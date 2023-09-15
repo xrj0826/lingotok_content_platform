@@ -27,7 +27,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'TableTemplate',
+  name: 'UserMini',
 };
 </script>
 <script setup lang="tsx">
@@ -54,16 +54,13 @@ const size: Ref<SizeEnum> = ref('medium');
 const showHeader = ref(true);
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'applicant', title: '申请人' },
+  { colKey: 'userName', title: '用户名' },
   {
-    colKey: 'status',
-    title: '申请状态',
+    colKey: 'userInfo',
+    title: '用户详细信息',
     cell: (h, { row }) => {
       return (
-        <t-tag shape="round" theme={statusNameListMap[row.status].theme} variant="light-outline">
-          {statusNameListMap[row.status].icon}
-          {statusNameListMap[row.status].label}
-        </t-tag>
+   
       );
     },
   },
