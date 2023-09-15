@@ -1,0 +1,30 @@
+{
+  "id": "4164716",
+  "name": "越海客号",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1420859",
+      "name": "game",
+      "font_class": "game",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "7988823",
+      "name": "bag",
+      "font_class": "bag",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "8986733",
+      "name": "love",
+      "font_class": "-love",
+      "unicode": "e60b",
+      "unicode_decimal": 58891
+    }
+  ]
+}
