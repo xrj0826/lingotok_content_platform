@@ -1,22 +1,24 @@
 <template>
   <div :class="sideNavCls">
     <t-menu :class="menuCls" :theme="theme" :value="active" :collapsed="collapsed" :default-expanded="defaultExpanded">
-<!--      <template #logo>-->
-<!--        <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">-->
-<!--          <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />-->
-<!--          <div style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: 10px ">越海客号</div>-->
-<!--        </span>-->
-<!--      </template>-->
-      <span  :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">
-        <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />
-        <div v-if="!collapsed" style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: -50px; margin-right: 20px ">越海客号</div>
+      <!--      <template #logo>-->
+      <!--        <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">-->
+      <!--          <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />-->
+      <!--          <div style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: 10px ">越海客号</div>-->
+      <!--        </span>-->
+      <!--      </template>-->
+      <span :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">
+        <component :is="getLogo()" :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />
+        <div v-if="!collapsed"
+          style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: -50px; margin-right: 20px ">
+          智能球馆</div>
       </span>
-<!--      <div style="display: flex; ">-->
-<!--        <img style="height: 50px; " src="/src/assets/assets-logo-full.svg">-->
-<!--      </div>-->
+      <!--      <div style="display: flex; ">-->
+      <!--        <img style="height: 50px; " src="/src/assets/assets-logo-full.svg">-->
+      <!--      </div>-->
       <menu-content :nav-data="menu" />
       <template #operations>
-        <span class="version-container"> {{ !collapsed ? '越海客号' : '' }}  </span>
+        <span class="version-container"> {{ !collapsed ? '越海客号' : '' }} </span>
       </template>
     </t-menu>
     <div :class="`${prefix}-side-nav-placeholder${collapsed ? '-hidden' : ''}`"></div>
