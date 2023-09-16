@@ -10,6 +10,7 @@ export default [
     component: Layout,
     redirect: '/table/template',
     meta: { title: '表格', icon: shallowRef(DashboardIcon) },
+
     children: [
       {
         path: 'template',

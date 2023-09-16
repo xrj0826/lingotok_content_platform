@@ -20,37 +20,21 @@
       <t-col :xs="12" :xl="9">
         <t-card class="dashboard-detail-card" title="采购商品申请趋势" subtitle="(件)" :bordered="false">
           <template #actions>
-            <t-date-range-picker
-              class="card-date-picker-container"
-              :default-value="LAST_7_DAYS"
-              theme="primary"
-              mode="date"
-              style="width: 248px"
-              @change="onMaterialChange"
-            />
+            <t-date-range-picker class="card-date-picker-container" :default-value="LAST_7_DAYS" theme="primary"
+              mode="date" style="width: 248px" @change="onMaterialChange" />
           </template>
           <div id="lineContainer" style="width: 100%; height: 416px" />
         </t-card>
       </t-col>
       <t-col :xs="12" :xl="3">
-        <product-card
-          v-for="(item, index) in PRODUCT_LIST"
-          :key="index"
-          :product="item"
-          :class="{ 'row-margin': index !== 0, 'product-card': true }"
-        />
+        <product-card v-for="(item, index) in PRODUCT_LIST" :key="index" :product="item"
+          :class="{ 'row-margin': index !== 0, 'product-card': true }" />
       </t-col>
     </t-row>
     <t-card :class="['dashboard-detail-card', 'row-margin']" title="采购商品满意度分布" :bordered="false">
       <template #actions>
-        <t-date-range-picker
-          class="card-date-picker-container"
-          :default-value="LAST_7_DAYS"
-          theme="primary"
-          mode="date"
-          style="display: inline-block; margin-right: var(--td-comp-margin-s); width: 248px"
-          @change="onSatisfyChange"
-        />
+        <t-date-range-picker class="card-date-picker-container" :default-value="LAST_7_DAYS" theme="primary" mode="date"
+          style="display: inline-block; margin-right: var(--td-comp-margin-s); width: 248px" @change="onSatisfyChange" />
         <t-button class="card-date-button"> 导出数据 </t-button>
       </template>
       <div id="scatterContainer" style="width: 100%; height: 434px" />
@@ -183,6 +167,7 @@ const onMaterialChange = (value: string[]) => {
     padding: 0;
   }
 }
+
 // 统一增加8px;
 .dashboard-detail-card {
   padding: var(--td-comp-paddingTB-xxl) var(--td-comp-paddingLR-xxl);
@@ -258,6 +243,7 @@ const onMaterialChange = (value: string[]) => {
     .t-icon {
       font-size: var(--td-comp-size-xxxs);
     }
+
     &-left {
       display: flex;
 

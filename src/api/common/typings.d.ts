@@ -204,15 +204,15 @@ declare namespace API {
     read?: boolean;
     /** 消息类型 */
     messageType?:
-      | 'TIMTextElem'
-      | 'TIMLocationElem'
-      | 'TIMFaceElem'
-      | 'TIMCustomElem'
-      | 'TIMSoundElem'
-      | 'TIMImageElem'
-      | 'TIMFileElem'
-      | 'TIMVideoFileElem'
-      | 'TIMRelayElem';
+    | 'TIMTextElem'
+    | 'TIMLocationElem'
+    | 'TIMFaceElem'
+    | 'TIMCustomElem'
+    | 'TIMSoundElem'
+    | 'TIMImageElem'
+    | 'TIMFileElem'
+    | 'TIMVideoFileElem'
+    | 'TIMRelayElem';
     /** 会话ID */
     conversationId?: string;
     content?: MsgContent;
