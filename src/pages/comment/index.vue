@@ -1,4 +1,4 @@
-<!-- 用户管理 -->
+<!-- 评论管理 -->
 <template>
   <div>
     <t-space direction="vertical">
@@ -27,7 +27,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'UserMini',
+  name: 'CommentManage',
 };
 </script>
 <script setup lang="tsx">

@@ -1,4 +1,4 @@
-<!-- 用户管理 -->
+<!-- 订单管理 -->
 <template>
   <div>
     <t-space direction="vertical">
@@ -27,7 +27,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'UserMini',
+  name: 'OrderManage',
 };
 </script>
 <script setup lang="tsx">
