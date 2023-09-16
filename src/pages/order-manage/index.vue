@@ -1,37 +1,28 @@
 <!-- 订单管理 -->
 <template>
   <div>
-    <t-space direction="vertical">
-      <!-- 按钮操作区域 -->
-      <!-- <t-radio-group v-model="size" variant="default-filled"> -->
-      <!-- <t-radio-button value="small">小尺寸</t-radio-button>
-        <t-radio-button value="medium">中尺寸</t-radio-button>
-        <t-radio-button value="large">大尺寸</t-radio-button> -->
-      <!-- </t-radio-group> -->
-
-      <!-- <t-space>
-        <t-checkbox v-model="stripe"> 显示斑马纹 </t-checkbox>
-        <t-checkbox v-model="bordered"> 显示表格边框 </t-checkbox>
-        <t-checkbox v-model="hover"> 显示悬浮效果 </t-checkbox>
-        <t-checkbox v-model="tableLayout"> 宽度自适应 </t-checkbox>
-        <t-checkbox v-model="showHeader"> 显示表头 </t-checkbox>
-      </t-space> -->
-
-      <!-- 当数据为空需要占位时，会显示 cellEmptyContent -->
-      <t-table row-key="index" :data="data" :columns="columns" :stripe="true" table-layout="fixed" :bordered="true"
-        size="medium" :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
-      </t-table>
-    </t-space>
+    <t-card>
+      <t-space>
+        <t-button theme="primary">
+          <template #icon><add-icon /></template>
+          订单导出
+        </t-button></t-space>
+      <t-space direction="vertical">
+        <t-table row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="large"
+          :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
+        </t-table>
+      </t-space>
+    </t-card>
   </div>
 </template>
 
 <script lang="tsx">
 export default {
-  name: 'OrderManage',
+  name: 'Announcement',
 };
 </script>
 <script setup lang="tsx">
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
+import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon, AddIcon } from 'tdesign-icons-vue-next';
 import { SizeEnum } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { Ref, ref } from 'vue';
