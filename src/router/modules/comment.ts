@@ -8,11 +8,11 @@ export default [
     path: '/comment',
     name: 'comment',
     component: Layout,
-    redirect: '/comment/CommentManage',
+    redirect: '/comment/Comment-manage',
     meta: { title: '评论管理', icon: shallowRef(DashboardIcon) },
     children: [
       {
-        path: 'commentManage',
+        path: 'comment-manage',
         name: 'CommentManage',
         component: () => import('@/pages/comment/index.vue'),
         meta: { title: '评论管理', hidden: true },

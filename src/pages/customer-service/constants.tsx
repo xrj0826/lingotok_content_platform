@@ -4,8 +4,10 @@ export function useSomeFeature() {
   for (let i = 0; i < total; i++) {
     data.push({
       index: i + 1,
-      applicant: ['贾明', '张三', '王芳'][i % 3],
-      status: i % 3,
+      userName: ['贾明', '张三', '王芳'][i % 3],
+      id: i,
+      phone: 15992950688 + i,
+      status:i%3,
       channel: ['电子签署', '纸质签署', '纸质签署'][i % 3],
       detail: {
         email: ['w.cezkdudy@lhll.au', 'r.nmgw@peurezgn.sl', 'p.cumx@rampblpa.ru'][i % 3],

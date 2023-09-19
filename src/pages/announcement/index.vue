@@ -8,8 +8,8 @@
           新建公告
         </t-button></t-space>
       <t-space direction="vertical">
-        <t-table row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="large"
-          :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
+        <t-table row-key="index" :data="data" :columns="columns" :stripe="false" table-layout="fixed" :bordered="true"
+          size="large" :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
         </t-table>
       </t-space>
     </t-card>
@@ -22,58 +22,58 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon, AddIcon } from 'tdesign-icons-vue-next';
-import { SizeEnum } from 'tdesign-vue-next';
+import { AddIcon } from 'tdesign-icons-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { Ref, ref } from 'vue';
 
 import { useSomeFeature } from './constants';
+import Dialog from "./components/Dialog.vue";
 
 const { data, total } = useSomeFeature();
 
-const statusNameListMap = {
-  0: { label: '审批通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
-  1: { label: '审批失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
-  2: { label: '审批过期', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-};
-
 
 const columns: PrimaryTableCol[] = [
-  { colKey: 'userName', title: '用户名' },
+  { colKey: 'announcementId', title: '公告编号' },
   {
-    colKey: 'userInfo',
-    title: '用户详细信息',
+    colKey: 'img',
+    title: '配图',
   },
   {
-    colKey: 'userStatus', title: '用户会员状态', cell: (h, { row }) => {
+    colKey: 'detail', title: '公告内容', cell: (h, { row }) => {
       return (
-        <t-tag shape="round" theme={statusNameListMap[row.status].theme} variant="light-outline">
-          {statusNameListMap[row.status].icon}
-          {statusNameListMap[row.status].label}
-        </t-tag>
+        <t-link theme="primary">详情</t-link>
       );
     },
   },
-  { colKey: 'userDefalut', title: '用户禁用', ellipsis: true, cell: undefined },
-  { colKey: 'operation', title: '操作' },
+  { colKey: 'isTop', title: '是否置顶', ellipsis: true, cell: undefined },
+  {
+    colKey: 'operation', title: '操作', cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-link theme="danger" onClick={handlerDelete}>删除</t-link>
+          <Dialog edit={editRow} editId={row.id}></Dialog>
+        </t-space>
+      );
+    },
+  },
 ];
-interface A {
-  name?: string;
-}
-const B: A = {};
-const ary: A[] = [{ name: '123' }, {}];
-console.log(ary);
-console.log(B);
-
-const handleRowClick = (e) => {
-  console.log(e);
-};
 
 const pagination = {
   defaultCurrent: 1,
   defaultPageSize: 5,
   total,
 };
+const handleRowClick = (e) => {
+  console.log(e);
+};
+const handlerDelete = (e) => {
+  console.log(e);
+};
+//发送编辑行后执行回调
+const editRow = (newData) => {
+  alert("编辑完成")
+  // alert(newData)
+}
 </script>
 
 <style lang="less" scoped></style>
