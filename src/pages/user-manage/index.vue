@@ -3,7 +3,7 @@
   <div>
     <t-card>
       <t-space direction="vertical">
-        <t-table row-key="index" :data="data" :columns="columns" :stripe="true" table-layout="fixed" :bordered="true"
+        <t-table row-key="id" :data="data" :columns="columns" :stripe="true" table-layout="fixed" :bordered="true"
           size="medium" :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
         </t-table>
       </t-space>
@@ -13,7 +13,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'user-manage',
+  name: 'UserManage',
 };
 </script>
 <script setup lang="tsx">
@@ -35,7 +35,11 @@ console.log(B);
 
 const handleRowClick = (e) => {
   console.log(e);
+  // console.log(data);
+
 };
+
+
 
 const pagination = {
   defaultCurrent: 1,

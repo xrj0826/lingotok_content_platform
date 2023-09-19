@@ -5,17 +5,17 @@ import Layout from '@/layouts/index.vue';
 
 export default [
   {
-    path: '/customerService',
-    name: 'customerService',
+    path: '/customer-service',
+    name: 'customer-service',
     component: Layout,
-    redirect: '/customerService/CommentManage',
+    redirect: '/customer-service/customer-manage',
     meta: { title: '客服中心', icon: shallowRef(DashboardIcon) },
     children: [
       {
-        path: 'customerManage',
+        path: 'customer-manage',
         name: 'CustomerManage',
         component: () => import('@/pages/customer-service/index.vue'),
-        meta: { title: '客服管理' },
+        meta: { title: '客服管理', hidden: true },
       },
     ],
   },

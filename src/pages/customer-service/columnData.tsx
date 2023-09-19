@@ -1,6 +1,6 @@
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
-import { compileStyle } from '@vue/compiler-sfc';
+import Drawer from '../customer-service/component/Drawer.vue'
 
 const statusNameListMap = {
   0: {
@@ -21,13 +21,17 @@ const statusDefaultListMap = {
 };
 
 export const columns: PrimaryTableCol[] = [
-        { colKey: 'userName', title: '用户名' },
+        { colKey: 'userName', title: '客服名' },
         {
-          colKey: 'userInfo',
-          title: '用户详细信息',
+          colKey: 'id',
+          title: 'id',
         },
         {
-          colKey: 'userStatus', title: '用户会员状态', cell: (h, { row }) => {
+          colKey: 'phone',
+          title: '电话号码',
+        },
+        {
+          colKey: 'userStatus', title: '客服状态', cell: (h, { row }) => {
             return (
               <t-tag shape = "round"  theme = { statusNameListMap[row.status].theme } variant = "dark" >    
             { statusNameListMap[row.status].label }
@@ -45,15 +49,24 @@ export const columns: PrimaryTableCol[] = [
             }, },
         { colKey: 'operation', title: '操作', cell: (h, { row }) => {
                     return (
-                     <t-space> <t-link theme="primary" onClick={ handlerClick }>详情</t-link>
-                      <t-link theme="danger" onClick={ handlerDelete }>删除</t-link></t-space>
+                     <t-space> 
+                      <t-link theme="danger" onClick={ handlerDelete }>删除</t-link>
+                      <Drawer edit={editRow} editId={row.id}></Drawer>
+                      </t-space>
               );
             } },
         
 ];
-const handlerClick = () => {
-   alert('事件触发了')
+const handlerEdit = () => {
+   alert('编辑事件触发了')
 }
 const handlerDelete =()=>{
   alert("你确定要删除该用户吗?删除后数据将无法恢复。")
+  
+}
+
+  //发送编辑行后执行回调
+const editRow = (newData) => {
+  alert("编辑完成")
+  // alert(newData)
 }
