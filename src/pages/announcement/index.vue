@@ -51,7 +51,7 @@ const columns: PrimaryTableCol[] = [
       return (
         <t-space>
           <t-link theme="danger" onClick={handlerDelete}>删除</t-link>
-          <Dialog edit={editRow} editId={row.id}></Dialog>
+          <Dialog onEdit={editFinish} editId={row.id}></Dialog>
         </t-space>
       );
     },
@@ -70,9 +70,9 @@ const handlerDelete = (e) => {
   console.log(e);
 };
 //发送编辑行后执行回调
-const editRow = (newData) => {
+const editFinish = (newData) => {
   alert("编辑完成")
-  // alert(newData)
+  alert(newData)
 }
 </script>
 

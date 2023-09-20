@@ -51,15 +51,13 @@ export const columns: PrimaryTableCol[] = [
                     return (
                      <t-space> 
                       <t-link theme="danger" onClick={ handlerDelete }>删除</t-link>
-                      <Drawer edit={editRow} editId={row.id}></Drawer>
+                      <Drawer onEdit={editRow} editId={row.id}></Drawer>
                       </t-space>
               );
             } },
         
 ];
-const handlerEdit = () => {
-   alert('编辑事件触发了')
-}
+
 const handlerDelete =()=>{
   alert("你确定要删除该用户吗?删除后数据将无法恢复。")
   
@@ -68,5 +66,5 @@ const handlerDelete =()=>{
   //发送编辑行后执行回调
 const editRow = (newData) => {
   alert("编辑完成")
-  // alert(newData)
+  alert(newData)
 }

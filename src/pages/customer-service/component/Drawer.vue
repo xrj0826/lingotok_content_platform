@@ -24,7 +24,7 @@
 <script setup>
 import { ref } from 'vue';
 const props = defineProps({ editId: String || Number })//为什么这里类型只能用大写，不然会警告?
-const emit = defineEmits(['edit'])
+const emit = defineEmits(['ok'])
 
 const visible = ref(false);
 
@@ -48,7 +48,7 @@ const editBegin = () => {
 //确定编辑
 const edit = () => {
   visible.value = false;
-  emit('edit');
+  emit('edit', "emit传来喜报:组件通信成功");
   // .then((values) => {
   //   console.log('表格行id', props.editId)
 
@@ -65,7 +65,7 @@ const edit = () => {
   //     data: values,
   //   }).then((res) => {
   //     console.log(res.data.data)
-  //     emit('ok', res.data.data)
+  //     emit('edit', res.data.data)
   //   })
   // })
   // .catch((info) => {
