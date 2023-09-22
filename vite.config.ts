@@ -46,7 +46,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       cors: true,
       proxy: {
         '/Manager': {
-          target: 'http://47.99.90.88:8887/',
+          target: 'http://10.142.217.152:8887/',
           ws: true,
           changeOrigin: true,
           rewrite: (path) => {
@@ -71,6 +71,14 @@ export default ({ mode }: ConfigEnv): UserConfig => {
             return path.replace(/^\/Api/, '');
           },
           secure: false, // 跳过证书问题
+        },
+        '/test': {
+          target: 'http://10.142.217.152:8887/',
+          ws: true,
+          changeOrigin: false,
+          rewrite: (path) => {
+            return path.replace(/^\/test/, '');
+          },
         },
       },
     },

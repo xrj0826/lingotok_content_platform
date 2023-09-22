@@ -41,7 +41,7 @@ export const usePermissionStore = defineStore('permission', {
       let removeRoutes: Array<RouteRecordRaw> = [];
       // special token
       // if (roles.includes('all')) {
-        accessedRouters = allRoutes;
+      accessedRouters = allRoutes;
       // }
       // else {
       //   const res = filterPermissionsRouters(allRoutes, roles);

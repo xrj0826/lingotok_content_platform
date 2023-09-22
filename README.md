@@ -45,3 +45,28 @@ git commit "feat: 123"
 2. 在 .tsx 文件中将组件写在 cell 里面，引入 index.tsx 文件里面的 data 变量等
 
    `warn: 目前尚未确定哪种写法更好，待有接口后进一步试验`
+
+# 2023/9/20
+
+## emit 与自定义事件，实现组件间通信(在 tsx 里的实现)
+
+1. 自定义事件在 tsx 里的写法:
+
+```tsx
+<Dialog onEdit={editFinish}></Dialog> //on+自定义事件名(首字母大写)
+```
+
+2. 在子组件里用 defineEmits 接收自定义组件
+
+```ts
+const emit = defineEmits(['edit']); //数组写法
+```
+
+3. 使用自定义组件名,emit 传递信信息
+
+```js
+const edit = () => {
+  visible.value = false;
+  emit('edit', 'emit传来喜报:组件通信成功'); //第一个参数为自定义方法名，第二个为传递的信息
+};
+```
