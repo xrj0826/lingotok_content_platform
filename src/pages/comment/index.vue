@@ -4,12 +4,25 @@
     <!-- <Drawer></Drawer> -->
     <t-card>
       <t-space direction="vertical">
-        <t-table :row-key="rowKey" :data="data" :columns="columns" :stripe="false" size="medium" :showHeader="false"
-          :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
-
-          <template #op="slotProps">
+        <t-table
+          :row-key="rowKey"
+          :data="data"
+          :columns="columns"
+          :stripe="false"
+          size="medium"
+          :show-header="false"
+          :pagination="pagination"
+          cell-empty-content="-"
+          resizable
+          @row-click="handleRowClick"
+        >
+          <template #op="">
             <t-space>
-              <t-link theme="danger" @click="handlerDelete">删除</t-link>
+              <t-link
+                theme="danger"
+                @click="handlerDelete"
+                >删除</t-link
+              >
               <!-- <Drawer :edit="editRow" :editId="index"></Drawer> -->
             </t-space>
           </template>
@@ -25,32 +38,27 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { SizeEnum } from 'tdesign-vue-next';
 import { Ref, ref } from 'vue';
-import { columns } from './columnData'
+
+import { columns } from './columnData';
 import { useSomeFeature } from './constants';
 // import Drawer from '../customer-service/component/Drawer.vue'
 
 const { data, total } = useSomeFeature();
 
-const rowKey = "index"
-
+const rowKey = 'index';
 
 const handleRowClick = (e) => {
   console.log(e);
   console.log(data);
 
   // console.log(data);
-
 };
-
 
 const handlerDelete = (e) => {
   console.log(e);
   // console.log(data);
-
 };
-
 
 const pagination = {
   defaultCurrent: 1,

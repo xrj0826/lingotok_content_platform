@@ -2,7 +2,10 @@
   <div>
     <t-space direction="vertical">
       <!-- 按钮操作区域 -->
-      <t-radio-group v-model="size" variant="default-filled">
+      <t-radio-group
+        v-model="size"
+        variant="default-filled"
+      >
         <t-radio-button value="small">小尺寸</t-radio-button>
         <t-radio-button value="medium">中尺寸</t-radio-button>
         <t-radio-button value="large">大尺寸</t-radio-button>
@@ -17,9 +20,21 @@
       </t-space>
 
       <!-- 当数据为空需要占位时，会显示 cellEmptyContent -->
-      <t-table row-key="index" :data="data" :columns="columns" :stripe="stripe" :bordered="bordered" :hover="hover"
-        :table-layout="tableLayout ? 'auto' : 'fixed'" :size="size" :pagination="pagination" :show-header="showHeader"
-        cell-empty-content="-" resizable @row-click="handleRowClick">
+      <t-table
+        row-key="index"
+        :data="data"
+        :columns="columns"
+        :stripe="stripe"
+        :bordered="bordered"
+        :hover="hover"
+        :table-layout="tableLayout ? 'auto' : 'fixed'"
+        :size="size"
+        :pagination="pagination"
+        :show-header="showHeader"
+        cell-empty-content="-"
+        resizable
+        @row-click="handleRowClick"
+      >
       </t-table>
     </t-space>
   </div>
@@ -60,7 +75,11 @@ const columns: PrimaryTableCol[] = [
     title: '申请状态',
     cell: (h, { row }) => {
       return (
-        <t-tag shape="round" theme={statusNameListMap[row.status].theme} variant="light-outline">
+        <t-tag
+          shape="round"
+          theme={statusNameListMap[row.status].theme}
+          variant="light-outline"
+        >
           {statusNameListMap[row.status].icon}
           {statusNameListMap[row.status].label}
         </t-tag>

@@ -1,26 +1,24 @@
 <template>
   <div>
     <t-space>
-      <t-space>
-        <t-link
-          theme="primery"
-          @click="handlerEdit"
-          >编辑</t-link
-        >
-      </t-space>
-      <t-dialog
-        v-model:visible="visible"
-        header="保存订单"
-        body="订单保存中，请稍后"
-        :confirm-btn="{
-          content: '提交',
-          theme: 'primary',
-          loading,
-        }"
-        :on-confirm="edit"
-        :on-close="close"
-      />
+      <t-link
+        theme="primary"
+        @click="handlerEdit"
+        >编辑</t-link
+      >
     </t-space>
+    <t-dialog
+      v-model:visible="visible"
+      header="保存订单"
+      body="订单保存中，请稍后"
+      :confirm-btn="{
+        content: '提交',
+        theme: 'primary',
+        loading,
+      }"
+      :on-confirm="edit"
+      :on-close="close"
+    ></t-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -30,7 +28,7 @@ const props = defineProps({ editId: String || Number }); // 为什么这里类�
 
 const emit = defineEmits(['edit']);
 
-const visible = ref(false);
+const visible = ref(false); // 是否显示
 const loading = ref(false);
 
 const close = () => {
@@ -38,7 +36,8 @@ const close = () => {
   visible.value = false;
 };
 
-const handlerEdit = (e) => {
+// 外部的编辑按钮
+const handlerEdit = () => {
   visible.value = true;
   console.log(props.editId);
   // axios({
