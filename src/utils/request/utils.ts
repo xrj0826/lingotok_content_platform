@@ -1,7 +1,7 @@
 import isObject from 'lodash/isObject';
 import isString from 'lodash/isString';
 
-const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+const DATE_TIME_FORMAT = 'YYYY-MM-DD';
 
 export function joinTimestamp<T extends boolean>(join: boolean, restful: T): T extends true ? string : object;
 
@@ -15,6 +15,13 @@ export function joinTimestamp(join: boolean, restful = false): string | object {
   }
   return { _t: now };
 }
+function checkDSate(dateStr) {
+  const a = /^(\d{4})-(\d{2})-(\d{2})$/;
+  if (!a.test(dateStr)) {
+    return false;
+  }
+  return true;
+}
 
 // 格式化提交参数时间
 export function formatRequestDate(params: Recordable) {
@@ -24,7 +31,10 @@ export function formatRequestDate(params: Recordable) {
 
   for (const key in params) {
     // eslint-disable-next-line no-underscore-dangle
-    if (params[key] && params[key]._isAMomentObject) {
+    // if (params[key] && params[key]._isAMomentObject) {
+    //   params[key] = params[key].format(DATE_TIME_FORMAT);
+    // }
+    if (params[key] && checkDSate(params[key])) {
       params[key] = params[key].format(DATE_TIME_FORMAT);
     }
     if (isString(key)) {

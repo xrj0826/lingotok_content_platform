@@ -6,10 +6,21 @@
         <t-button theme="primary">
           <template #icon><add-icon /></template>
           订单导出
-        </t-button></t-space>
+        </t-button></t-space
+      >
       <t-space direction="vertical">
-        <t-table row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="large"
-          :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
+        <t-table
+          row-key="index"
+          :data="data"
+          :columns="columns"
+          table-layout="fixed"
+          :bordered="true"
+          size="large"
+          :pagination="pagination"
+          cell-empty-content="-"
+          resizable
+          @row-click="handleRowClick"
+        >
         </t-table>
       </t-space>
     </t-card>
@@ -22,7 +33,7 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon, AddIcon } from 'tdesign-icons-vue-next';
+import { AddIcon, CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
 import { SizeEnum } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { Ref, ref } from 'vue';
@@ -37,7 +48,6 @@ const statusNameListMap = {
   2: { label: '审批过期', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
 };
 
-
 const columns: PrimaryTableCol[] = [
   { colKey: 'userName', title: '用户名' },
   {
@@ -45,9 +55,15 @@ const columns: PrimaryTableCol[] = [
     title: '用户详细信息',
   },
   {
-    colKey: 'userStatus', title: '用户会员状态', cell: (h, { row }) => {
+    colKey: 'userStatus',
+    title: '用户会员状态',
+    cell: (h, { row }) => {
       return (
-        <t-tag shape="round" theme={statusNameListMap[row.status].theme} variant="light-outline">
+        <t-tag
+          shape="round"
+          theme={statusNameListMap[row.status].theme}
+          variant="light-outline"
+        >
           {statusNameListMap[row.status].icon}
           {statusNameListMap[row.status].label}
         </t-tag>

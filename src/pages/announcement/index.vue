@@ -15,6 +15,8 @@
           :columns="columns"
           :stripe="false"
           table-layout="fixed"
+          :loading="isLoading"
+          :hover="true"
           :bordered="true"
           size="large"
           :pagination="pagination"
@@ -35,66 +37,62 @@ export default {
 </script>
 <script setup lang="tsx">
 import { AddIcon } from 'tdesign-icons-vue-next';
-import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-import { Ref, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 
-import Dialog from './components/Dialog.vue';
-import { useSomeFeature } from './constants';
+import { page4 } from '@/api/user/xiaochengxugonggao';
+import { useRenewDataStore } from '@/store/renewData';
 
-const { data, total } = useSomeFeature();
+import { columns } from './columnData';
 
-const columns: PrimaryTableCol[] = [
-  { colKey: 'announcementId', title: '公告编号' },
-  {
-    colKey: 'img',
-    title: '配图',
-  },
-  {
-    colKey: 'detail',
-    title: '公告内容',
-    cell: (h, { row }) => {
-      return <t-link theme="primary">详情</t-link>;
-    },
-  },
-  { colKey: 'isTop', title: '是否置顶', ellipsis: true, cell: undefined },
-  {
-    colKey: 'operation',
-    title: '操作',
-    cell: (h, { row }) => {
-      return (
-        <t-space>
-          <t-link
-            theme="danger"
-            onClick={handlerDelete}
-          >
-            删除
-          </t-link>
-          <Dialog
-            onEdit={editFinish}
-            editId={row.id}
-          ></Dialog>
-        </t-space>
-      );
-    },
-  },
-];
+const data = ref([]);
+const isLoading = ref(false);
+const store = useRenewDataStore();
+// 挂载时调用请求函数
+onMounted(async () => {
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+  store.renewData = queryData; // 挂载时，将请求函数给pinia
+  store.pagination.current = pagination.current; // 分页数据也一起给
+  store.pagination.pageSize = pagination.pageSize;
+});
+// 请求数据
+const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
+  try {
+    isLoading.value = true;
+    console.log('请求', entityInfo, paginationInfo);
+    const res = await page4({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    console.log('数据已送达', res);
 
-const pagination = {
-  defaultCurrent: 1,
-  defaultPageSize: 5,
-  total,
+    data.value = res.result.records; // 获得表格数据
+    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+  } catch (err) {
+    console.log(err);
+  }
+  isLoading.value = false;
 };
+
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 10,
+  showJumper: true,
+  onChange: (pageInfo) => {
+    pagination.current = pageInfo.current;
+    pagination.pageSize = pageInfo.pageSize;
+    queryData({
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    }); // 分页数据改变时调用请求函数
+    console.log('pagination.onChange', pageInfo);
+  },
+});
+
 const handleRowClick = (e) => {
   console.log(e);
-};
-const handlerDelete = (e) => {
-  console.log(e);
-};
-// 发送编辑行后执行回调
-const editFinish = (newData) => {
-  alert('编辑完成');
-  alert(newData);
 };
 </script>
 
 <style lang="less" scoped></style>
+./columnData
