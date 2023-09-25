@@ -175,7 +175,7 @@ const onReset = () => {
 //   if (validateResult === true) {
 //     MessagePlugin.success('提交成功');
 //   } else {
-//     console.log('Validate Errors: ', fitrstError, validateResult);
+//     console.log('Validate Errors: ', firstError, validateResult);
 //     MessagePlugin.warning(firstError);
 //   }
 // };

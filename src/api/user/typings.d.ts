@@ -70,6 +70,45 @@ declare namespace API {
     userId?: string;
     /** 门店id */
     storeId?: string;
+    /** 折扣值 */
+    discountValue?: number;
+  };
+
+  type CbCoupon = {
+    /** id */
+    id?: string;
+    /** 创建者 */
+    createBy?: string;
+    /** 创建时间 */
+    createTime?: string;
+    /** 删除标志 true/false 删除/未删除 */
+    deleteFlag?: boolean;
+    /** 更新者 */
+    updateBy?: string;
+    /** 更新时间 */
+    updateTime?: string;
+    /** 优惠天数 */
+    days?: number;
+    /** 邀请人数 */
+    numberInvitees?: number;
+    /** 是否可叠加 */
+    overlay?: number;
+    /** 兑换码 */
+    code?: string;
+    /** 生效日期 */
+    startDate?: string;
+    /** 结束日期 */
+    endDate?: string;
+    /** 使用次数限制 */
+    usageLimit?: string;
+    /** 是否有效（0、1） */
+    isActive?: boolean;
+    /** 优惠卷使用次数 */
+    usageCount?: string;
+    /** 折扣类型 */
+    discountType?: string;
+    /** 折扣值 */
+    discountValue?: string;
   };
 
   type CbNotice = {
@@ -97,6 +136,52 @@ declare namespace API {
     noticeState?: boolean;
     /** 门店id */
     storeId?: string;
+  };
+
+  type CbOrderInfo = {
+    /** id */
+    id?: string;
+    /** 创建者 */
+    createBy?: string;
+    /** 创建时间 */
+    createTime?: string;
+    /** 修改者 */
+    updateBy?: string;
+    /** 修改时间 */
+    updateTime?: string;
+    /** 删除标志 true/false 删除/未删除 */
+    deleteFlag?: number;
+    /** 用户id */
+    userId?: string;
+    /** 门店id */
+    storeId?: string;
+    /** 预约日期 */
+    orderDate?: string;
+    /** 预约开始时间 */
+    orderSt?: string;
+    /** 预约结束时间 */
+    orderEd?: string;
+    /** 订单状态(枚举） */
+    orderState?: string;
+    /** 订单价格 */
+    orderPrice?: number;
+    /** 订单类型（枚举） */
+    orderType?: string;
+    /** 支付方式 */
+    paymentMethods?: string;
+    /** 分享次数 */
+    share?: number;
+    /** 场地id */
+    venueId?: string;
+    /** 手机号码 */
+    phoneNumber?: string;
+    /** 二维码 */
+    qrCode?: string;
+    /** 用户进场时间 */
+    startTime?: string;
+    /** 用户离开时间 */
+    endTime?: string;
+    transactionId?: string;
   };
 
   type CbStore = {
@@ -138,6 +223,43 @@ declare namespace API {
     address?: string;
   };
 
+  type CbUser = {
+    /** id */
+    id?: string;
+    /** 创建者 */
+    createBy?: string;
+    /** 创建时间 */
+    createTime?: string;
+    /** 修改者 */
+    updateBy?: string;
+    /** 修改时间 */
+    updateTime?: string;
+    /** 删除标志 true/false 删除/未删除 */
+    deleteFlag?: boolean;
+    /** 微信openid */
+    openId?: string;
+    /** 头像 */
+    avatar?: string;
+    /** 昵称（默认用户+手机号后四位） */
+    nickName?: string;
+    /** 手机号 */
+    phoneNumber?: string;
+    /** 生日 */
+    birthday?: string;
+    /** 性别(0表示男，1表示女） */
+    sex?: number;
+    /** 邮件 */
+    email?: string;
+    /** 是否被禁用 */
+    isBan?: boolean;
+    /** 积分 */
+    credit?: string;
+    /** 姓名 */
+    name?: string;
+    /** 状态 默认true正常 false禁用 */
+    status?: boolean;
+  };
+
   type CbVenue = {
     /** id */
     id?: number;
@@ -161,10 +283,30 @@ declare namespace API {
     allPrice?: number;
     /** 价格 */
     price?: number;
+    /** 特殊价格 */
+    specialValue?: string;
   };
 
   type delAllByIdsParams = {
     ids: string[];
+  };
+
+  type delete10Params = {
+    /** ID集合 */
+    ids: string;
+  };
+
+  type delete11Params = {
+    id: string;
+  };
+
+  type delete12Params = {
+    /** ID集合 */
+    ids: string;
+  };
+
+  type delete13Params = {
+    id: string;
   };
 
   type delete1Params = {
@@ -198,6 +340,15 @@ declare namespace API {
     id: string;
   };
 
+  type delete8Params = {
+    /** ID集合 */
+    ids: string;
+  };
+
+  type delete9Params = {
+    id: string;
+  };
+
   type deleteUsingDELETEParams = {
     /** ID集合 */
     ids: string;
@@ -220,6 +371,18 @@ declare namespace API {
     id: number;
   };
 
+  type get4Params = {
+    id: number;
+  };
+
+  type get5Params = {
+    id: number;
+  };
+
+  type get6Params = {
+    id: number;
+  };
+
   type getParams = {
     id: number;
   };
@@ -227,41 +390,65 @@ declare namespace API {
   type IPageAdminUser = {
     size?: number;
     total?: number;
-    records?: AdminUser[];
-    current?: number;
     pages?: number;
+    current?: number;
+    records?: AdminUser[];
   };
 
   type IPageCbCard = {
     size?: number;
     total?: number;
-    records?: CbCard[];
-    current?: number;
     pages?: number;
+    current?: number;
+    records?: CbCard[];
+  };
+
+  type IPageCbCoupon = {
+    size?: number;
+    total?: number;
+    pages?: number;
+    current?: number;
+    records?: CbCoupon[];
   };
 
   type IPageCbNotice = {
     size?: number;
     total?: number;
-    records?: CbNotice[];
-    current?: number;
     pages?: number;
+    current?: number;
+    records?: CbNotice[];
+  };
+
+  type IPageCbOrderInfo = {
+    size?: number;
+    total?: number;
+    pages?: number;
+    current?: number;
+    records?: CbOrderInfo[];
   };
 
   type IPageCbStore = {
     size?: number;
     total?: number;
-    records?: CbStore[];
-    current?: number;
     pages?: number;
+    current?: number;
+    records?: CbStore[];
+  };
+
+  type IPageCbUser = {
+    size?: number;
+    total?: number;
+    pages?: number;
+    current?: number;
+    records?: CbUser[];
   };
 
   type IPageCbVenue = {
     size?: number;
     total?: number;
-    records?: CbVenue[];
-    current?: number;
     pages?: number;
+    current?: number;
+    records?: CbVenue[];
   };
 
   type loginParams = {
@@ -270,24 +457,42 @@ declare namespace API {
   };
 
   type page1Params = {
-    entity: CbStore;
+    entity: CbUser;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page2Params = {
-    entity: CbNotice;
+    entity: CbStore;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page3Params = {
-    entity: CbCard;
+    entity: CbOrderInfo;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page4Params = {
+    entity: CbNotice;
+    searchVo: SearchVO;
+    page: PageVO;
+  };
+
+  type page5Params = {
+    entity: CbCoupon;
+    searchVo: SearchVO;
+    page: PageVO;
+  };
+
+  type page6Params = {
+    entity: CbCard;
+    searchVo: SearchVO;
+    page: PageVO;
+  };
+
+  type page7Params = {
     entity: AdminUserVo;
     searchVo: SearchVO;
     page: PageVO;
@@ -348,6 +553,18 @@ declare namespace API {
     result?: CbCard;
   };
 
+  type ResultMessageCbCoupon = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CbCoupon;
+  };
+
   type ResultMessageCbNotice = {
     /** 成功标志 */
     success?: boolean;
@@ -360,6 +577,18 @@ declare namespace API {
     result?: CbNotice;
   };
 
+  type ResultMessageCbOrderInfo = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CbOrderInfo;
+  };
+
   type ResultMessageCbStore = {
     /** 成功标志 */
     success?: boolean;
@@ -370,6 +599,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: CbStore;
+  };
+
+  type ResultMessageCbUser = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CbUser;
   };
 
   type ResultMessageCbVenue = {
@@ -408,6 +649,18 @@ declare namespace API {
     result?: IPageCbCard;
   };
 
+  type ResultMessageIPageCbCoupon = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageCbCoupon;
+  };
+
   type ResultMessageIPageCbNotice = {
     /** 成功标志 */
     success?: boolean;
@@ -420,6 +673,18 @@ declare namespace API {
     result?: IPageCbNotice;
   };
 
+  type ResultMessageIPageCbOrderInfo = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageCbOrderInfo;
+  };
+
   type ResultMessageIPageCbStore = {
     /** 成功标志 */
     success?: boolean;
@@ -430,6 +695,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: IPageCbStore;
+  };
+
+  type ResultMessageIPageCbUser = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageCbUser;
   };
 
   type ResultMessageIPageCbVenue = {
@@ -473,8 +750,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertEndDate?: string;
     convertStartDate?: string;
+    convertEndDate?: string;
   };
 
   type Token = {
