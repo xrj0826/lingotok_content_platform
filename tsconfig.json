@@ -4,29 +4,19 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "preserve",
+    "allowJs": true,
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "vite/client",
-      "tdesign-vue-next/global",
-      "node"
-    ],
+    "lib": ["esnext", "dom"],
+    "types": ["vite/client", "tdesign-vue-next/global", "node"],
     "noEmit": true,
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "/@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"],
+      "/@/*": ["src/*"]
     },
     "noImplicitAny": false
   },

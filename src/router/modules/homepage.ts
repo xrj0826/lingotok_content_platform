@@ -12,7 +12,7 @@ export default [
     meta: {
       title: '仪表盘',
       icon: shallowRef(DashboardIcon),
-      orderNo: 0,
+      orderNo: -1,
     },
     children: [
       {

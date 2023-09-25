@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia';
 import { MessagePlugin } from 'tdesign-vue-next';
 
-import { getUserInfo } from '@/api/manager/adminUser';
+import { getUserInfo } from '@/api/user/guanliyuan';
 import router from '@/router';
 import { usePermissionStore } from '@/store';
 import type { UserInfo } from '@/types/interface';
 
-import manager from '../../api/manager';
-import { login } from '../../api/manager/adminUser';
+import { login } from '../../api/user/guanliyuan';
 import md5 from '../../utils/md5';
 
 const InitUserInfo: UserInfo = {
@@ -17,7 +16,8 @@ const InitUserInfo: UserInfo = {
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: localStorage.getItem('accessToken'), // 默认token不走权限
+    // token: localStorage.getItem('accessToken'), // 默认token不走权限?
+    token: null,
     userInfo: { ...InitUserInfo },
   }),
   getters: {
@@ -45,11 +45,14 @@ export const useUserStore = defineStore('user', {
       // }
       const data = {
         username: userInfo.account as string,
-        password: md5.md5(userInfo.password),
-        uuid: '',
+        // password: md5.md5(userInfo.password),
+        password: '12121212', // 改为固定密码
+        // uuid: '',
       };
 
       const res = await login(data);
+      console.log(data);
+
       localStorage.setItem('accessToken', res.result.accessToken);
       localStorage.setItem('tabsvalue', '1');
       localStorage.setItem('bereviewedtabsvalue', '1');
@@ -64,7 +67,7 @@ export const useUserStore = defineStore('user', {
     async getUserInfo() {
       await getUserInfo().then((res) => {
         localStorage.setItem('userInfo', JSON.stringify(res.result));
-        localStorage.setItem('userId', res.result.id);
+        localStorage.setItem('userId', res.result.roleIds);
       });
     },
     async logout() {

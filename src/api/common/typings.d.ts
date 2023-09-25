@@ -59,14 +59,10 @@ declare namespace API {
   };
 
   type getSliderImageParams = {
-    /** uuid */
-    uuid: string;
     verificationEnums: 'LOGIN' | 'REGISTER' | 'FIND_USER' | 'UPDATE_PASSWORD' | 'WALLET_PASSWORD';
   };
 
   type getSmsCodeParams = {
-    /** uuid */
-    uuid: string;
     /** 手机号 */
     mobile: string;
     verificationEnums: 'LOGIN' | 'REGISTER' | 'FIND_USER' | 'UPDATE_PASSWORD' | 'WALLET_PASSWORD';
@@ -204,15 +200,15 @@ declare namespace API {
     read?: boolean;
     /** 消息类型 */
     messageType?:
-      | 'TIMTextElem'
-      | 'TIMLocationElem'
-      | 'TIMFaceElem'
-      | 'TIMCustomElem'
-      | 'TIMSoundElem'
-      | 'TIMImageElem'
-      | 'TIMFileElem'
-      | 'TIMVideoFileElem'
-      | 'TIMRelayElem';
+    | 'TIMTextElem'
+    | 'TIMLocationElem'
+    | 'TIMFaceElem'
+    | 'TIMCustomElem'
+    | 'TIMSoundElem'
+    | 'TIMImageElem'
+    | 'TIMFileElem'
+    | 'TIMVideoFileElem'
+    | 'TIMRelayElem';
     /** 会话ID */
     conversationId?: string;
     content?: MsgContent;
@@ -247,12 +243,12 @@ declare namespace API {
 
   type MsgContent = {
     text?: string;
-    fileName?: string;
     url?: string;
     fileSize?: number;
     uuid?: string;
     imageInfoArray?: ImImage[];
     imageFormat?: number;
+    fileName?: string;
   };
 
   type PageVO = {
@@ -472,7 +468,6 @@ declare namespace API {
 
   type verificationImageParams = {
     xPos: number;
-    uuid: string;
     verificationEnums: 'LOGIN' | 'REGISTER' | 'FIND_USER' | 'UPDATE_PASSWORD' | 'WALLET_PASSWORD';
   };
 }
