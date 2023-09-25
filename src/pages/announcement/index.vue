@@ -2,12 +2,8 @@
 <template>
   <div>
     <t-card>
-      <t-space>
-        <t-button theme="primary">
-          <template #icon><add-icon /></template>
-          新建公告
-        </t-button></t-space
-      >
+      <t-space> <add @add="AddFinsh"></add> </t-space>
+
       <t-space direction="vertical">
         <t-table
           row-key="index"
@@ -23,6 +19,7 @@
           cell-empty-content="-"
           resizable
           @row-click="handleRowClick"
+          @change="onChange"
         >
         </t-table>
       </t-space>
@@ -36,17 +33,18 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { AddIcon } from 'tdesign-icons-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 import { page4 } from '@/api/user/xiaochengxugonggao';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
+import Add from './components/Add.vue';
 
 const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
+
 // 挂载时调用请求函数
 onMounted(async () => {
   queryData({
@@ -72,7 +70,16 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   }
   isLoading.value = false;
 };
-
+// 排序、分页、过滤等发生变化时会出发 change 事件
+const onChange = (info, context) => {
+  console.log('change', info.sorter, context);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+    sort: info.sorter.sortBy,
+    order: info.sorter.descending === false ? 'asc' : 'desc',
+  });
+};
 const pagination = reactive({
   current: 1,
   pageSize: 10,
@@ -91,6 +98,13 @@ const pagination = reactive({
 
 const handleRowClick = (e) => {
   console.log(e);
+};
+const AddFinsh = (newData) => {
+  console.log(newData);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
 };
 </script>
 
