@@ -1,5 +1,7 @@
 <!-- 订单管理 -->
 <template>
+
+
   <div>
     <t-card>
       <t-space>
@@ -8,8 +10,10 @@
           订单导出
         </t-button></t-space>
       <t-space direction="vertical">
+        <t-checkbox v-model="horizontalScrollAffixedBottom" style="margin-left: 32px">滚动条吸底</t-checkbox>
         <t-table row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="large"
           :pagination="pagination" cell-empty-content="-" resizable @row-click="handleRowClick">
+
         </t-table>
       </t-space>
     </t-card>
@@ -18,61 +22,63 @@
 
 <script lang="tsx">
 export default {
-  name: 'Announcement',
+  name: 'OrderManage',
 };
 </script>
 <script setup lang="tsx">
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon, AddIcon } from 'tdesign-icons-vue-next';
-import { SizeEnum } from 'tdesign-vue-next';
-import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-import { Ref, ref } from 'vue';
+import { PrimaryTableCol, SizeEnum } from 'tdesign-vue-next';
+import { Ref, reactive, ref,onMounted } from 'vue';
+import {page3} from '@/api/user/dingdanguanlijiekou'
+import { columns } from "./newFile";
+const data = ref([]);
+const total = ref();
 
-import { useSomeFeature } from './constants';
-
-const { data, total } = useSomeFeature();
-
-const statusNameListMap = {
-  0: { label: '审批通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
-  1: { label: '审批失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
-  2: { label: '审批过期', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-};
+// 挂载时调用请求函数
+onMounted(async () => {
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+});
 
 
-const columns: PrimaryTableCol[] = [
-  { colKey: 'userName', title: '用户名' },
-  {
-    colKey: 'userInfo',
-    title: '用户详细信息',
-  },
-  {
-    colKey: 'userStatus', title: '用户会员状态', cell: (h, { row }) => {
-      return (
-        <t-tag shape="round" theme={statusNameListMap[row.status].theme} variant="light-outline">
-          {statusNameListMap[row.status].icon}
-          {statusNameListMap[row.status].label}
-        </t-tag>
-      );
-    },
-  },
-  { colKey: 'userDefalut', title: '用户禁用', ellipsis: true, cell: undefined },
-  { colKey: 'operation', title: '操作' },
-];
-interface A {
-  name?: string;
-}
-const B: A = {};
-const ary: A[] = [{ name: '123' }, {}];
-console.log(ary);
-console.log(B);
 
+
+const horizontalScrollAffixedBottom = ref(false);
 const handleRowClick = (e) => {
   console.log(e);
 };
 
-const pagination = {
-  defaultCurrent: 1,
-  defaultPageSize: 5,
-  total,
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 10,
+  showJumper: true,
+  onChange: (pageInfo) => {
+    pagination.current = pageInfo.current;
+    pagination.pageSize = pageInfo.pageSize;
+    queryData({ // 分页改变时更新数据
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+    console.log('pagination.onChange', pageInfo);
+  },
+});
+const editFinish = (newData) => {
+  alert('编辑完成');
+  alert(newData);
+};
+const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
+  try {
+    console.log('请求', entityInfo, paginationInfo);
+
+    const res = await page3({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    console.log('数据已送达', res);
+    data.value = res.result.records; // 获得表格数据
+    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+  } catch (err) {
+    console.log(err);
+  }
 };
 </script>
 
