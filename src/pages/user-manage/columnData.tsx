@@ -1,105 +1,77 @@
-import { compileStyle } from '@vue/compiler-sfc';
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-const statusNameListMap = {
-  0: {
-    label: '非会员',
-    theme: 'warning',
-  },
-  1: {
-    label: '游客',
-    theme: 'danger',
-  },
-  2: {
-    label: '会员',
-    theme: 'success',
-  },
-};
+import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { useRenewDataStore } from '@/store/renewData';
 
-const statusDefaultListMap = {
-  0: {
-    label: '正常',
-    theme: 'success',
-    icon: <CheckCircleFilledIcon />,
-  },
-  1: {
-    label: '封禁',
-    theme: 'danger',
-    icon: <CloseCircleFilledIcon />,
-  },
-  2: {
-    label: 'null',
-    theme: 'warning',
-    icon: <ErrorCircleFilledIcon />,
-  },
-};
+import Dialog from './components/Dialog.vue';
 
 export const columns: PrimaryTableCol[] = [
-  { colKey: 'userName', title: '用户名' },
   {
-    colKey: 'userInfo',
-    title: '用户详细信息',
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
   },
+  // {
+  //   colKey: 'id',
+  //   title: 'id',
+  // },
   {
-    colKey: 'userStatus',
-    title: '用户会员状态',
-    cell: (h, { row }) => {
-      return (
-        <t-tag
-          shape="round"
-          theme={statusNameListMap[row.status].theme}
-          variant="dark"
-        >
-          {statusNameListMap[row.status].label}
-        </t-tag>
-      );
-    },
+    colKey: 'name',
+    title: '姓名',
   },
+  { colKey: 'nickName', title: '昵称' },
   {
-    colKey: 'userDefalut',
-    title: '封禁状态',
-    ellipsis: true,
-    cell: (h, { row }) => {
-      return (
-        <t-tag
-          shape="round"
-          theme={statusDefaultListMap[row.status].theme}
-          variant="light-outline"
-        >
-          {statusDefaultListMap[row.status].icon}
-          {statusDefaultListMap[row.status].label}
-        </t-tag>
-      );
-    },
+    colKey: 'credit',
+    title: '积分',
   },
+
+  { colKey: 'phoneNumber', title: '手机号' },
+  { colKey: 'email', title: '邮件' },
+  { colKey: 'birthday', title: '生日' },
+  { colKey: 'avatar', title: '头像' },
+  { colKey: 'sex', title: '性别' },
+
   {
     colKey: 'operation',
     title: '操作',
     cell: (h, { row }) => {
       return (
         <t-space>
-          {' '}
-          <t-link
-            theme="primary"
-            onClick={handlerClick}
+          <t-popconfirm
+            content="确认删除吗"
+            onClick={() => handleDelete(row.id)}
           >
-            详情
-          </t-link>
-          <t-link
-            theme="danger"
-            onClick={handlerDelete}
-          >
-            删除
-          </t-link>
+            <t-link
+              variant="text"
+              hover="color"
+              theme="danger"
+            >
+              删除
+            </t-link>
+          </t-popconfirm>
+          <Dialog
+            onEdit={editFinish}
+            editId={row.id}
+          ></Dialog>
         </t-space>
       );
     },
   },
+  { colKey: 'createBy', title: '创建者' },
+  { colKey: 'createTime', title: '创建时间', sorter: true },
+  { colKey: 'updateBy', title: '修改者' },
+  { colKey: 'updateTime', title: '修改时间', sorter: true },
 ];
-const handlerClick = () => {
-  alert('事件触发了');
+const store = useRenewDataStore();
+const handleDelete = async (id) => {
+  console.log('删除的id', id);
+  const res = await delete3(id);
+  console.log('删除后', res);
+
+  store.renewData({ pageNmber: 1, pagaSize: 10 });
 };
-const handlerDelete = () => {
-  alert('你确定要删除该用户吗?删除后数据将无法恢复。');
+// 发送编辑行后执行回调
+const editFinish = async (newData) => {
+  console.log('edit传回', newData);
+  store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
 };

@@ -8,7 +8,8 @@
         <t-button theme="primary">
           <template #icon><add-icon /></template>
           订单导出
-        </t-button></t-space>
+        </t-button></t-space
+      >
       <t-space direction="vertical">
         <t-checkbox v-model="horizontalScrollAffixedBottom" style="margin-left: 32px">滚动条吸底</t-checkbox>
         <t-table row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="large"
@@ -40,7 +41,6 @@ onMounted(async () => {
     pageSize: pagination.pageSize,
   });
 });
-
 
 
 
