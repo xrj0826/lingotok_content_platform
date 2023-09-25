@@ -1,6 +1,7 @@
+import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete1, deleteUsingDELETE, page, update } from '@/api/user/changdeguanli';
+import { delete1 } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Dialog from './components/Dialog.vue';
@@ -67,6 +68,7 @@ const handleDelete = async (id) => {
     };
     const res = await delete1(params);
     console.log('删除后', res);
+    MessagePlugin.success('删除成功');
 
     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
   } catch (error) {

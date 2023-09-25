@@ -92,7 +92,7 @@ import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page, save, update } from '@/api/user/changdeguanli';
+import { save } from '@/api/user/changdeguanli';
 
 const emit = defineEmits(['add']);
 
@@ -145,6 +145,7 @@ const add = async () => {
       visible.value = false;
       clearTimeout(timer);
     }, 200);
+    MessagePlugin.success('添加成功');
   } catch (error) {
     console.log(error);
   }

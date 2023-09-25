@@ -24,7 +24,6 @@
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
       >
         <t-form-item
           label="场地名称"
@@ -153,6 +152,7 @@ const edit = async () => {
     const res = await update(formData);
     console.log('編輯返回', res);
     emit('edit', 'emit传来喜报:组件通信成功', res);
+
     loading.value = true;
     // 加载一下
     const timer = setTimeout(() => {
@@ -160,16 +160,13 @@ const edit = async () => {
       visible.value = false;
       clearTimeout(timer);
     }, 200);
+    MessagePlugin.success('编辑成功');
   } catch (error) {
     console.log(error);
   }
 };
 
 const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
-};
 
 // const onSubmit = ({ validateResult, firstError }) => {
 //   if (validateResult === true) {
