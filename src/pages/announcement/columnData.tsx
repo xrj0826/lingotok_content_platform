@@ -5,7 +5,7 @@ import { delete1 } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Detail from './components/Detail.vue';
-import Dialog from './components/Dialog.vue';
+import Edit from './components/Edit.vue';
 
 export const columns: PrimaryTableCol[] = [
   { colKey: 'createBy', title: '创建者' },
@@ -39,10 +39,10 @@ export const columns: PrimaryTableCol[] = [
           >
             删除
           </t-link>
-          <Dialog
+          <Edit
             onEdit={editFinish}
             editId={row.id}
-          ></Dialog>
+          ></Edit>
         </t-space>
       );
     },

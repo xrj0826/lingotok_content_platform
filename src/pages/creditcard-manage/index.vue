@@ -1,4 +1,4 @@
-<!-- 客服管理 -->
+<!-- 储值卡管理 -->
 <template>
   <div>
     <t-space>
@@ -54,7 +54,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'UserManager',
+  name: 'CreditCardManage',
 };
 </script>
 <script setup lang="tsx">
@@ -62,7 +62,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete2, page1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { delete12, page6 } from '@/api/user/chuzhikaguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -89,7 +89,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page1({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page6({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -104,7 +104,7 @@ const selectedRowKeys = ref([]);
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await delete2({ ids });
+    const res = await delete12({ ids });
     console.log('批量删除后', res);
     queryData({
       pageNumber: pagination.current,
