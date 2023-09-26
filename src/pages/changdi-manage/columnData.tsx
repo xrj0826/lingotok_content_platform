@@ -4,7 +4,7 @@ import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { delete1 } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
-import Dialog from './components/Dialog.vue';
+import Edit from './components/Edit.vue';
 
 export const columns: PrimaryTableCol[] = [
   {
@@ -49,10 +49,10 @@ export const columns: PrimaryTableCol[] = [
               删除
             </t-link>
           </t-popconfirm>
-          <Dialog
+          <Edit
             onEdit={editFinish}
             editId={row.id}
-          ></Dialog>
+          ></Edit>
         </t-space>
       );
     },
@@ -69,7 +69,6 @@ const handleDelete = async (id) => {
     const res = await delete1(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
-
     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
   } catch (error) {
     console.log(error);

@@ -59,8 +59,8 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import {} from 'module';
 import { SearchIcon } from 'tdesign-icons-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
@@ -117,6 +117,7 @@ const handleMoreDelete = async () => {
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
     });
+    MessagePlugin.success('删除成功');
   } catch (error) {
     console.log(error);
   }

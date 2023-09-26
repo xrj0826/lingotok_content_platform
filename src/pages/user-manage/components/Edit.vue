@@ -27,63 +27,73 @@
         @reset="onReset"
       >
         <t-form-item
-          label="场地名称"
-          name="venueName"
+          label="姓名"
+          name="name"
         >
           <t-input
-            v-model="formData.venueName"
+            v-model="formData.name"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
 
         <t-form-item
-          label="修改者"
-          name="updateBy"
+          label="积分"
+          name="credit"
         >
           <t-input
-            v-model="formData.updateBy"
+            v-model="formData.credit"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-        <!-- 
+
         <t-form-item
-          label="修改时间"
-          name="updateTime"
-        > -->
-        <!-- <t-input
-            v-model="formData.updateTime"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input> -->
-        <!-- </t-form-item> -->
-        <t-form-item
-          label="半场价格"
-          name="halfPrice"
+          label="状态"
+          name="status"
         >
           <t-input
-            v-model="formData.halfPrice"
+            :v-model="formData.status"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
         <t-form-item
-          label="全场价格"
-          name="allPrice"
+          label="昵称"
+          name="nickName"
         >
           <t-input
-            v-model="formData.allPrice"
+            v-model="formData.nickName"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
         <t-form-item
-          label="价格"
-          name="price"
+          label="手机号"
+          name="phoneNumber"
         >
           <t-input
-            v-model="formData.price"
+            v-model="formData.phoneNumber"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
+        <t-form-item
+          label="邮件"
+          name="email"
+        >
+          <t-input
+            v-model="formData.email"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
+        <t-form-item
+          label="性别"
+          name="sex"
+        >
+          <t-input
+            v-model="formData.sex"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
@@ -95,9 +105,9 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page, update } from '@/api/user/changdeguanli';
+import { page1, update1 } from '@/api/user/yonghuguanlixiangguanjiekou';
 
-const props = defineProps({ editId: String || Number }); // 为什么这里类型只能用大写，不然会警告?
+const props = defineProps({ editId: String }); // 为什么这里类型只能用大写，不然会警告?
 
 const emit = defineEmits(['edit']);
 
@@ -108,13 +118,16 @@ const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
 // 在此定义表单数据
 const formData = reactive({
   id: null,
-  storeId: '',
-  venueName: '',
-  updateBy: '',
-  // updateTime: '',
-  halfPrice: null,
-  allPrice: null,
-  price: null,
+  name: '',
+  credit: '',
+  status: true,
+  nickName: '',
+  phoneNumber: '',
+  email: '',
+  sex: null,
+  birthday: '',
+  // openId: '',
+  // avatar: '',
 });
 
 const close = () => {
@@ -127,7 +140,7 @@ const handlerEdit = async () => {
   try {
     visible.value = true;
     console.log(props.editId);
-    const res = await page({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
+    const res = await page1({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
     const [data] = res.result.records; // 解构赋值records
     // for (const key in formData) {
     //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
@@ -135,14 +148,16 @@ const handlerEdit = async () => {
     //   }
     // }
     // 以下操作用于更新数据
-    formData.id = data.id;
-    formData.storeId = data.storeId;
-    formData.venueName = data.venueName;
-    formData.updateBy = data.updateBy;
-    // formData.updateTime = data.updateTime;
-    formData.halfPrice = data.halfPrice;
-    formData.allPrice = data.allPrice;
-    formData.price = data.price;
+    formData.name = data.name;
+    formData.credit = data.credit;
+    formData.status = data.status;
+    formData.nickName = data.nickName;
+    formData.phoneNumber = data.phoneNumber;
+    formData.email = data.email;
+    formData.sex = data.sex;
+    // formData.birthday = data.birthday;
+    // formData.openId = data.openId;
+    // formData.avatar = data.avatar;
   } catch (error) {
     console.log(error);
   }
@@ -150,7 +165,7 @@ const handlerEdit = async () => {
 // 确定编辑
 const edit = async () => {
   try {
-    const res = await update(formData);
+    const res = await update1(formData);
     console.log('編輯返回', res);
     emit('edit', 'emit传来喜报:组件通信成功', res);
     loading.value = true;
@@ -159,7 +174,8 @@ const edit = async () => {
       loading.value = false;
       visible.value = false;
       clearTimeout(timer);
-    }, 200);
+    }, 150);
+    MessagePlugin.success('编辑成功');
   } catch (error) {
     console.log(error);
   }

@@ -1,9 +1,8 @@
 import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
-import { Loading, MessagePlugin } from 'tdesign-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-import { ref } from 'vue';
 
-import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { delete11 } from '@/api/user/youhuiquanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
@@ -23,19 +22,16 @@ export const columns: PrimaryTableCol[] = [
   //   colKey: 'id',
   //   title: 'id',
   // },
+
+  { colKey: 'userId', title: '用户id' },
   {
-    colKey: 'name',
-    title: '姓名',
+    colKey: 'storeId',
+    title: '门店id',
   },
-  { colKey: 'nickName', title: '昵称' },
+  { colKey: 'cardName', title: '卡名称' },
   {
-    colKey: 'credit',
-    title: '积分',
-    sorter: true,
-  },
-  {
-    colKey: 'status',
-    title: '状态',
+    colKey: 'cardType',
+    title: '卡类型（储值卡、月卡、次卡）',
     cell: (h, { row }) => {
       return (
         <t-tag
@@ -49,27 +45,26 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-
-  { colKey: 'phoneNumber', title: '手机号' },
-  { colKey: 'email', title: '邮件' },
-  { colKey: 'birthday', title: '生日' },
   {
-    colKey: 'avatar',
-    title: '头像',
-    cell: (h, { row }) => {
-      return (
-        <t-image
-          key={loadingCount}
-          src={`https://${row.avatar}`}
-          style={{ width: '284px', height: '160px' }}
-          lazy={true}
-          placeholder={renderPlaceholder}
-          loading={renderLoading}
-        />
-      );
-    },
+    colKey: 'currentBalance',
+    title: '当前余额',
+    sorter: true,
   },
-  { colKey: 'sex', title: '性别' },
+  {
+    colKey: 'bonusAmount',
+    title: '赠送金额',
+  },
+
+  { colKey: 'faceValue', title: '面值', sorter: true },
+
+  {
+    colKey: 'discountValue',
+    title: '折扣值',
+  },
+  { colKey: 'days', title: '有效期', sorter: true },
+  { colKey: 'startDate', title: '生效日期' },
+  { colKey: 'endDate', title: '结束日期' },
+
   {
     colKey: 'operation',
     title: '操作',
@@ -109,7 +104,7 @@ const handleDelete = async (id) => {
     const params = {
       id,
     };
-    const res = await delete3(params);
+    const res = await delete11(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
 
@@ -123,36 +118,3 @@ const editFinish = async (newData) => {
   console.log('edit传回', newData);
   store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
 };
-
-const loadingCount = ref(0);
-const renderPlaceholder = () => (
-  <img
-    width="100%"
-    height="100%"
-    src="https://tdesign.gtimg.com/demo/demo-image-5.png"
-  />
-);
-const renderLoading = () => (
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '100%',
-      height: '100%',
-      background: 'rgba(255,255,255,.4)',
-      backdropFilter: 'blur(10px)',
-    }}
-  >
-    <Loading
-      delay={0}
-      fullscreen={false}
-      indicator
-      inheritColor={false}
-      loading
-      preventScrollThrough
-      showOverlay
-      size="small"
-    />
-  </div>
-);
