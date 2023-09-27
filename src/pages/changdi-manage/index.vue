@@ -1,16 +1,16 @@
 <!-- 客服管理 -->
 <template>
   <div>
-    <t-space>
-      <add @add="AddFinsh"></add>
-      <t-button
-        theme="danger"
-        @click="handleMoreDelete"
-      >
-        批量删除
-      </t-button>
-    </t-space>
     <t-card>
+      <t-space style="margin: 0 20px 20px 0">
+        <add @add="AddFinsh"></add>
+        <t-button
+          theme="danger"
+          @click="handleMoreDelete"
+        >
+          批量删除
+        </t-button>
+      </t-space>
       <t-select-input
         placeholder="请输入任意关键词"
         allow-input

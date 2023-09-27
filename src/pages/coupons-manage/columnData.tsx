@@ -1,4 +1,3 @@
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
@@ -7,73 +6,116 @@ import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
-const statusNameListMap = {
-  0: { label: '审批通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
-  1: { label: '审批失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
-  2: { label: '审批过期', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-};
 export const columns: PrimaryTableCol[] = [
   {
     colKey: 'row-select',
     type: 'multiple',
     width: 50,
+    fixed: 'left',
   },
   // {
   //   colKey: 'id',
   //   title: 'id',
   // },
+  { colKey: 'usageLimit', title: '优惠卷次数限制', width: '140px' },
+  { colKey: 'usageCount', title: '优惠卷使用次数', width: '140px' },
 
-  { colKey: 'userId', title: '用户id' },
   {
-    colKey: 'storeId',
-    title: '门店id',
+    colKey: 'discountValue',
+    title: '折扣值(元)',
   },
-  { colKey: 'cardName', title: '卡名称' },
   {
-    colKey: 'cardType',
-    title: '卡类型（储值卡、月卡、次卡）',
+    colKey: 'discountType',
+    title: '折扣类型',
     cell: (h, { row }) => {
       return (
         <t-tag
           shape="round"
-          theme={statusNameListMap[row.status].theme}
           variant="light-outline"
         >
-          {statusNameListMap[row.status].icon}
-          {statusNameListMap[row.status].label}
+          {row.discountType}
         </t-tag>
       );
     },
   },
+  { colKey: 'days', title: '优惠天数', sorter: true },
+  { colKey: 'cardName', title: '卡名称' },
   {
-    colKey: 'currentBalance',
-    title: '当前余额',
-    sorter: true,
+    colKey: 'isActive',
+    title: '是否有效',
+    cell: (h, { row }) => {
+      return (
+        <t-tag
+          shape="round"
+          theme={row.isActive === 0 ? 'danger' : 'success'}
+          variant="light-outline"
+        >
+          {row.isActive === 0 ? '失效' : '有效'}
+        </t-tag>
+      );
+    }, // 单选过滤配置
+    filter: {
+      // 过滤行中的列标题别名
+      // label: '申请状态 A',
+      type: 'single',
+      list: [
+        { label: '失败', value: 0 },
+        { label: '有效', value: 1 },
+      ],
+      popupProps: {
+        attach: () => document.body,
+      },
+    },
   },
   {
-    colKey: 'bonusAmount',
-    title: '赠送金额',
+    colKey: 'numberInvitees',
+    title: '邀请人数',
   },
-
-  { colKey: 'faceValue', title: '面值', sorter: true },
-
   {
-    colKey: 'discountValue',
-    title: '折扣值',
+    colKey: 'overlay',
+    title: '是否可叠加',
+    cell: (h, { row }) => {
+      return <b>{row.overlay === 1 ? '是' : '否'}</b>;
+    },
+    // eslint-disable-next-line consistent-return
+    attrs: ({ row }) => {
+      if (row.overlay === 1) {
+        return {
+          style: {
+            color: 'rgb(117, 211, 175)',
+          },
+        };
+      }
+      if (row.overlay === 0) {
+        return {
+          style: {
+            color: 'rgb(249, 62, 62)',
+          },
+        };
+      }
+    },
   },
-  { colKey: 'days', title: '有效期', sorter: true },
-  { colKey: 'startDate', title: '生效日期' },
-  { colKey: 'endDate', title: '结束日期' },
+  {
+    colKey: 'code',
+    title: '兑换码',
+  },
 
+  { colKey: 'startDate', title: '生效日期', sorter: true },
+  { colKey: 'endDate', title: '结束日期', sorter: true },
+  { colKey: 'createBy', title: '创建者' },
+  { colKey: 'createTime', title: '创建时间', sorter: true },
+  { colKey: 'updateBy', title: '修改者' },
+  { colKey: 'updateTime', title: '修改时间', sorter: true },
   {
     colKey: 'operation',
     title: '操作',
+    width: '150px',
     cell: (h, { row }) => {
       return (
         <t-space>
           <t-popconfirm
             content="确认删除吗"
-            onClick={() => handleDelete(row.id)}
+            onConfirm={() => handleDelete(row.id)}
           >
             <t-link
               variant="text"
@@ -90,12 +132,14 @@ export const columns: PrimaryTableCol[] = [
         </t-space>
       );
     },
+    fixed: 'right',
   },
-  { colKey: 'createBy', title: '创建者' },
-  { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改者' },
-  { colKey: 'updateTime', title: '修改时间', sorter: true },
 ];
+// 循环为列属性配置居中属性
+for (let i = 0; i < columns.length; i++) {
+  columns[i].align = 'center';
+}
+
 const store = useRenewDataStore();
 const handleDelete = async (id) => {
   try {

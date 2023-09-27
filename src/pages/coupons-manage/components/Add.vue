@@ -1,7 +1,7 @@
 <template>
   <div>
     <t-space>
-      <t-button @click="handleAdd">添加场地</t-button>
+      <t-button @click="handleAdd">添加优惠卷</t-button>
     </t-space>
     <t-dialog
       v-model:visible="visible"
@@ -28,9 +28,14 @@
         >
           <t-input
             v-model="formData.discountValue"
-            placeholder="请输入内容"
+            theme="normal"
+            align="right"
+            style="width: 150px"
             @enter="onEnter"
-          ></t-input>
+          >
+            <template #label><span>金额：</span></template>
+            <template #suffix><span>元</span></template>
+          </t-input>
         </t-form-item>
 
         <t-form-item
@@ -78,41 +83,41 @@
           label="是否可叠加"
           name="overlay"
         >
-          <t-input
-            v-model="formData.overlay"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-radio-group v-model="formData.overlay">
+            <t-radio :value="0">否</t-radio>
+            <t-radio :value="1">是</t-radio>
+          </t-radio-group>
         </t-form-item>
         <t-form-item
           label="是否有效"
           name="isActive"
         >
-          <t-input
+          <t-switch
             v-model="formData.isActive"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+            size="large"
+          >
+            <template #label="slotProps">{{ slotProps.value ? '是' : '否' }}</template>
+          </t-switch>
         </t-form-item>
         <t-form-item
           label="生效日期"
           name="startDate"
-        >
-          <t-input
+          ><t-date-picker
             v-model="formData.startDate"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input> </t-form-item
+            enable-time-picker
+            allow-input
+            clearable
+          /> </t-form-item
         ><t-form-item
           label="结束日期"
           name="endDate"
         >
-          <t-input
+          <t-date-picker
             v-model="formData.endDate"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item> </t-form
+            enable-time-picker
+            allow-input
+            clearable
+          /> </t-form-item></t-form
     ></t-dialog>
   </div>
 </template>
@@ -135,10 +140,12 @@ const FORM_RULES = {
   endDate: [{ required: true, message: '结束日期必填' }],
 };
 // nanoid配置
-const nanoid = customAlphabet('1234567890', 10);
+const nanocode = customAlphabet('1234567890ABCDEF', 9);
+const nanoid = customAlphabet('1234567890', 5);
+
 // 在此定义表单数据
 const formData = reactive({
-  // id: '',
+  id: '',
   discountValue: null,
   discountType: '',
   days: null, // 优惠天数
@@ -164,7 +171,8 @@ const handleAdd = () => {
 const add = async () => {
   try {
     // 第三方库随机生成兑换码
-    formData.code = nanoid();
+    formData.code = nanocode();
+    formData.id = nanoid();
     const res = await save5(formData);
     console.log('編輯返回', res);
     emit('add', 'emit传来喜报:组件通信成功', res);

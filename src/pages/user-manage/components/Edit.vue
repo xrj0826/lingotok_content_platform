@@ -113,7 +113,7 @@ const emit = defineEmits(['edit']);
 
 const visible = ref(false); // 是否显示
 const loading = ref(false);
-const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
+const FORM_RULES = {};
 
 // 在此定义表单数据
 const formData = reactive({
@@ -148,6 +148,7 @@ const handlerEdit = async () => {
     //   }
     // }
     // 以下操作用于更新数据
+    formData.id = data.id;
     formData.name = data.name;
     formData.credit = data.credit;
     formData.status = data.status;

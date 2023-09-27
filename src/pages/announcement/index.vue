@@ -2,11 +2,19 @@
 <template>
   <div>
     <t-card>
-      <t-space> <add @add="AddFinsh"></add> </t-space>
+      <t-space style="margin: 0 20px 20px 0">
+        <add @add="AddFinsh"></add>
+        <t-button
+          theme="danger"
+          @click="handleMoreDelete"
+        >
+          批量删除
+        </t-button></t-space
+      >
 
       <t-space direction="vertical">
         <t-table
-          row-key="index"
+          :row-key="index"
           :data="data"
           :columns="columns"
           :stripe="false"
@@ -18,7 +26,9 @@
           :pagination="pagination"
           cell-empty-content="-"
           resizable
+          :selected-row-keys="selectedRowKeys"
           @row-click="handleRowClick"
+          @select-change="onSelectChange"
           @change="onChange"
         >
         </t-table>
@@ -33,14 +43,16 @@ export default {
 };
 </script>
 <script setup lang="tsx">
+import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { page4 } from '@/api/user/xiaochengxugonggao';
+import { delete8, page4 } from '@/api/user/xiaochengxugonggao';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
 import Add from './components/Add.vue';
 
+const index = ref();
 const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
@@ -99,6 +111,27 @@ const pagination = reactive({
 const handleRowClick = (e) => {
   console.log(e);
 };
+const selectedRowKeys = ref([]);
+
+// 行选中变化时
+const onSelectChange = (value, params) => {
+  selectedRowKeys.value = value;
+  console.log(value, params);
+};
+const handleMoreDelete = async () => {
+  try {
+    const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
+    const res = await delete8({ ids });
+    console.log('批量删除后', res);
+    queryData({
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    });
+    MessagePlugin.success('删除成功');
+  } catch (error) {
+    console.log(error);
+  }
+};
 const AddFinsh = (newData) => {
   console.log(newData);
   queryData({
@@ -108,5 +141,9 @@ const AddFinsh = (newData) => {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+:deep([class*='t-table-expandable-icon-cell']) .t-icon {
+  background-color: transparent;
+}
+</style>
 ./columnData

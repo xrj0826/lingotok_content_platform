@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import request from '/@/utils/request/index';
+
 /** 储值卡修改 PUT /staff/cbcard */
 export async function update6(body: API.CbCard, options?: { [key: string]: any }) {
   return request<API.ResultMessage>('/staff/cbcard', {

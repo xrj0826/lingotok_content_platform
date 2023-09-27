@@ -76,44 +76,7 @@ declare namespace API {
 
   type CbCoupon = {
     /** id */
-    id?: string;
-    /** 创建者 */
-    createBy?: string;
-    /** 创建时间 */
-    createTime?: string;
-    /** 删除标志 true/false 删除/未删除 */
-    deleteFlag?: boolean;
-    /** 更新者 */
-    updateBy?: string;
-    /** 更新时间 */
-    updateTime?: string;
-    /** 优惠天数 */
-    days?: number;
-    /** 邀请人数 */
-    numberInvitees?: number;
-    /** 是否可叠加 */
-    overlay?: number;
-    /** 兑换码 */
-    code?: string;
-    /** 生效日期 */
-    startDate?: string;
-    /** 结束日期 */
-    endDate?: string;
-    /** 使用次数限制 */
-    usageLimit?: string;
-    /** 是否有效（0、1） */
-    isActive?: boolean;
-    /** 优惠卷使用次数 */
-    usageCount?: string;
-    /** 折扣类型 */
-    discountType?: string;
-    /** 折扣值 */
-    discountValue?: string;
-  };
-
-  type CbCoupon = {
-    /** id */
-    id?: string;
+    id?: number;
     /** 创建者 */
     createBy?: string;
     /** 创建时间 */
@@ -428,88 +391,64 @@ declare namespace API {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
     records?: AdminUser[];
+    current?: number;
   };
 
   type IPageCbCard = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
     records?: CbCard[];
+    current?: number;
   };
 
   type IPageCbCoupon = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
-    records?: CbCoupon[];
-  };
-
-  type IPageCbCoupon = {
-    size?: number;
-    total?: number;
     records?: CbCoupon[];
     current?: number;
-    pages?: number;
   };
 
   type IPageCbNotice = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
     records?: CbNotice[];
+    current?: number;
   };
 
   type IPageCbOrderInfo = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
-    records?: CbOrderInfo[];
-  };
-
-  type IPageCbOrderInfo = {
-    size?: number;
-    total?: number;
     records?: CbOrderInfo[];
     current?: number;
-    pages?: number;
   };
 
   type IPageCbStore = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
     records?: CbStore[];
+    current?: number;
   };
 
   type IPageCbUser = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
-    records?: CbUser[];
-  };
-
-  type IPageCbUser = {
-    size?: number;
-    total?: number;
     records?: CbUser[];
     current?: number;
-    pages?: number;
   };
 
   type IPageCbVenue = {
     size?: number;
     total?: number;
     pages?: number;
-    current?: number;
     records?: CbVenue[];
+    current?: number;
   };
 
   type loginParams = {
@@ -811,8 +750,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertStartDate?: string;
     convertEndDate?: string;
+    convertStartDate?: string;
   };
 
   type Token = {

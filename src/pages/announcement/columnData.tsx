@@ -1,17 +1,24 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete1 } from '@/api/user/changdeguanli';
+import { delete9 } from '@/api/user/xiaochengxugonggao';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Detail from './components/Detail.vue';
 import Edit from './components/Edit.vue';
 
 export const columns: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
   { colKey: 'createBy', title: '创建者' },
   { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改时间', sorter: true },
-  { colKey: 'noticeTime', title: '通知日期', sorter: true },
+  { colKey: 'updateBy', title: '修改人' },
+  { colKey: 'updateTime', title: '修改时间', sorter: true },
+
+  { colKey: 'noticeTime', title: '通知时间', sorter: true },
   { colKey: 'noticePerson', title: '通知人' },
 
   {
@@ -25,7 +32,6 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-  { colKey: 'noticeState', title: '通知状态' },
 
   {
     colKey: 'operation',
@@ -35,7 +41,7 @@ export const columns: PrimaryTableCol[] = [
         <t-space>
           <t-link
             theme="danger"
-            onClick={() => handleDelete(row.id)}
+            onConfirm={() => handleDelete(row.id)}
           >
             删除
           </t-link>
@@ -48,12 +54,18 @@ export const columns: PrimaryTableCol[] = [
     },
   },
 ];
+// for (let i = 0; i < columns.length; i++) {
+//   columns[i].align = 'center';
+// }
 
 const store = useRenewDataStore();
 
 const handleDelete = async (id) => {
   console.log('删除的id', id);
-  const res = await delete1(id);
+  const params = {
+    id,
+  };
+  const res = await delete9(params);
   console.log('删除后', res);
   MessagePlugin.success('删除成功');
 

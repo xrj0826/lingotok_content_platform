@@ -32,6 +32,11 @@ export const columns: PrimaryTableCol[] = [
   { colKey: 'allPrice', title: '全场价格' },
   { colKey: 'price', title: '价格', sorter: true },
   {
+    colKey: 'specialValue',
+    title: '特殊价格',
+  },
+
+  {
     colKey: 'operation',
     title: '操作',
     cell: (h, { row }) => {
@@ -58,6 +63,10 @@ export const columns: PrimaryTableCol[] = [
     },
   },
 ];
+for (let i = 0; i < columns.length; i++) {
+  columns[i].align = 'center';
+}
+
 const store = useRenewDataStore();
 const handleDelete = async (id) => {
   try {

@@ -31,9 +31,14 @@
         >
           <t-input
             v-model="formData.discountValue"
-            placeholder="请输入内容"
+            theme="normal"
+            align="right"
+            style="width: 150px"
             @enter="onEnter"
-          ></t-input>
+          >
+            <template #label><span>金额：</span></template>
+            <template #suffix><span>元</span></template>
+          </t-input>
         </t-form-item>
 
         <t-form-item
@@ -81,40 +86,41 @@
           label="是否可叠加"
           name="overlay"
         >
-          <t-input
-            v-model="formData.overlay"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-radio-group v-model="formData.overlay">
+            <t-radio :value="0">否</t-radio>
+            <t-radio :value="1">是</t-radio>
+          </t-radio-group>
         </t-form-item>
         <t-form-item
           label="是否有效"
           name="isActive"
         >
-          <t-input
-            :v-model="formData.isActive"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-switch
+            v-model="formData.isActive"
+            size="large"
+          >
+            <template #label="slotProps">{{ slotProps.value ? '是' : '否' }}</template>
+          </t-switch>
         </t-form-item>
         <t-form-item
           label="生效日期"
           name="startDate"
-        >
-          <t-input
+          ><t-date-picker
             v-model="formData.startDate"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input> </t-form-item
+            enable-time-picker
+            allow-input
+            clearable
+          /> </t-form-item
         ><t-form-item
           label="结束日期"
           name="endDate"
         >
-          <t-input
+          <t-date-picker
             v-model="formData.endDate"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input> </t-form-item></t-form
+            enable-time-picker
+            allow-input
+            clearable
+          /> </t-form-item></t-form
     ></t-dialog>
   </div>
 </template>
@@ -124,7 +130,7 @@ import { reactive, ref } from 'vue';
 
 import { page5, update5 } from '@/api/user/youhuiquanguanlijiekou';
 
-const props = defineProps({ editId: String }); // 为什么这里类型只能用大写，不然会警告?
+const props = defineProps({ editId: Number || String }); // 为什么这里类型只能用大写，不然会警告?
 
 const emit = defineEmits(['edit']);
 
@@ -135,14 +141,13 @@ const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
 // 在此定义表单数据
 const formData = reactive({
   // id: '',
-  discountValue: null,
+  discountValue: '',
   discountType: '',
   days: null, // 优惠天数
   usageLimit: '', // 使用次数限制
   numberInvitees: null, // 邀请人数
   overlay: null,
-  isActive: true, // 是否有效（0、1）
-  code: null,
+  isActive: true, // 是否有效
   startDate: '',
   endDate: '',
 });
@@ -204,3 +209,4 @@ const onEnter = (_, { e }) => {
   e.preventDefault();
 };
 </script>
+<style lang="less" scoped></style>

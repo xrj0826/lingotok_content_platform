@@ -1,4 +1,4 @@
-import { DashboardIcon } from 'tdesign-icons-vue-next';
+import { BacktopRectangleIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
@@ -9,7 +9,7 @@ export default [
     name: 'changdi-manage',
     component: Layout,
     redirect: '/changdi-manage/changdi-manage',
-    meta: { title: '场地管理', icon: shallowRef(DashboardIcon) },
+    meta: { title: '场地管理', icon: shallowRef(BacktopRectangleIcon) },
     children: [
       {
         path: 'changdi-manage',
