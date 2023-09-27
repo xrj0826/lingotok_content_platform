@@ -15,7 +15,7 @@ export const columns: PrimaryTableCol[] = [
         <t-space>
           <t-link
             theme="danger"
-            onClick={handlerDelete}
+            onConfirm={handlerDelete}
           >
             删除
           </t-link>

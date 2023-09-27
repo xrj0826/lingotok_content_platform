@@ -1,4 +1,4 @@
-import { DashboardIcon } from 'tdesign-icons-vue-next';
+import { FileImageIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
@@ -9,7 +9,7 @@ export default [
     name: 'coupons-manage',
     component: Layout,
     redirect: '/coupons-manage/coupons-manage',
-    meta: { title: '优惠卷管理', icon: shallowRef(DashboardIcon) },
+    meta: { title: '优惠卷管理', icon: shallowRef(FileImageIcon) },
     children: [
       {
         path: 'coupons-manage',

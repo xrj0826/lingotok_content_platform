@@ -1,4 +1,4 @@
-import { DashboardIcon } from 'tdesign-icons-vue-next';
+import { CalendarIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
@@ -9,7 +9,7 @@ export default [
     name: 'creditcard-manage',
     component: Layout,
     redirect: '/creditcard-manage/creditcard-manage',
-    meta: { title: '储值卡管理', icon: shallowRef(DashboardIcon) },
+    meta: { title: '储值卡管理', icon: shallowRef(CalendarIcon) },
     children: [
       {
         path: 'creditcard-manage',

@@ -47,7 +47,16 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-
+        <t-form-item
+          label="修改人"
+          name="updateBy"
+        >
+          <t-input
+            v-model="formData.updateBy"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
         <t-form-item
           label="通知内容"
           name="noticeContent"
@@ -67,7 +76,7 @@ import { reactive, ref } from 'vue';
 
 import { page4, update4 } from '@/api/user/xiaochengxugonggao';
 
-const props = defineProps({ editId: String || Number }); // 为什么这里类型只能用大写，不然会警告?
+const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 
 const emit = defineEmits(['edit']);
 
@@ -79,6 +88,7 @@ const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
 const formData = reactive({
   id: null,
   storeId: '',
+  updateBy: '',
   noticeTitle: '',
   noticeContent: '',
   noticePerson: '',
@@ -96,8 +106,9 @@ const handlerEdit = async () => {
     console.log(props.editId);
     const res = await page4({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
     const [data] = res.result.records; // 解构赋值records
-
     // 以下操作用于更新数据
+    formData.id = data.id;
+    formData.storeId = data.storeId;
     formData.noticeTitle = data.noticeTitle;
     formData.noticeContent = data.noticeContent;
     formData.noticePerson = data.noticePerson;

@@ -59,6 +59,17 @@
             placeholder="填写你要展示的内容吧"
             clearable
           />
+        </t-form-item>
+        <t-form-item
+          label="通知时间"
+          name="noticeTime"
+        >
+          <t-date-picker
+            v-model="formData.noticeTime"
+            enable-time-picker
+            allow-input
+            clearable
+          />
         </t-form-item> </t-form
     ></t-dialog>
   </div>
@@ -90,6 +101,7 @@ const formData = reactive({
   noticeTitle: '',
   noticeContent: '',
   noticePerson: '',
+  noticeTime: '',
 });
 
 const close = () => {

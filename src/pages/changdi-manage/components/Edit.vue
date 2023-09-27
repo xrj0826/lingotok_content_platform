@@ -96,7 +96,7 @@ import { reactive, ref } from 'vue';
 
 import { page, update } from '@/api/user/changdeguanli';
 
-const props = defineProps({ editId: String || Number }); // 为什么这里类型只能用大写，不然会警告?
+const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 
 const emit = defineEmits(['edit']);
 

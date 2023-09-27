@@ -1,4 +1,3 @@
-import { CheckCircleFilledIcon, CloseCircleFilledIcon, ErrorCircleFilledIcon } from 'tdesign-icons-vue-next';
 import { Loading, MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { ref } from 'vue';
@@ -8,11 +7,6 @@ import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
-const statusNameListMap = {
-  0: { label: '审批通过', theme: 'success', icon: <CheckCircleFilledIcon /> },
-  1: { label: '审批失败', theme: 'danger', icon: <CloseCircleFilledIcon /> },
-  2: { label: '审批过期', theme: 'warning', icon: <ErrorCircleFilledIcon /> },
-};
 export const columns: PrimaryTableCol[] = [
   {
     colKey: 'row-select',
@@ -40,28 +34,28 @@ export const columns: PrimaryTableCol[] = [
       return (
         <t-tag
           shape="round"
-          theme={statusNameListMap[row.status].theme}
+          theme={row.status === false ? 'danger' : 'success'}
           variant="light-outline"
         >
-          {statusNameListMap[row.status].icon}
-          {statusNameListMap[row.status].label}
+          {row.status === false ? '禁用' : '正常'}
         </t-tag>
       );
     },
   },
 
-  { colKey: 'phoneNumber', title: '手机号' },
-  { colKey: 'email', title: '邮件' },
+  { colKey: 'phoneNumber', title: '手机号', width: '110px' },
+  { colKey: 'email', title: '邮件', width: '150px' },
   { colKey: 'birthday', title: '生日' },
   {
     colKey: 'avatar',
     title: '头像',
+    width: ' 100px',
     cell: (h, { row }) => {
       return (
         <t-image
           key={loadingCount}
           src={`https://${row.avatar}`}
-          style={{ width: '284px', height: '160px' }}
+          style={{ width: '80px', height: '80px' }}
           lazy={true}
           placeholder={renderPlaceholder}
           loading={renderLoading}
@@ -69,16 +63,28 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-  { colKey: 'sex', title: '性别' },
+  {
+    colKey: 'sex',
+    title: '性别',
+    cell: (h, { row }) => {
+      return <span>{row.sex === 0 ? '男' : '女'}</span>;
+    },
+  },
+
+  { colKey: 'createBy', title: '创建者' },
+  { colKey: 'createTime', title: '创建时间', sorter: true },
+  { colKey: 'updateBy', title: '修改者' },
+  { colKey: 'updateTime', title: '修改时间', sorter: true },
   {
     colKey: 'operation',
     title: '操作',
+    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
           <t-popconfirm
             content="确认删除吗"
-            onClick={() => handleDelete(row.id)}
+            onConfirm={() => handleDelete(row.id)}
           >
             <t-link
               variant="text"
@@ -96,11 +102,11 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-  { colKey: 'createBy', title: '创建者' },
-  { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改者' },
-  { colKey: 'updateTime', title: '修改时间', sorter: true },
 ];
+// 循环为列属性配置居中属性
+for (let i = 0; i < columns.length; i++) {
+  columns[i].align = 'center';
+}
 const store = useRenewDataStore();
 const handleDelete = async (id) => {
   try {

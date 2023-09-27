@@ -1,54 +1,57 @@
 <!-- 储值卡管理 -->
 <template>
-  <div>
-    <t-space>
-      <add @add="AddFinsh"></add>
-      <t-button
-        theme="danger"
-        @click="handleMoreDelete"
-      >
-        批量删除
-      </t-button>
-    </t-space>
+  <div
+    class="tdesign-demo-block-column"
+    style="width: 100%"
+  >
     <t-card>
-      <t-select-input
-        placeholder="请输入任意关键词"
-        allow-input
-        clearable
-        style="width: 300px"
-        @input-change="onInputChange"
-      >
-        <template #suffixIcon><search-icon /></template>
-      </t-select-input>
+      <t-space>
+        <add
+          style="margin-bottom: 25px"
+          @add="AddFinsh"
+        ></add>
 
-      <t-space direction="vertical">
-        <t-table
-          :row-key="index"
-          :data="data"
-          :columns="columns"
-          table-layout="fixed"
-          :bordered="true"
-          size="small"
-          :pagination="pagination"
-          cell-empty-content="-"
-          resizable
-          :loading="isLoading"
-          :hover="true"
-          :show-sort-column-bg-color="true"
-          right-fixed-column="1"
-          :selected-row-keys="selectedRowKeys"
-          select-on-row-click
-          @row-click="handleRowClick"
-          @select-change="onSelectChange"
-          @change="onChange"
+        <t-button
+          theme="danger"
+          @click="handleMoreDelete"
         >
-          <!-- 自定义表头，title值为插槽名称  -->
-          <template #title-slot-name>
-            <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
-          </template>
-        </t-table>
+          批量删除
+        </t-button>
+        <t-select-input
+          placeholder="请输入任意关键词"
+          allow-input
+          clearable
+          style="width: 300px"
+          @input-change="onInputChange"
+        >
+          <template #suffixIcon><search-icon /></template>
+        </t-select-input>
       </t-space>
-    </t-card>
+      <t-table
+        :right-fixed-column="1"
+        :row-key="index"
+        :data="data"
+        :columns="columns"
+        table-layout="fixed"
+        :bordered="true"
+        size="small"
+        :pagination="pagination"
+        cell-empty-content="-"
+        resizable
+        :loading="isLoading"
+        :hover="true"
+        :show-sort-column-bg-color="true"
+        :selected-row-keys="selectedRowKeys"
+        @row-click="handleRowClick"
+        @select-change="onSelectChange"
+        @change="onChange"
+      >
+        <!-- 自定义表头，title值为插槽名称  -->
+        <template #title-slot-name>
+          <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
+        </template>
+      </t-table></t-card
+    >
   </div>
 </template>
 
@@ -66,7 +69,7 @@ import { delete10, page5 } from '@/api/user/youhuiquanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
-// import Add from './components/Add.vue';
+import Add from './components/Add.vue';
 
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -127,6 +130,15 @@ const handleRowClick = (e) => {
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
   console.log('change', info, context);
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: info.sorter.sortBy || null,
+      order: info.sorter.descending === false ? 'asc' : 'desc',
+    },
+    { selecte: info.filter },
+  );
 };
 // 搜索框
 const onInputChange = (keyword) => {
