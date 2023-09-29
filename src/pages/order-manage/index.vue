@@ -34,7 +34,7 @@
         <template #suffixIcon><search-icon /></template>
       </t-select-input></t-card>
         <t-table
-          row-key="index"
+          :row-key="index"
           :data="data"
           :columns="columns"
           table-layout="fixed"
@@ -42,16 +42,18 @@
           size="large"
           :pagination="pagination"
           cell-empty-content="-"
-          :show-overflowtooltip="true"
+          :selected-row-keys="selectedRowKeys"
+
           onmouseover="showTooltip(this);"
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
           width: 1200px;
-          ">
+          "
+          @select-change="onSelectChange">
 
 
         </t-table>
       </t-space>
-      <t-pagination :total="30" />
+
     </div>
 </template>
 
@@ -67,6 +69,7 @@ import { delete6, page3 } from '@/api/user/dingdanguanlijiekou';
 
 import { columns } from './newFile';
 
+const index = ref();
 const data = ref([]);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const selectedRowKeys = ref([]);
@@ -80,6 +83,12 @@ const AddFinsh = (newData: any) => {
 };
 const onInputChange = (keyword: any) => {
   console.log(keyword);
+};
+
+// 行选中变化时
+const onSelectChange = (value, params) => {
+  selectedRowKeys.value = value;
+  console.log(value, params);
 };
 const handleMoreDelete = async () => {
   try {
