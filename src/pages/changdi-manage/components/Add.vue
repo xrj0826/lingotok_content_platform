@@ -128,24 +128,27 @@ const handleAdd = () => {
   visible.value = true;
 };
 // 确定添加
-const add = async () => {
+const add = async (validateResult) => {
   try {
-    // 第三方库随机生成id
-    formData.storeId = nanoid();
-    console.log('storeId', formData);
+    if (validateResult === true) {
+      // // 第三方库随机生成id
+      formData.storeId = nanoid();
+      const res = await save(formData);
+      console.log('編輯返回', res);
+      emit('add', 'emit传来喜报:组件通信成功', res);
 
-    const res = await save(formData);
-    console.log('編輯返回', res);
-    emit('add', 'emit传来喜报:组件通信成功', res);
-
-    loading.value = true;
-    // 加载一下
-    const timer = setTimeout(() => {
-      loading.value = false;
-      visible.value = false;
-      clearTimeout(timer);
-    }, 200);
-    MessagePlugin.success('添加成功');
+      loading.value = true;
+      // 加载一下
+      const timer = setTimeout(() => {
+        loading.value = false;
+        visible.value = false;
+        clearTimeout(timer);
+      }, 200);
+      MessagePlugin.success('添加成功');
+    } else {
+      console.log('Validate Errors: ');
+      MessagePlugin.warning('error,请确认已填写所有必填信息!');
+    }
   } catch (error) {
     console.log(error);
   }
@@ -156,15 +159,6 @@ const form = ref(null);
 const onReset = () => {
   MessagePlugin.success('重置成功');
 };
-
-// const onSubmit = ({ validateResult, firstError }) => {
-//   if (validateResult === true) {
-//     MessagePlugin.success('提交成功');
-//   } else {
-//     console.log('Validate Errors: ', firstError, validateResult);
-//     MessagePlugin.warning(firstError);
-//   }
-// };
 
 // 禁用 Input 组件，按下 Enter 键时，触发 submit 事件
 const onEnter = (_, { e }) => {

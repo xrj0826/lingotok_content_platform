@@ -92,7 +92,7 @@ import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page, save, update } from '@/api/user/changdeguanli';
+import { save1 } from '@/api/user/yonghuguanlixiangguanjiekou';
 
 const emit = defineEmits(['add']);
 
@@ -128,21 +128,27 @@ const handleAdd = () => {
   visible.value = true;
 };
 // 确定添加
-const add = async () => {
+const add = async (validateResult) => {
   try {
-    // 第三方库随机生成id
-    formData.storeId = nanoid();
-    const res = await save(formData);
-    console.log('編輯返回', res);
-    emit('add', 'emit传来喜报:组件通信成功', res);
+    if (validateResult === true) {
+      // 第三方库随机生成id
+      formData.storeId = nanoid();
+      const res = await save1(formData);
+      console.log('編輯返回', res);
+      emit('add', 'emit传来喜报:组件通信成功', res);
 
-    loading.value = true;
-    // 加载一下
-    const timer = setTimeout(() => {
-      loading.value = false;
-      visible.value = false;
-      clearTimeout(timer);
-    }, 200);
+      loading.value = true;
+      // 加载一下
+      const timer = setTimeout(() => {
+        loading.value = false;
+        visible.value = false;
+        clearTimeout(timer);
+      }, 200);
+      MessagePlugin.success('添加成功');
+    } else {
+      console.log('Validate Errors: ');
+      MessagePlugin.warning('error,请确认已填写所有必填信息!');
+    }
   } catch (error) {
     console.log(error);
   }

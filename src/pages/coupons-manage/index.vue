@@ -107,13 +107,17 @@ const selectedRowKeys = ref([]);
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await delete10({ ids });
-    console.log('批量删除后', res);
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    });
-    MessagePlugin.success('删除成功');
+    if (ids === '') {
+      MessagePlugin.error('未勾选删除项');
+    } else {
+      const res = await delete10({ ids });
+      console.log('批量删除后', res);
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+      MessagePlugin.success('删除成功');
+    }
   } catch (error) {
     console.log(error);
   }

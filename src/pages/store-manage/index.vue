@@ -117,7 +117,6 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { dataTool } from 'echarts';
 import { AddIcon } from 'tdesign-icons-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { onMounted, reactive, ref } from 'vue';

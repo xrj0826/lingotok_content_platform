@@ -13,13 +13,13 @@ export const columns: PrimaryTableCol[] = [
     type: 'multiple',
     width: 50,
   },
-  { colKey: 'createBy', title: '创建者' },
-  { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改人' },
-  { colKey: 'updateTime', title: '修改时间', sorter: true },
+  // { colKey: 'createBy', title: '创建者' },
+  // { colKey: 'createTime', title: '创建时间', sorter: true },
+  // { colKey: 'updateBy', title: '修改人' },
+  // { colKey: 'updateTime', title: '修改时间', sorter: true },
 
   { colKey: 'noticeTime', title: '通知时间', sorter: true },
-  { colKey: 'noticePerson', title: '通知人' },
+  // { colKey: 'noticePerson', title: '通知人' },
 
   {
     colKey: 'detail',
@@ -45,7 +45,7 @@ export const columns: PrimaryTableCol[] = [
           >
             删除
           </t-link>
-          <Edit
+          <Edit // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
           ></Edit>

@@ -1,15 +1,11 @@
 <template>
   <div>
     <t-space>
-      <t-link
-        theme="primary"
-        @click="handlerEdit"
-        >编辑</t-link
-      >
+      <t-link @click="handlerEdit">修改密码</t-link>
     </t-space>
     <t-dialog
       v-model:visible="visible"
-      header="修改公告信息"
+      header="修改密码"
       body="保存中，请稍后"
       :confirm-btn="{
         content: '提交',
@@ -24,48 +20,27 @@
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
       >
         <t-form-item
-          label="通知标题"
-          name="noticeTitle"
+          label="原密码"
+          name="password "
         >
           <t-input
-            v-model="formData.noticeTitle"
-            placeholder="请输入内容"
+            v-model="formData.password"
+            placeholder="请输入内容:"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
 
-        <!-- <t-form-item
-          label="通知人"
-          name="noticePerson"
+        <t-form-item
+          label="新密码"
+          name="newPassword "
         >
           <t-input
-            v-model="formData.noticePerson"
+            v-model="formData.newPassword"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item> -->
-        <t-form-item
-          label="修改人"
-          name="updateBy"
-        >
-          <t-input
-            v-model="formData.updateBy"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-        <t-form-item
-          label="通知内容"
-          name="noticeContent"
-        >
-          <t-textarea
-            v-model="formData.noticeContent"
-            placeholder="填写你要展示的内容吧"
-            clearable
-          />
         </t-form-item> </t-form
     ></t-dialog>
   </div>
@@ -74,9 +49,9 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page4, update4 } from '@/api/user/xiaochengxugonggao';
+import { editPassword } from '@/api/user/guanliyuan';
 
-const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
+// import { page4, update4 } from '@/api/user/xiaochengxugonggao';
 
 const emit = defineEmits(['edit']);
 
@@ -86,12 +61,8 @@ const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
 
 // 在此定义表单数据
 const formData = reactive({
-  id: null,
-  storeId: '',
-  updateBy: '',
-  noticeTitle: '',
-  noticeContent: '',
-  noticePerson: '',
+  password: '',
+  newPassword: '',
 });
 
 const close = () => {
@@ -103,15 +74,8 @@ const close = () => {
 const handlerEdit = async () => {
   try {
     visible.value = true;
-    console.log(props.editId);
-    const res = await page4({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
-    const [data] = res.result.records; // 解构赋值records
+
     // 以下操作用于更新数据
-    formData.id = data.id;
-    formData.storeId = data.storeId;
-    formData.noticeTitle = data.noticeTitle;
-    formData.noticeContent = data.noticeContent;
-    formData.noticePerson = data.noticePerson;
   } catch (error) {
     console.log(error);
   }
@@ -119,9 +83,9 @@ const handlerEdit = async () => {
 // 确定编辑
 const edit = async () => {
   try {
-    const res = await update4(formData);
+    const res = await editPassword(formData);
     console.log('編輯返回', res);
-    emit('edit', 'emit传来喜报:组件通信成功', res);
+    emit('edit', 'emit传来喜报:组件通信成功', formData.newPassword);
     loading.value = true;
     // 加载一下
     const timer = setTimeout(() => {
@@ -136,10 +100,6 @@ const edit = async () => {
 };
 
 const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
-};
 
 // 禁用 Input 组件，按下 Enter 键时，触发 submit 事件
 const onEnter = (_, { e }) => {

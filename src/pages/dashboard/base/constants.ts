@@ -152,7 +152,6 @@ export const SALE_COLUMNS: TdBaseTableProps['columns'] = [
     colKey: 'operation',
     title: '操作',
     width: 70,
-    fixed: 'right',
   },
 ];
 

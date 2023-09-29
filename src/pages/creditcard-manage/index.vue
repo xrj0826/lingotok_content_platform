@@ -3,7 +3,7 @@
   <div>
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
-        <!-- <add @add="AddFinsh"></add> -->
+        <add @add="AddFinsh"></add>
         <t-button
           theme="danger"
           @click="handleMoreDelete"
@@ -63,7 +63,7 @@ import { delete12, page6 } from '@/api/user/chuzhikaguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
-// import Add from './components/Add.vue';
+import Add from './components/Add.vue';
 
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -101,13 +101,17 @@ const selectedRowKeys = ref([]);
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await delete12({ ids });
-    console.log('批量删除后', res);
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    });
-    MessagePlugin.success('删除成功');
+    if (ids === '') {
+      MessagePlugin.error('未勾选删除项');
+    } else {
+      const res = await delete12({ ids });
+      console.log('批量删除后', res);
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+      MessagePlugin.success('删除成功');
+    }
   } catch (error) {
     console.log(error);
   }
@@ -123,7 +127,13 @@ const handleRowClick = (e) => {
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
-  console.log('change', info, context);
+  console.log('change', info.sorter, context);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+    sort: info.sorter.sortBy,
+    order: info.sorter.descending === false ? 'asc' : 'desc',
+  });
 };
 // 搜索框
 const onInputChange = (keyword) => {

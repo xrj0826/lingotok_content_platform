@@ -5,6 +5,7 @@ import { delete1 } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
+import TimePrice from './components/TimePrice.vue';
 
 export const columns: PrimaryTableCol[] = [
   {
@@ -20,20 +21,30 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'venueName',
     title: '场地名称',
   },
-  {
-    colKey: 'createBy',
-    title: '创建者',
-  },
-  { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改者' },
-  { colKey: 'updateTime', title: '修改时间', sorter: true },
+  // {
+  //   colKey: 'createBy',
+  //   title: '创建者',
+  // },
+  // { colKey: 'createTime', title: '创建时间', sorter: true },
+  // { colKey: 'updateBy', title: '修改者' },
+  // { colKey: 'updateTime', title: '修改时间', sorter: true },
   { colKey: 'storeId', title: '门店id' },
   { colKey: 'halfPrice', title: '半场价格' },
   { colKey: 'allPrice', title: '全场价格' },
-  { colKey: 'price', title: '价格', sorter: true },
+  { colKey: 'price', title: '普通场价格', sorter: true },
   {
     colKey: 'specialValue',
-    title: '特殊价格',
+    title: '设置时间区间价格',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <TimePrice // @ts-ignore
+            onAdd={editFinish}
+            editId={row.id}
+          ></TimePrice>
+        </t-space>
+      );
+    },
   },
 
   {
@@ -54,7 +65,7 @@ export const columns: PrimaryTableCol[] = [
               删除
             </t-link>
           </t-popconfirm>
-          <Edit
+          <Edit // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
           ></Edit>

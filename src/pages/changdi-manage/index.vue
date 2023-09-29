@@ -111,13 +111,17 @@ const onSelectChange = (value, params) => {
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await deleteUsingDELETE({ ids });
-    console.log('批量删除后', res);
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    });
-    MessagePlugin.success('删除成功');
+    if (ids === '') {
+      MessagePlugin.error('未勾选删除项');
+    } else {
+      const res = await deleteUsingDELETE({ ids });
+      console.log('批量删除后', res);
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+      MessagePlugin.success('删除成功');
+    }
   } catch (error) {
     console.log(error);
   }
@@ -136,7 +140,18 @@ const onChange = (info, context) => {
   });
 };
 const onInputChange = (keyword) => {
-  console.log(keyword);
+  console.log('搜索', keyword);
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    },
+    {
+      selecte: {
+        additionalProp1: { keyword },
+      },
+    },
+  );
 };
 
 const pagination = reactive({

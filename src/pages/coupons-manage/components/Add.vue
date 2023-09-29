@@ -145,7 +145,7 @@ const nanoid = customAlphabet('1234567890', 5);
 
 // 在此定义表单数据
 const formData = reactive({
-  id: '',
+  id: null,
   discountValue: null,
   discountType: '',
   days: null, // 优惠天数
