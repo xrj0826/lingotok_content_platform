@@ -4,20 +4,7 @@
   <div>
     <t-space>
       <add @add="AddFinsh"></add>
-      <t-button
-        theme="danger"
-        @click="handleMoreDelete"
-      >
-        批量删除
-      </t-button>
     </t-space>
-    <t-space>
-    <t-checkbox style="margin-left: 100px;;">未选中项</t-checkbox>
-    <t-checkbox>未选悬停项</t-checkbox>
-    <t-checkbox :default-checked="true"> 选中项 </t-checkbox>
-    <t-checkbox disabled> 未选禁用项 </t-checkbox>
-    <t-checkbox disabled :default-checked="true"> 选中禁用项 </t-checkbox>
-  </t-space>
       <t-space>
         </t-space>
       <t-space direction="vertical">
@@ -43,7 +30,6 @@
           :pagination="pagination"
           cell-empty-content="-"
           :selected-row-keys="selectedRowKeys"
-
           onmouseover="showTooltip(this);"
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
           width: 1200px;
@@ -66,9 +52,11 @@ export default {
 import { onMounted, reactive, ref } from 'vue';
 
 import { delete6, page3 } from '@/api/user/dingdanguanlijiekou';
+import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './newFile';
 
+const store = useRenewDataStore();
 const index = ref();
 const data = ref([]);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -80,6 +68,7 @@ const AddFinsh = (newData: any) => {
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
   });
+
 };
 const onInputChange = (keyword: any) => {
   console.log(keyword);

@@ -47,7 +47,7 @@ onMounted(async () => {
   });
 });
 const columns: PrimaryTableCol[] = [
-  { colKey: 'createTime', title: '创建时间' },
+  { colKey: 'createTime', title: '创建时间', width: '200px' },
   {
     colKey: 'updateBy',
     title: '修改者',
@@ -55,6 +55,7 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'updateTime',
     title: '修改时间',
+    width: '200px',
   },
   {
     colKey: 'venueIntroduction ',
@@ -63,19 +64,22 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'closingTime ',
     title: '关店时间',
+    width: '200px',
   },
   {
     colKey: 'openingTime ',
     title: '开店时间',
+    width: '200px',
   },
   { colKey: 'deleteFlag', title: ' 删除标志', ellipsis: true, cell: undefined },
 
   {
     colKey: 'storeImages',
     title: '门店图片',
+    width: '200px',
   },
   {
-    colKey: ' serviceHotline ',
+    colKey: ' serviceHotline',
     title: '服务热线',
   },
   {
