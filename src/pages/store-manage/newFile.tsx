@@ -1,44 +1,12 @@
-<!-- 订单管理 -->
-<template>
-  <div>
-    <t-card>
-      <t-space>
-        <t-button theme="primary">
-          <template #icon><add-icon /></template>
-          新建公告
-        </t-button></t-space
-      >
-      <t-space direction="vertical">
-        <t-table
-          :row-key="index"
-          :data="data"
-          :columns="columns"
-          :stripe="false"
-          table-layout="fixed"
-          :bordered="true"
-          size="large"
-          :pagination="pagination"
-          cell-empty-content="-"
-          resizable
-          @row-click="handleRowClick"
-        >
-        </t-table>
-      </t-space>
-    </t-card>
-  </div>
-</template>
+/* __placeholder__ */
 
-<script setup lang="tsx">
-import { AddIcon } from 'tdesign-icons-vue-next';
-import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
+import { Dialog, PrimaryTableCol } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 import { page2 } from '@/api/user/mendianguanlijiekou';
 
-import Dialog from './components/Dialog.vue';
-
+// const { data, total } = useSomeFeature();
 const data = ref([]);
-const index = ref();
 // 挂载时调用请求函数
 onMounted(async () => {
   queryData({
@@ -46,7 +14,7 @@ onMounted(async () => {
     pageSize: pagination.pageSize,
   });
 });
-const columns: PrimaryTableCol[] = [
+export const columns: PrimaryTableCol[] = [
   { colKey: 'createTime', title: '创建时间' },
   {
     colKey: 'updateBy',
@@ -107,7 +75,7 @@ const columns: PrimaryTableCol[] = [
         <t-space>
           <t-link
             theme="danger"
-            onConfirm={handlerDelete}
+            onClick={handlerDelete}
           >
             删除
           </t-link>
@@ -129,16 +97,14 @@ const handlerDelete = (e) => {
 };
 // 发送编辑行后执行回调
 const editFinish = (newData) => {
-  // eslint-disable-next-line no-alert
   alert('编辑完成');
-  // eslint-disable-next-line no-alert
   alert(newData);
 };
-const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
+const queryData = async (paginatio8nInfo?, searchVo?, entityInfo?) => {
   try {
     console.log('请求', entityInfo, paginationInfo);
 
-    const res = await page2({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page2({ entity: null, searchVo, page: paginatio8nInfo }); // 在此发送请求
     console.log('数据已送达', res);
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
@@ -158,10 +124,3 @@ const pagination = reactive({
     console.log('pagination.onChange', pageInfo);
   },
 });
-</script>
-
-<style lang="less" scoped>
-.tdesign-demo-block-column {
-  width: 100%;
-}
-</style>
