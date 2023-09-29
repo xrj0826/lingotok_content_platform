@@ -7,20 +7,16 @@
       v-model:visible="visible"
       header="添加场地"
       body="订单保存中，请稍后"
-      :confirm-btn="{
-        content: '提交',
-        theme: 'primary',
-        loading,
-      }"
-      :on-confirm="add"
-      :on-close="close"
+      :confirm-btn="null"
+      :cancel-btn="null"
+      :on-confirm="close"
     >
       <t-form
         ref="form"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
+        @submit="add"
       >
         <!-- <t-form-item
           label="场地id"
@@ -83,12 +79,22 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item> </t-form
-    ></t-dialog>
+        </t-form-item>
+        <t-form-item :status-icon="false">
+          <t-space size="small">
+            <t-button
+              theme="primary"
+              type="submit"
+              >提交</t-button
+            >
+          </t-space>
+        </t-form-item></t-form
+      ></t-dialog
+    >
   </div>
 </template>
 <script lang="ts" setup>
-import { customAlphabet } from 'nanoid';
+// import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
@@ -99,17 +105,17 @@ const emit = defineEmits(['add']);
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
-  storeId: [{ required: true, message: '门店id必填' }],
+  // storeId: [{ required: true, message: '门店id必填' }],
   venueName: [{ required: true, message: '门店名称必填' }],
   createBy: [{ required: true, message: '创建必填' }],
   price: [{ required: true, message: '价格必填' }],
 };
 // nanoid配置
-const nanoid = customAlphabet('1234567890', 10);
+// const nanoid = customAlphabet('1234567890', 10);
 // 在此定义表单数据
 const formData = reactive({
   // id: '',
-  storeId: null,
+  storeId: '9376',
   venueName: '',
   createBy: '',
   createTime: '',
@@ -128,11 +134,11 @@ const handleAdd = () => {
   visible.value = true;
 };
 // 确定添加
-const add = async (validateResult) => {
+const add = async ({ validateResult, _ }) => {
   try {
     if (validateResult === true) {
       // 第三方库随机生成id
-      formData.storeId = nanoid();
+      // formData.storeId = nanoid();
       const res = await save1(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
@@ -155,10 +161,6 @@ const add = async (validateResult) => {
 };
 
 const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
-};
 
 // const onSubmit = ({ validateResult, firstError }) => {
 //   if (validateResult === true) {

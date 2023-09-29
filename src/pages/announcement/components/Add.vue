@@ -13,20 +13,16 @@
       v-model:visible="visible"
       header="修改公告信息"
       body="保存中，请稍后"
-      :confirm-btn="{
-        content: '提交',
-        theme: 'primary',
-        loading,
-      }"
-      :on-confirm="add"
-      :on-close="close"
+      :confirm-btn="null"
+      :cancel-btn="null"
+      :on-confirm="close"
     >
       <t-form
         ref="form"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
+        @submit="add"
       >
         <t-form-item
           label="通知标题"
@@ -70,17 +66,26 @@
             allow-input
             clearable
           />
-        </t-form-item> </t-form
-    ></t-dialog>
+        </t-form-item>
+        <t-form-item :status-icon="false">
+          <t-space size="small">
+            <t-button
+              theme="primary"
+              type="submit"
+              >提交</t-button
+            >
+          </t-space>
+        </t-form-item></t-form
+      ></t-dialog
+    >
   </div>
 </template>
 <script lang="ts" setup>
-import { customAlphabet } from 'nanoid';
 import { AddIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save4 } from '@/api/user/xiaochengxugonggao';
+import { save5 } from '@/api/user/xiaochengxugonggao';
 
 const emit = defineEmits(['add']);
 
@@ -91,8 +96,6 @@ const FORM_RULES = {
   noticeContent: [{ required: true, message: '门店名称必填' }],
   noticePerson: [{ required: true, message: '创建必填' }],
 };
-// nanoid配置 纯数字，五位
-const nanoid = customAlphabet('1234567890', 5);
 
 // 在此定义表单数据
 const formData = reactive({
@@ -114,12 +117,14 @@ const handleAdd = () => {
   visible.value = true;
 };
 // 确定添加
-const add = async (validateResult) => {
+const add = async ({ validateResult, _ }) => {
   try {
     if (validateResult === true) {
       // // 第三方库随机生成id
-      formData.storeId = nanoid();
-      const res = await save4(formData);
+      // formData.storeId = nanoid();
+      formData.storeId = '9376';
+
+      const res = await save5(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 

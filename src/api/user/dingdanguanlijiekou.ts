@@ -3,7 +3,7 @@
 import request from '/@/utils/request/index';
 
 /** 订单修改 PUT /staff/cborderinfo */
-export async function update3(body: API.CbOrderInfo, options?: { [key: string]: any }) {
+export async function update4(body: API.CbOrderInfo, options?: { [key: string]: any }) {
   return request<API.ResultMessage>('/staff/cborderinfo', {
     method: 'PUT',
     headers: {
@@ -15,7 +15,7 @@ export async function update3(body: API.CbOrderInfo, options?: { [key: string]: 
 }
 
 /** 订单保存 POST /staff/cborderinfo */
-export async function save3(body: API.CbOrderInfo, options?: { [key: string]: any }) {
+export async function save4(body: API.CbOrderInfo, options?: { [key: string]: any }) {
   return request<API.ResultMessage>('/staff/cborderinfo', {
     method: 'POST',
     headers: {
@@ -27,9 +27,9 @@ export async function save3(body: API.CbOrderInfo, options?: { [key: string]: an
 }
 
 /** 订单id批量删除 DELETE /staff/cborderinfo */
-export async function delete6(
+export async function delete9(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete6Params,
+  params: API.delete9Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessage>('/staff/cborderinfo', {
@@ -42,9 +42,9 @@ export async function delete6(
 }
 
 /** 订单id查询 GET /staff/cborderinfo/${param0} */
-export async function get3(
+export async function get4(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.get3Params,
+  params: API.get4Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
@@ -56,9 +56,9 @@ export async function get3(
 }
 
 /** 订单id删除 DELETE /staff/cborderinfo/${param0} */
-export async function delete7(
+export async function delete10(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete7Params,
+  params: API.delete10Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
@@ -70,9 +70,9 @@ export async function delete7(
 }
 
 /** 订单分页接口 GET /staff/cborderinfo/page */
-export async function page3(
+export async function page4(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.page3Params,
+  params: API.page4Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessageIPageCbOrderInfo>('/staff/cborderinfo/page', {

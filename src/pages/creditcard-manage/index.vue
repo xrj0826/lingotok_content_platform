@@ -59,7 +59,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete12, page6 } from '@/api/user/chuzhikaguanli';
+import { delete17, page8 } from '@/api/user/chuzhikaguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -86,7 +86,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page6({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page8({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -104,7 +104,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete12({ ids });
+      const res = await delete17({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,

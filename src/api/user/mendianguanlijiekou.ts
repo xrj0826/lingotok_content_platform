@@ -27,9 +27,9 @@ export async function save2(body: API.CbStore, options?: { [key: string]: any })
 }
 
 /** 根据id批量删除门店 DELETE /staff/cbstore */
-export async function delete4(
+export async function delete5(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete4Params,
+  params: API.delete5Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessage>('/staff/cbstore', {
@@ -56,9 +56,9 @@ export async function get2(
 }
 
 /** 根据id删除门店 DELETE /staff/cbstore/${param0} */
-export async function delete5(
+export async function delete6(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete5Params,
+  params: API.delete6Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;

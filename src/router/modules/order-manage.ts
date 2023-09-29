@@ -15,7 +15,7 @@ export default [
         path: 'orderManage',
         name: 'OrderManage',
         component: () => import('@/pages/order-manage/index.vue'),
-        meta: { title: '订单管理' },
+        meta: { title: '订单管理', hidden: true },
       },
     ],
   },

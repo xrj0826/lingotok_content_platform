@@ -7,19 +7,16 @@
       v-model:visible="visible"
       header="添加管理员"
       body="保存中，请稍后"
-      :confirm-btn="{
-        content: '提交',
-        theme: 'primary',
-        loading,
-      }"
-      :on-confirm="add"
-      :on-close="close"
+      :confirm-btn="null"
+      :cancel-btn="null"
+      :on-confirm="close"
     >
       <t-form
         ref="form"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
+        @submit="add"
       >
         <t-form-item
           label="管理员用户名"
@@ -51,8 +48,19 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item> </t-form
-    ></t-dialog>
+        </t-form-item>
+        <t-form-item :status-icon="false">
+          <t-space size="small">
+            <t-button
+              theme="primary"
+              type="submit"
+              style="margin: 20px 100px 0 0"
+              >提交</t-button
+            >
+          </t-space>
+        </t-form-item></t-form
+      ></t-dialog
+    >
   </div>
 </template>
 <script lang="ts" setup>
@@ -60,7 +68,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save7 } from '@/api/user/guanliyuan';
+import { save9 } from '@/api/user/guanliyuan';
 
 const emit = defineEmits(['add']);
 const form = ref(null);
@@ -82,6 +90,7 @@ const FORM_RULES = {
 // 在此定义表单数据
 const formData = reactive({
   // id: null,
+  storeId: '',
   username: '',
   mobile: '',
   password: '',
@@ -102,7 +111,9 @@ const add = async (validateResult) => {
     if (validateResult === true) {
       // // 第三方库随机生成id
       // formData.id = nanoid();
-      const res = await save7(formData);
+      formData.storeId = '9376';
+
+      const res = await save9(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 
