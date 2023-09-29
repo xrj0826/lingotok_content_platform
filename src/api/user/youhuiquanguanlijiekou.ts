@@ -3,7 +3,7 @@
 import request from '/@/utils/request/index';
 
 /** 优惠券修改 PUT /staff/cbcoupon */
-export async function update5(body: API.CbCoupon, options?: { [key: string]: any }) {
+export async function update7(body: API.CbCoupon, options?: { [key: string]: any }) {
   return request<API.ResultMessage>('/staff/cbcoupon', {
     method: 'PUT',
     headers: {
@@ -15,7 +15,7 @@ export async function update5(body: API.CbCoupon, options?: { [key: string]: any
 }
 
 /** 新增优惠券 POST /staff/cbcoupon */
-export async function save5(body: API.CbCoupon, options?: { [key: string]: any }) {
+export async function save7(body: API.CbCoupon, options?: { [key: string]: any }) {
   return request<API.ResultMessage>('/staff/cbcoupon', {
     method: 'POST',
     headers: {
@@ -27,9 +27,9 @@ export async function save5(body: API.CbCoupon, options?: { [key: string]: any }
 }
 
 /** 优惠券id批量删除 DELETE /staff/cbcoupon */
-export async function delete10(
+export async function delete15(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete10Params,
+  params: API.delete15Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessage>('/staff/cbcoupon', {
@@ -42,9 +42,9 @@ export async function delete10(
 }
 
 /** 优惠券id查询 GET /staff/cbcoupon/${param0} */
-export async function get5(
+export async function get7(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.get5Params,
+  params: API.get7Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
@@ -56,9 +56,9 @@ export async function get5(
 }
 
 /** 优惠券删除 DELETE /staff/cbcoupon/${param0} */
-export async function delete11(
+export async function delete16(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete11Params,
+  params: API.delete16Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
@@ -70,9 +70,9 @@ export async function delete11(
 }
 
 /** 优惠券分页查询 GET /staff/cbcoupon/page */
-export async function page5(
+export async function page7(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.page5Params,
+  params: API.page7Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessageIPageCbCoupon>('/staff/cbcoupon/page', {

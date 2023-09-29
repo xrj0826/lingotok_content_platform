@@ -196,7 +196,7 @@ const orderState = [
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page3, update3 } from '@/api/user/dingdanguanlijiekou';
+import { page4, update4 } from '@/api/user/dingdanguanlijiekou';
 
 const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -212,8 +212,7 @@ const groupChangeFn = (value: any, context: { e: Event }) => {
 // 在此定义表单数据
 const formData = reactive({
   id: null,
-  storeId: '',
-  deleteFlag: false,
+  storeId: '9376',
   orderPrice: null,
   orderDate: '',
   orderSt: '',
@@ -237,7 +236,7 @@ const handlerEdit = async () => {
   try {
     visible.value = true;
     console.log(props.editId);
-    const res = await page3({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
+    const res = await page4({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
     const [data] = res.result.records; // 解构赋值records
     // for (const key in formData) {
     //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
@@ -264,7 +263,7 @@ const handlerEdit = async () => {
 // 确定编辑
 const edit = async () => {
   try {
-    const res = await update3(formData);
+    const res = await update4(formData);
     console.log('編輯返回', res);
     emit('edit', 'emit传来喜报:组件通信成功', res);
 

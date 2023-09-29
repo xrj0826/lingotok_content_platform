@@ -113,6 +113,13 @@ declare namespace API {
 
   type Cbdoor = true;
 
+  type CbImage = {
+    /** 门店图片id */
+    id?: string;
+    /** 门店图片 */
+    storeImage?: string;
+  };
+
   type CbNotice = {
     /** id */
     id?: number;
@@ -186,6 +193,18 @@ declare namespace API {
     transactionId?: string;
   };
 
+  type CbSpecialValue = {
+    /** 场地id */
+    venueId?: number;
+    /** 开门时间 */
+    orderst?: string;
+    /** 关门时间 */
+    ordered?: string;
+    /** 后台指定特殊价格 */
+    specialValue?: number;
+    id?: number;
+  };
+
   type CbStore = {
     /** id */
     id?: string;
@@ -204,9 +223,9 @@ declare namespace API {
     /** 场馆介绍 */
     venueIntroduction?: string;
     /** 开店时间 */
-    openingTime?: number;
+    openingTime?: string;
     /** 关店时间 */
-    closingTime?: number;
+    closingTime?: string;
     /** 门店图片 */
     storeImages?: string;
     /** 服务热线 */
@@ -223,6 +242,8 @@ declare namespace API {
     announcement?: string;
     /** 门店地址 */
     address?: string;
+    /** 订场须知 */
+    scheduledNotice?: string;
   };
 
   type CbUser = {
@@ -294,20 +315,42 @@ declare namespace API {
   };
 
   type delete10Params = {
-    /** ID集合 */
-    ids: string;
-  };
-
-  type delete11Params = {
     id: string;
   };
 
-  type delete12Params = {
+  type delete11Params = {
     /** ID集合 */
     ids: string;
   };
 
+  type delete12Params = {
+    id: string;
+  };
+
   type delete13Params = {
+    /** ID集合 */
+    ids: string;
+  };
+
+  type delete14Params = {
+    id: string;
+  };
+
+  type delete15Params = {
+    /** ID集合 */
+    ids: string;
+  };
+
+  type delete16Params = {
+    id: string;
+  };
+
+  type delete17Params = {
+    /** ID集合 */
+    ids: string;
+  };
+
+  type delete18Params = {
     id: string;
   };
 
@@ -325,35 +368,39 @@ declare namespace API {
   };
 
   type delete4Params = {
-    /** ID集合 */
-    ids: string;
+    name: string;
   };
 
   type delete5Params = {
-    id: string;
+    /** ID集合 */
+    ids: string;
   };
 
   type delete6Params = {
-    /** ID集合 */
-    ids: string;
+    id: string;
   };
 
   type delete7Params = {
-    id: string;
-  };
-
-  type delete8Params = {
     /** ID集合 */
     ids: string;
   };
 
-  type delete9Params = {
+  type delete8Params = {
     id: string;
+  };
+
+  type delete9Params = {
+    /** ID集合 */
+    ids: string;
   };
 
   type deleteUsingDELETEParams = {
     /** ID集合 */
     ids: string;
+  };
+
+  type downloadParams = {
+    name: string;
   };
 
   type editPasswordParams = {
@@ -385,6 +432,14 @@ declare namespace API {
     id: number;
   };
 
+  type get7Params = {
+    id: number;
+  };
+
+  type get8Params = {
+    id: number;
+  };
+
   type getParams = {
     id: number;
   };
@@ -413,6 +468,14 @@ declare namespace API {
     size?: number;
   };
 
+  type IPageCbImage = {
+    total?: number;
+    current?: number;
+    records?: CbImage[];
+    pages?: number;
+    size?: number;
+  };
+
   type IPageCbNotice = {
     total?: number;
     current?: number;
@@ -425,6 +488,14 @@ declare namespace API {
     total?: number;
     current?: number;
     records?: CbOrderInfo[];
+    pages?: number;
+    size?: number;
+  };
+
+  type IPageCbSpecialValue = {
+    total?: number;
+    current?: number;
+    records?: CbSpecialValue[];
     pages?: number;
     size?: number;
   };
@@ -471,30 +542,42 @@ declare namespace API {
   };
 
   type page3Params = {
-    entity: CbOrderInfo;
+    entity: CbSpecialValue;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page4Params = {
-    entity: CbNotice;
+    entity: CbOrderInfo;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page5Params = {
-    entity: CbCoupon;
+    entity: CbNotice;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page6Params = {
-    entity: CbCard;
+    entity: CbImage;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page7Params = {
+    entity: CbCoupon;
+    searchVo: SearchVO;
+    page: PageVO;
+  };
+
+  type page8Params = {
+    entity: CbCard;
+    searchVo: SearchVO;
+    page: PageVO;
+  };
+
+  type page9Params = {
     entity: AdminUserVo;
     searchVo: SearchVO;
     page: PageVO;
@@ -567,6 +650,18 @@ declare namespace API {
     result?: CbCoupon;
   };
 
+  type ResultMessageCbImage = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CbImage;
+  };
+
   type ResultMessageCbNotice = {
     /** 成功标志 */
     success?: boolean;
@@ -589,6 +684,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: CbOrderInfo;
+  };
+
+  type ResultMessageCbSpecialValue = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CbSpecialValue;
   };
 
   type ResultMessageCbStore = {
@@ -663,6 +770,18 @@ declare namespace API {
     result?: IPageCbCoupon;
   };
 
+  type ResultMessageIPageCbImage = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageCbImage;
+  };
+
   type ResultMessageIPageCbNotice = {
     /** 成功标志 */
     success?: boolean;
@@ -685,6 +804,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: IPageCbOrderInfo;
+  };
+
+  type ResultMessageIPageCbSpecialValue = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageCbSpecialValue;
   };
 
   type ResultMessageIPageCbStore = {

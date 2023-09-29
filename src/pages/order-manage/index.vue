@@ -51,8 +51,7 @@ export default {
 <script setup lang="tsx">
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete6, page3 } from '@/api/user/dingdanguanlijiekou';
-import { useRenewDataStore } from '@/store/renewData';
+import { delete9, page4 } from '@/api/user/dingdanguanlijiekou';
 
 import { columns } from './newFile';
 
@@ -82,7 +81,7 @@ const onSelectChange = (value, params) => {
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await delete6({ ids });
+    const res = await delete9({ ids });
     console.log('批量删除后', res);
     queryData({
       pageNumber: pagination.current,
@@ -125,7 +124,7 @@ const queryData = async (
   try {
     console.log('请求', entityInfo, paginationInfo);
 
-    const res = await page3({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page4({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数

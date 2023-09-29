@@ -99,7 +99,6 @@ const emit = defineEmits(['add']);
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
-  storeId: [{ required: true, message: '门店id必填' }],
   venueName: [{ required: true, message: '门店名称必填' }],
   createBy: [{ required: true, message: '创建必填' }],
   price: [{ required: true, message: '价格必填' }],
@@ -131,8 +130,6 @@ const handleAdd = () => {
 const add = async (validateResult) => {
   try {
     if (validateResult === true) {
-      // // 第三方库随机生成id
-      formData.storeId = nanoid();
       const res = await save(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);

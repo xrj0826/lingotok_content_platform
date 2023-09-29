@@ -7,20 +7,16 @@
       v-model:visible="visible"
       header="添加储值卡"
       body="订单保存中，请稍后"
-      :confirm-btn="{
-        content: '提交',
-        theme: 'primary',
-        loading,
-      }"
-      :on-confirm="add"
-      :on-close="close"
+      :confirm-btn="null"
+      :cancel-btn="null"
+      :on-confirm="close"
     >
       <t-form
         ref="form"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
+        @submit="add"
       >
         <t-form-item
           label="卡名称"
@@ -38,12 +34,26 @@
           name="cardType"
         >
           <t-radio-group v-model="formData.cardType">
-            <t-radio value="储值卡">储值卡</t-radio>
-            <t-radio value="月卡">月卡</t-radio>
-            <t-radio value="次卡">次卡</t-radio>
+            <t-radio value="STORED_VALUE">储值卡</t-radio>
+            <t-radio value="MONTHLY">月卡</t-radio>
+            <t-radio value="TIME_BASED">次卡</t-radio>
           </t-radio-group>
         </t-form-item>
 
+        <!-- <t-form-item
+          label="有效期"
+          name="days"
+        >
+          <t-input
+            v-model="formData.days"
+            theme="normal"
+            align="right"
+            style="width: 88px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>天</span></template>
+          </t-input>
+        </t-form-item> -->
         <t-form-item
           label="面值"
           name="faceValue"
@@ -90,10 +100,10 @@
             v-model="formData.discountValue"
             theme="normal"
             align="right"
-            style="width: 88px"
+            style="width: 70px"
             @enter="onEnter"
           >
-            <template #suffix><span>元</span></template>
+            <template #suffix><span>折</span></template>
           </t-input>
         </t-form-item>
         <t-form-item
@@ -114,16 +124,25 @@
             enable-time-picker
             allow-input
             clearable
-          />
-        </t-form-item> </t-form
-    ></t-dialog>
+          /> </t-form-item
+        ><t-form-item :status-icon="false">
+          <t-space size="small">
+            <t-button
+              theme="primary"
+              type="submit"
+              >提交</t-button
+            >
+          </t-space>
+        </t-form-item>
+      </t-form></t-dialog
+    >
   </div>
 </template>
 <script lang="ts" setup>
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save6 } from '@/api/user/chuzhikaguanli';
+import { save8 } from '@/api/user/chuzhikaguanli';
 
 const emit = defineEmits(['add']);
 
@@ -133,7 +152,11 @@ const FORM_RULES = {
   cardType: [{ required: true, message: '卡类型必填' }],
   cardName: [{ required: true, message: '卡名称必填' }],
   days: [{ required: true, message: '生效时间必填' }],
-  discountValue: [{ required: true, message: '折扣值必填' }],
+  discountValue: [
+    { required: true, message: '该项必填' },
+    { min: 1.0, message: '折扣应在1~10之间', type: 'error', trigger: 'blur' },
+    { max: 10.0, message: '折扣应在1~10之间', type: 'error', trigger: 'blur' },
+  ],
   faceValue: [{ required: true, message: '面值必填' }],
   bonusAmount: [{ required: true, message: '赠送金额必填' }],
 };
@@ -141,6 +164,7 @@ const FORM_RULES = {
 // 在此定义表单数据
 const formData = reactive({
   // id: '',
+  storeId: '',
   cardType: '',
   cardName: '',
   days: null,
@@ -162,35 +186,28 @@ const handleAdd = () => {
   visible.value = true;
 };
 // 确定添加
-const add = async (validateResult) => {
-  try {
-    if (validateResult === true) {
-      const res = await save6(formData);
-      console.log('編輯返回', res);
-      emit('add', 'emit传来喜报:组件通信成功', res);
+const add = async ({ validateResult, _ }) => {
+  if (validateResult === true) {
+    formData.storeId = '9376';
+    const res = await save8(formData);
+    console.log('編輯返回', res);
+    emit('add', 'emit传来喜报:组件通信成功', res);
 
-      loading.value = true;
-      // 加载一下
-      const timer = setTimeout(() => {
-        loading.value = false;
-        visible.value = false;
-        clearTimeout(timer);
-      }, 200);
-      MessagePlugin.success('添加成功');
-    } else {
-      console.log('Validate Errors: ');
-      MessagePlugin.warning('error,请确认已填写所有必填信息!');
-    }
-  } catch (error) {
-    console.log(error);
+    loading.value = true;
+    // 加载一下
+    const timer = setTimeout(() => {
+      loading.value = false;
+      visible.value = false;
+      clearTimeout(timer);
+    }, 200);
+    MessagePlugin.success('添加成功');
+  } else {
+    console.log('Validate Errors: ');
+    MessagePlugin.warning('error,请确认已填写所有必填信息!');
   }
 };
 
 const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
-};
 
 // const onSubmit = ({ validateResult, firstError }) => {
 //   if (validateResult === true) {

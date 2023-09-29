@@ -1,7 +1,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete9 } from '@/api/user/xiaochengxugonggao';
+import { delete12 } from '@/api/user/xiaochengxugonggao';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Detail from './components/Detail.vue';
@@ -65,7 +65,7 @@ const handleDelete = async (id) => {
   const params = {
     id,
   };
-  const res = await delete9(params);
+  const res = await delete12(params);
   console.log('删除后', res);
   MessagePlugin.success('删除成功');
 
