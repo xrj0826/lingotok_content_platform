@@ -1,7 +1,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete13 } from '@/api/user/chuzhikaguanli';
+import { delete18 } from '@/api/user/chuzhikaguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
@@ -43,9 +43,9 @@ export const columns: PrimaryTableCol[] = [
 
   {
     colKey: 'discountValue',
-    title: '折扣值',
+    title: '折扣值/折',
   },
-  { colKey: 'days', title: '有效期', sorter: true },
+  // { colKey: 'days', title: '有效期', sorter: true },
   { colKey: 'startDate', title: '生效日期', sorter: true },
   { colKey: 'endDate', title: '结束日期', sorter: true },
 
@@ -93,7 +93,7 @@ const handleDelete = async (id) => {
     const params = {
       id,
     };
-    const res = await delete13(params);
+    const res = await delete18(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
 

@@ -1,4 +1,4 @@
-<!-- 客服管理 -->
+<!-- 场地管理 -->
 <template>
   <div>
     <t-card>
@@ -63,7 +63,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
+import { delete1, page } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -114,7 +114,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await deleteUsingDELETE({ ids });
+      const res = await delete1({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,

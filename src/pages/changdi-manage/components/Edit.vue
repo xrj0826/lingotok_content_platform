@@ -107,7 +107,7 @@ const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
 // 在此定义表单数据
 const formData = reactive({
   id: null,
-  storeId: '',
+  storeId: '9376',
   venueName: '',
   updateBy: '',
   // updateTime: '',

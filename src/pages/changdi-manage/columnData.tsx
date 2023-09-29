@@ -28,7 +28,7 @@ export const columns: PrimaryTableCol[] = [
   // { colKey: 'createTime', title: '创建时间', sorter: true },
   // { colKey: 'updateBy', title: '修改者' },
   // { colKey: 'updateTime', title: '修改时间', sorter: true },
-  { colKey: 'storeId', title: '门店id' },
+  // { colKey: 'storeId', title: '门店id' },
   { colKey: 'halfPrice', title: '半场价格' },
   { colKey: 'allPrice', title: '全场价格' },
   { colKey: 'price', title: '普通场价格', sorter: true },
@@ -86,6 +86,7 @@ const handleDelete = async (id) => {
     const params = {
       id,
     };
+    //
     const res = await delete1(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');

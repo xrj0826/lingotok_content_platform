@@ -59,7 +59,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delAllByIds, page7 } from '@/api/user/guanliyuan';
+import { delAllByIds, page9 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -86,7 +86,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page7({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page9({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据

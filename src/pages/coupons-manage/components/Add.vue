@@ -126,7 +126,7 @@ import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save5 } from '@/api/user/youhuiquanguanlijiekou';
+import { save7 } from '@/api/user/youhuiquanguanlijiekou';
 
 const emit = defineEmits(['add']);
 
@@ -173,7 +173,7 @@ const add = async () => {
     // 第三方库随机生成兑换码
     formData.code = nanocode();
     formData.id = nanoid();
-    const res = await save5(formData);
+    const res = await save7(formData);
     console.log('編輯返回', res);
     emit('add', 'emit传来喜报:组件通信成功', res);
 

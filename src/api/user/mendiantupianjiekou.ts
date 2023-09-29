@@ -2,9 +2,9 @@
 /* eslint-disable */
 import request from '/@/utils/request/index';
 
-/** 储值卡修改 PUT /staff/cbcard */
-export async function update8(body: API.CbCard, options?: { [key: string]: any }) {
-  return request<API.ResultMessage>('/staff/cbcard', {
+/** 修改 PUT /staff/cbimage */
+export async function update6(body: API.CbImage, options?: { [key: string]: any }) {
+  return request<API.ResultMessage>('/staff/cbimage', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -14,9 +14,9 @@ export async function update8(body: API.CbCard, options?: { [key: string]: any }
   });
 }
 
-/** 储值卡保存 POST /staff/cbcard */
-export async function save8(body: API.CbCard, options?: { [key: string]: any }) {
-  return request<API.ResultMessage>('/staff/cbcard', {
+/** 保存 POST /staff/cbimage */
+export async function save6(body: API.CbImage, options?: { [key: string]: any }) {
+  return request<API.ResultMessage>('/staff/cbimage', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,13 +26,13 @@ export async function save8(body: API.CbCard, options?: { [key: string]: any }) 
   });
 }
 
-/** 储值卡根据id批量删除 DELETE /staff/cbcard */
-export async function delete17(
+/** 批量删除 DELETE /staff/cbimage */
+export async function delete13(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete17Params,
+  params: API.delete13Params,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResultMessage>('/staff/cbcard', {
+  return request<API.ResultMessage>('/staff/cbimage', {
     method: 'DELETE',
     params: {
       ...params,
@@ -41,41 +41,41 @@ export async function delete17(
   });
 }
 
-/** 储值卡根据id查询 GET /staff/cbcard/${param0} */
-export async function get8(
+/** id查询 GET /staff/cbimage/${param0} */
+export async function get6(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.get8Params,
+  params: API.get6Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResultMessageCbCard>(`/staff/cbcard/${param0}`, {
+  return request<API.ResultMessageCbImage>(`/staff/cbimage/${param0}`, {
     method: 'GET',
     params: { ...queryParams },
     ...(options || {}),
   });
 }
 
-/** 储值卡根据id删除 DELETE /staff/cbcard/${param0} */
-export async function delete18(
+/** 删除 DELETE /staff/cbimage/${param0} */
+export async function delete14(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete18Params,
+  params: API.delete14Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResultMessage>(`/staff/cbcard/${param0}`, {
+  return request<API.ResultMessage>(`/staff/cbimage/${param0}`, {
     method: 'DELETE',
     params: { ...queryParams },
     ...(options || {}),
   });
 }
 
-/** 储值卡分页查询 GET /staff/cbcard/page */
-export async function page8(
+/** 分页 GET /staff/cbimage/page */
+export async function page6(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.page8Params,
+  params: API.page6Params,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResultMessageIPageCbCard>('/staff/cbcard/page', {
+  return request<API.ResultMessageIPageCbImage>('/staff/cbimage/page', {
     method: 'GET',
     params: {
       ...params,

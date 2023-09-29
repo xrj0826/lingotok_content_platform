@@ -11,11 +11,11 @@ const importList = [
     projectName: 'user',
     requestLibPath: "import request from '/@/utils/request/index'",
   },
-  {
-    schemaPath: 'http://139.9.38.185:8889/v3/api-docs/user',
-    projectName: 'mini-program',
-    requestLibPath: "import request from '/@/utils/request/index2'",
-  },
+  // {
+  //   schemaPath: 'http://139.9.38.185:8889/v3/api-docs/user',
+  //   projectName: 'mini-program',
+  //   requestLibPath: "import request from '/@/utils/request/index2'",
+  // },
   // {
   //   schemaPath: 'http://47.99.90.88:8890/v3/api-docs',
   //   projectName: 'common',
