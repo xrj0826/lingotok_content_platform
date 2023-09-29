@@ -38,25 +38,13 @@
         </t-form-item>
 
         <t-form-item
-          label="积分"
-          name="credit"
-        >
-          <t-input
-            v-model="formData.credit"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-
-        <t-form-item
           label="状态"
           name="status"
         >
-          <t-input
-            :v-model="formData.status"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-radio-group v-model="formData.status">
+            <t-radio :value="false">禁用</t-radio>
+            <t-radio :value="true">正常</t-radio>
+          </t-radio-group>
         </t-form-item>
         <t-form-item
           label="昵称"

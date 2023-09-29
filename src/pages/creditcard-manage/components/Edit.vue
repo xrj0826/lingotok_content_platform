@@ -24,8 +24,71 @@
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-      >
-      </t-form
+        ><t-form-item
+          label="储值卡名称"
+          name="cardName"
+        >
+          <t-input
+            v-model="formData.cardName"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
+
+        <t-form-item
+          label="储值卡类型"
+          name="cardType"
+        >
+          <t-radio-group v-model="formData.cardType">
+            <t-radio value="储值卡">储值卡</t-radio>
+            <t-radio value="月卡">月卡</t-radio>
+            <t-radio value="次卡">次卡</t-radio>
+          </t-radio-group>
+        </t-form-item>
+        <t-form-item
+          label="生效时间"
+          name="days"
+        >
+          <t-input
+            v-model="formData.days"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
+        <t-form-item
+          label="生效时间"
+          name="days"
+        >
+          <t-input
+            v-model="formData.days"
+            theme="normal"
+            align="right"
+            style="width: 70px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>天</span></template>
+          </t-input>
+        </t-form-item>
+        <t-form-item
+          label="生效时间"
+          name="startDate"
+          ><t-date-picker
+            v-model="formData.startDate"
+            enable-time-picker
+            allow-input
+            clearable
+          /> </t-form-item
+        ><t-form-item
+          label="结束时间"
+          name="endDate"
+        >
+          <t-date-picker
+            v-model="formData.endDate"
+            enable-time-picker
+            allow-input
+            clearable
+          />
+        </t-form-item> </t-form
     ></t-dialog>
   </div>
 </template>
@@ -77,7 +140,9 @@ const handlerEdit = async () => {
     //   }
     // }
     // 以下操作用于更新数据
+    formData.id = data.id;
     formData.cardType = data.cardType;
+    formData.cardName = data.cardName;
     formData.days = data.days;
     formData.startDate = data.startDate;
     formData.endDate = data.endDate;
@@ -111,7 +176,6 @@ const edit = async () => {
 };
 
 const form = ref(null);
-
 // 禁用 Input 组件，按下 Enter 键时，触发 submit 事件
 const onEnter = (_, { e }) => {
   e.preventDefault();

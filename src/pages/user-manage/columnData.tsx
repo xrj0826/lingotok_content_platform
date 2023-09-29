@@ -1,6 +1,5 @@
-import { Loading, MessagePlugin } from 'tdesign-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-import { ref } from 'vue';
 
 import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
@@ -24,7 +23,7 @@ export const columns: PrimaryTableCol[] = [
   { colKey: 'nickName', title: '昵称' },
   {
     colKey: 'credit',
-    title: '积分',
+    title: '累计消费',
     sorter: true,
   },
   {
@@ -46,23 +45,23 @@ export const columns: PrimaryTableCol[] = [
   { colKey: 'phoneNumber', title: '手机号', width: '110px' },
   { colKey: 'email', title: '邮件', width: '150px' },
   { colKey: 'birthday', title: '生日' },
-  {
-    colKey: 'avatar',
-    title: '头像',
-    width: ' 100px',
-    cell: (h, { row }) => {
-      return (
-        <t-image
-          key={loadingCount}
-          src={`https://${row.avatar}`}
-          style={{ width: '80px', height: '80px' }}
-          lazy={true}
-          placeholder={renderPlaceholder}
-          loading={renderLoading}
-        />
-      );
-    },
-  },
+  // {
+  //   colKey: 'avatar',
+  //   title: '头像',
+  //   width: ' 100px',
+  //   cell: (h, { row }) => {
+  //     return (
+  //       <t-image
+  //         key={loadingCount}
+  //         src={`https://${row.avatar}`}
+  //         style={{ width: '80px', height: '80px' }}
+  //         lazy={true}
+  //         placeholder={renderPlaceholder}
+  //         loading={renderLoading}
+  //       />
+  //     );
+  //   },
+  // },
   {
     colKey: 'sex',
     title: '性别',
@@ -71,14 +70,13 @@ export const columns: PrimaryTableCol[] = [
     },
   },
 
-  { colKey: 'createBy', title: '创建者' },
-  { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改者' },
-  { colKey: 'updateTime', title: '修改时间', sorter: true },
+  // { colKey: 'createBy', title: '创建者' },
+  // { colKey: 'createTime', title: '创建时间', sorter: true },
+  // { colKey: 'updateBy', title: '修改者' },
+  // { colKey: 'updateTime', title: '修改时间', sorter: true },
   {
     colKey: 'operation',
     title: '操作',
-    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -95,6 +93,7 @@ export const columns: PrimaryTableCol[] = [
             </t-link>
           </t-popconfirm>
           <Edit
+            // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
           ></Edit>
@@ -130,35 +129,35 @@ const editFinish = async (newData) => {
   store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
 };
 
-const loadingCount = ref(0);
-const renderPlaceholder = () => (
-  <img
-    width="100%"
-    height="100%"
-    src="https://tdesign.gtimg.com/demo/demo-image-5.png"
-  />
-);
-const renderLoading = () => (
-  <div
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '100%',
-      height: '100%',
-      background: 'rgba(255,255,255,.4)',
-      backdropFilter: 'blur(10px)',
-    }}
-  >
-    <Loading
-      delay={0}
-      fullscreen={false}
-      indicator
-      inheritColor={false}
-      loading
-      preventScrollThrough
-      showOverlay
-      size="small"
-    />
-  </div>
-);
+// const loadingCount = ref(0);
+// const renderPlaceholder = () => (
+//   <img
+//     width="100%"
+//     height="100%"
+//     src="https://tdesign.gtimg.com/demo/demo-image-5.png"
+//   />
+// );
+// const renderLoading = () => (
+//   <div
+//     style={{
+//       display: 'flex',
+//       alignItems: 'center',
+//       justifyContent: 'center',
+//       width: '100%',
+//       height: '100%',
+//       background: 'rgba(255,255,255,.4)',
+//       backdropFilter: 'blur(10px)',
+//     }}
+//   >
+//     <Loading
+//       delay={0}
+//       fullscreen={false}
+//       indicator
+//       inheritColor={false}
+//       loading
+//       preventScrollThrough
+//       showOverlay
+//       size="small"
+//     />
+//   </div>
+// );

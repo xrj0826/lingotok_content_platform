@@ -1,10 +1,10 @@
 <!-- 客服管理 -->
 <template>
   <div>
-    <!-- <add @add="AddFinsh"></add> -->
-
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
+        <add @add="AddFinsh"></add>
+
         <t-button
           theme="danger"
           @click="handleMoreDelete"
@@ -51,7 +51,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'UserManager',
+  name: 'AdminManager',
 };
 </script>
 <script setup lang="tsx">
@@ -59,11 +59,11 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete2, page1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { delAllByIds, page7 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
-// import Add from './components/Add.vue';
+import Add from './components/Add.vue';
 
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -86,7 +86,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page1({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page7({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -104,7 +104,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete2({ ids });
+      const res = await delAllByIds({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,
@@ -150,13 +150,13 @@ const pagination = reactive({
   },
 });
 
-// const AddFinsh = (newData) => {
-//   console.log(newData);
-//   queryData({
-//     pageNumber: pagination.current,
-//     pageSize: pagination.pageSize,
-//   });
-// };
+const AddFinsh = (newData) => {
+  console.log(newData);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+};
 </script>
 
 <style lang="less" scoped></style>

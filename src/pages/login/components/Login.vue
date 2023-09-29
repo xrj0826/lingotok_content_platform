@@ -26,7 +26,7 @@
           size="large"
           :type="showPsw ? 'text' : 'password'"
           clearable
-          placeholder="请输入登录密码：admin"
+          placeholder="请输入登录密码：666666"
         >
           <template #prefix-icon>
             <t-icon name="lock-on" />
@@ -42,6 +42,13 @@
 
       <div class="check-container remember-pwd">
         <t-checkbox>记住账号</t-checkbox>
+        <!-- <edit-password
+          @edit="
+            {
+              editFinish;
+            }
+          "
+        ></edit-password> -->
       </div>
     </template>
 
@@ -77,6 +84,8 @@ import { useRoute, useRouter } from 'vue-router';
 
 // import { useCounter } from '@/hooks';
 import { useUserStore } from '@/store';
+
+// import EditPassword from './EditPassword.vue';
 
 const userStore = useUserStore();
 
@@ -125,6 +134,11 @@ const onSubmit = async (ctx: SubmitContext) => {
     }
   }
 };
+// // 发送编辑行后执行回调
+// const editFinish = async (newPassword) => {
+//   console.log('edit传回', newPassword);
+//   INITIAL_DATA.password = newPassword;
+// };
 </script>
 
 <style lang="less" scoped>

@@ -125,14 +125,13 @@ export const columns: PrimaryTableCol[] = [
               删除
             </t-link>
           </t-popconfirm>
-          <Edit
+          <Edit // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
           ></Edit>
         </t-space>
       );
     },
-    fixed: 'right',
   },
 ];
 // 循环为列属性配置居中属性

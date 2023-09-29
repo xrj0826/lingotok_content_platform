@@ -31,7 +31,6 @@ import TdesignSetting from '@/layouts/setting.vue';
 
 import LoginHeader from './components/Header.vue';
 import Login from './components/Login.vue';
-import Register from './components/Register.vue';
 
 const type = ref('login');
 const switchType = (val: string) => {

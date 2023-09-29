@@ -18,7 +18,7 @@ export const columns: PrimaryTableCol[] = [
   //   title: 'id',
   // },
 
-  { colKey: 'userId', title: '用户id' },
+  // { colKey: 'userId', title: '用户id' },
   {
     colKey: 'storeId',
     title: '门店id',
@@ -29,11 +29,11 @@ export const columns: PrimaryTableCol[] = [
     title: '卡类型（储值卡、月卡、次卡）',
     width: '220px',
   },
-  {
-    colKey: 'currentBalance',
-    title: '当前余额',
-    sorter: true,
-  },
+  // {
+  //   colKey: 'currentBalance',
+  //   title: '当前余额',
+  //   sorter: true,
+  // },
   {
     colKey: 'bonusAmount',
     title: '赠送金额',
@@ -46,17 +46,16 @@ export const columns: PrimaryTableCol[] = [
     title: '折扣值',
   },
   { colKey: 'days', title: '有效期', sorter: true },
-  { colKey: 'startDate', title: '生效日期' },
-  { colKey: 'endDate', title: '结束日期' },
+  { colKey: 'startDate', title: '生效日期', sorter: true },
+  { colKey: 'endDate', title: '结束日期', sorter: true },
 
-  { colKey: 'createBy', title: '创建者' },
-  { colKey: 'createTime', title: '创建时间', sorter: true },
-  { colKey: 'updateBy', title: '修改者' },
-  { colKey: 'updateTime', title: '修改时间', sorter: true },
+  // { colKey: 'createBy', title: '创建者' },
+  // { colKey: 'createTime', title: '创建时间', sorter: true },
+  // { colKey: 'updateBy', title: '修改者' },
+  // { colKey: 'updateTime', title: '修改时间', sorter: true },
   {
     colKey: 'operation',
     title: '操作',
-    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -73,6 +72,7 @@ export const columns: PrimaryTableCol[] = [
             </t-link>
           </t-popconfirm>
           <Edit
+            // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
           ></Edit>
