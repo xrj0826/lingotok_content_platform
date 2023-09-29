@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import request from '/@/utils/request/index';
-import API from '/@/src/api';
+
 /** 订单修改 PUT /staff/cborderinfo */
 export async function update3(body: API.CbOrderInfo, options?: { [key: string]: any }) {
   return request<API.ResultMessage>('/staff/cborderinfo', {
