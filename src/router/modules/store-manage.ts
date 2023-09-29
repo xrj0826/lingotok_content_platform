@@ -1,4 +1,4 @@
-import { DashboardIcon } from 'tdesign-icons-vue-next';
+import { BacktopRectangleIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
@@ -9,7 +9,7 @@ export default [
     name: 'store-manage',
     component: Layout,
     redirect: '/store-manage/store-manage',
-    meta: { title: '门店管理', icon: shallowRef(DashboardIcon) },
+    meta: { title: '门店管理', icon: shallowRef(BacktopRectangleIcon) },
     children: [
       {
         path: 'store-manage',

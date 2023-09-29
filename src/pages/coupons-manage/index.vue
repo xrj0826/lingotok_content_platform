@@ -1,10 +1,16 @@
-<!-- 客服管理 -->
+<!-- 储值卡管理 -->
 <template>
-  <div>
-    <!-- <add @add="AddFinsh"></add> -->
-
+  <div
+    class="tdesign-demo-block-column"
+    style="width: 100%"
+  >
     <t-card>
-      <t-space style="margin: 0 20px 20px 0">
+      <t-space>
+        <add
+          style="margin-bottom: 25px"
+          @add="AddFinsh"
+        ></add>
+
         <t-button
           theme="danger"
           @click="handleMoreDelete"
@@ -22,6 +28,7 @@
         </t-select-input>
       </t-space>
       <t-table
+        :right-fixed-column="1"
         :row-key="index"
         :data="data"
         :columns="columns"
@@ -34,7 +41,6 @@
         :loading="isLoading"
         :hover="true"
         :show-sort-column-bg-color="true"
-        right-fixed-column="1"
         :selected-row-keys="selectedRowKeys"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
@@ -51,7 +57,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'UserManager',
+  name: 'CouponsManage',
 };
 </script>
 <script setup lang="tsx">
@@ -59,11 +65,11 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete2, page1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { delete10, page5 } from '@/api/user/youhuiquanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
-// import Add from './components/Add.vue';
+import Add from './components/Add.vue';
 
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -86,7 +92,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page1({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page5({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -104,7 +110,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete2({ ids });
+      const res = await delete10({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,
@@ -128,6 +134,15 @@ const handleRowClick = (e) => {
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
   console.log('change', info, context);
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: info.sorter.sortBy || null,
+      order: info.sorter.descending === false ? 'asc' : 'desc',
+    },
+    { selecte: info.filter },
+  );
 };
 // 搜索框
 const onInputChange = (keyword) => {
@@ -150,13 +165,13 @@ const pagination = reactive({
   },
 });
 
-// const AddFinsh = (newData) => {
-//   console.log(newData);
-//   queryData({
-//     pageNumber: pagination.current,
-//     pageSize: pagination.pageSize,
-//   });
-// };
+const AddFinsh = (newData) => {
+  console.log(newData);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+};
 </script>
 
 <style lang="less" scoped></style>

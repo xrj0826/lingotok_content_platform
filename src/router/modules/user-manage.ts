@@ -1,4 +1,4 @@
-import { DashboardIcon } from 'tdesign-icons-vue-next';
+import { UserIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
@@ -9,7 +9,7 @@ export default [
     name: 'user-manage',
     component: Layout,
     redirect: '/user-manage/u-manage',
-    meta: { title: '用户管理', icon: shallowRef(DashboardIcon) },
+    meta: { title: '用户管理', icon: shallowRef(UserIcon) },
     children: [
       {
         path: 'u-manage',

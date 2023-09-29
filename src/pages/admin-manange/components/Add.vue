@@ -1,12 +1,12 @@
 <template>
   <div>
     <t-space>
-      <t-button @click="handleAdd">添加场地</t-button>
+      <t-button @click="handleAdd">添加管理员</t-button>
     </t-space>
     <t-dialog
       v-model:visible="visible"
-      header="添加场地"
-      body="订单保存中，请稍后"
+      header="添加管理员"
+      body="保存中，请稍后"
       :confirm-btn="{
         content: '提交',
         theme: 'primary',
@@ -20,67 +20,34 @@
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
       >
-
-        <!-- <t-form-item
-          label="场地id"
-          name="storeId"
-        >
-          <t-input
-            v-model="formData.storeId"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item> -->
         <t-form-item
-          label="场地名称"
-          name="venueName"
+          label="管理员用户名"
+          name="username"
         >
           <t-input
-            v-model="formData.venueName"
+            v-model="formData.username"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
 
         <t-form-item
-          label="修改者"
-          name="createBy"
+          label="密码"
+          name="password"
         >
           <t-input
-            v-model="formData.createBy"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-
-        <t-form-item
-          label="半场价格"
-          name="halfPrice"
-        >
-          <t-input
-            v-model="formData.halfPrice"
+            v-model="formData.password"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item>
         <t-form-item
-          label="全场价格"
-          name="allPrice"
+          label="管理员手机号"
+          name="mobile"
         >
           <t-input
-            v-model="formData.allPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-        <t-form-item
-          label="价格"
-          name="price"
-        >
-          <t-input
-            v-model="formData.price"
+            v-model="formData.mobile"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
@@ -89,38 +56,39 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { customAlphabet } from 'nanoid';
+// import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save } from '@/api/user/changdeguanli';
+import { save7 } from '@/api/user/guanliyuan';
 
 const emit = defineEmits(['add']);
-
+const form = ref(null);
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
-  storeId: [{ required: true, message: '门店id必填' }],
-  venueName: [{ required: true, message: '门店名称必填' }],
-  createBy: [{ required: true, message: '创建必填' }],
-  price: [{ required: true, message: '价格必填' }],
+  username: [{ required: true, message: '该项必填' }],
+  password: [{ required: true, message: '该项必填' }],
+  mobile: [
+    { required: true, message: '该项必填' },
+    { min: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
+    { max: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
+  ],
 };
-// nanoid配置 纯数字，五位
-const nanoid = customAlphabet('1234567890', 5);
+
+// nanoid配置
+
+// const nanoid = customAlphabet('1234567890', 10);
 // 在此定义表单数据
 const formData = reactive({
   // id: null,
-  storeId: null,
-  venueName: '',
-  createBy: '',
-  halfPrice: null,
-  allPrice: null,
-  price: null,
-  specialValue: '',
+  username: '',
+  mobile: '',
+  password: '',
 });
 
 const close = () => {
-  console.error('突然的关闭');
+  console.error('===close');
   visible.value = false;
 };
 
@@ -133,8 +101,8 @@ const add = async (validateResult) => {
   try {
     if (validateResult === true) {
       // // 第三方库随机生成id
-      formData.storeId = nanoid();
-      const res = await save(formData);
+      // formData.id = nanoid();
+      const res = await save7(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 
@@ -153,12 +121,6 @@ const add = async (validateResult) => {
   } catch (error) {
     console.log(error);
   }
-};
-
-const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
 };
 
 // 禁用 Input 组件，按下 Enter 键时，触发 submit 事件

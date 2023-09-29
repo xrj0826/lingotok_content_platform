@@ -1,12 +1,18 @@
 <template>
   <div>
     <t-space>
-      <t-button @click="handleAdd">添加场地</t-button>
+      <t-button
+        theme="primary"
+        @click="handleAdd"
+      >
+        <template #icon><add-icon /></template>
+        新建公告
+      </t-button>
     </t-space>
     <t-dialog
       v-model:visible="visible"
-      header="添加场地"
-      body="订单保存中，请稍后"
+      header="修改公告信息"
+      body="保存中，请稍后"
       :confirm-btn="{
         content: '提交',
         theme: 'primary',
@@ -22,101 +28,80 @@
         :colon="true"
         @reset="onReset"
       >
-
-        <!-- <t-form-item
-          label="场地id"
-          name="storeId"
+        <t-form-item
+          label="通知标题"
+          name="noticeTitle"
         >
           <t-input
-            v-model="formData.storeId"
+            v-model="formData.noticeTitle"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
+
+        <!-- <t-form-item
+          label="通知人"
+          name="noticePerson"
+        >
+          <t-input
+            v-model="formData.noticePerson"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item> -->
-        <t-form-item
-          label="场地名称"
-          name="venueName"
-        >
-          <t-input
-            v-model="formData.venueName"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
 
         <t-form-item
-          label="修改者"
-          name="createBy"
+          label="通知内容"
+          name="noticeContent"
         >
-          <t-input
-            v-model="formData.createBy"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-
-        <t-form-item
-          label="半场价格"
-          name="halfPrice"
-        >
-          <t-input
-            v-model="formData.halfPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-textarea
+            v-model="formData.noticeContent"
+            placeholder="填写你要展示的内容吧"
+            clearable
+          />
         </t-form-item>
         <t-form-item
-          label="全场价格"
-          name="allPrice"
+          label="通知时间"
+          name="noticeTime"
         >
-          <t-input
-            v-model="formData.allPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-        <t-form-item
-          label="价格"
-          name="price"
-        >
-          <t-input
-            v-model="formData.price"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-date-picker
+            v-model="formData.noticeTime"
+            enable-time-picker
+            allow-input
+            clearable
+          />
         </t-form-item> </t-form
     ></t-dialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { customAlphabet } from 'nanoid';
+import { AddIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save } from '@/api/user/changdeguanli';
+import { save4 } from '@/api/user/xiaochengxugonggao';
 
 const emit = defineEmits(['add']);
 
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
-  storeId: [{ required: true, message: '门店id必填' }],
-  venueName: [{ required: true, message: '门店名称必填' }],
-  createBy: [{ required: true, message: '创建必填' }],
-  price: [{ required: true, message: '价格必填' }],
+  noticeTitle: [{ required: true, message: '门店id必填' }],
+  noticeContent: [{ required: true, message: '门店名称必填' }],
+  noticePerson: [{ required: true, message: '创建必填' }],
 };
 // nanoid配置 纯数字，五位
 const nanoid = customAlphabet('1234567890', 5);
+
 // 在此定义表单数据
 const formData = reactive({
-  // id: null,
-  storeId: null,
-  venueName: '',
-  createBy: '',
-  halfPrice: null,
-  allPrice: null,
-  price: null,
-  specialValue: '',
+  id: null,
+  storeId: '',
+  noticeTitle: '',
+  noticeContent: '',
+  noticePerson: '',
+  noticeTime: '',
 });
 
 const close = () => {
@@ -134,7 +119,7 @@ const add = async (validateResult) => {
     if (validateResult === true) {
       // // 第三方库随机生成id
       formData.storeId = nanoid();
-      const res = await save(formData);
+      const res = await save4(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 

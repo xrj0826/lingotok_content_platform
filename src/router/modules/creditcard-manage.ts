@@ -1,0 +1,22 @@
+import { CalendarIcon } from 'tdesign-icons-vue-next';
+import { shallowRef } from 'vue';
+
+import Layout from '@/layouts/index.vue';
+
+export default [
+  {
+    path: '/creditcard-manage',
+    name: 'creditcard-manage',
+    component: Layout,
+    redirect: '/creditcard-manage/creditcard-manage',
+    meta: { title: '储值卡管理', icon: shallowRef(CalendarIcon) },
+    children: [
+      {
+        path: 'creditcard-manage',
+        name: 'CreditCardManage',
+        component: () => import('@/pages/creditcard-manage/index.vue'),
+        meta: { title: '储值卡管理', hidden: true },
+      },
+    ],
+  },
+];

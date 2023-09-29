@@ -76,7 +76,7 @@ declare namespace API {
 
   type CbCoupon = {
     /** id */
-    id?: string;
+    id?: number;
     /** 创建者 */
     createBy?: string;
     /** 创建时间 */
@@ -110,6 +110,8 @@ declare namespace API {
     /** 折扣值 */
     discountValue?: string;
   };
+
+  type Cbdoor = true;
 
   type CbNotice = {
     /** id */
@@ -150,7 +152,7 @@ declare namespace API {
     /** 修改时间 */
     updateTime?: string;
     /** 删除标志 true/false 删除/未删除 */
-    deleteFlag?: number;
+    deleteFlag?: boolean;
     /** 用户id */
     userId?: string;
     /** 门店id */
@@ -388,67 +390,67 @@ declare namespace API {
   };
 
   type IPageAdminUser = {
-    size?: number;
     total?: number;
-    records?: AdminUser[];
     current?: number;
+    records?: AdminUser[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbCard = {
-    size?: number;
     total?: number;
-    records?: CbCard[];
     current?: number;
+    records?: CbCard[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbCoupon = {
-    size?: number;
     total?: number;
-    records?: CbCoupon[];
     current?: number;
+    records?: CbCoupon[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbNotice = {
-    size?: number;
     total?: number;
-    records?: CbNotice[];
     current?: number;
+    records?: CbNotice[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbOrderInfo = {
-    size?: number;
     total?: number;
-    records?: CbOrderInfo[];
     current?: number;
+    records?: CbOrderInfo[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbStore = {
-    size?: number;
     total?: number;
-    records?: CbStore[];
     current?: number;
+    records?: CbStore[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbUser = {
-    size?: number;
     total?: number;
-    records?: CbUser[];
     current?: number;
+    records?: CbUser[];
     pages?: number;
+    size?: number;
   };
 
   type IPageCbVenue = {
-    size?: number;
     total?: number;
-    records?: CbVenue[];
     current?: number;
+    records?: CbVenue[];
     pages?: number;
+    size?: number;
   };
 
   type loginParams = {

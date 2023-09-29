@@ -10,6 +10,7 @@ import * as xiaochengxugonggao from './xiaochengxugonggao';
 import * as youhuiquanguanlijiekou from './youhuiquanguanlijiekou';
 import * as chuzhikaguanli from './chuzhikaguanli';
 import * as guanliyuan from './guanliyuan';
+import * as yingjianyewuchuli from './yingjianyewuchuli';
 export default {
   changdeguanli,
   yonghuguanlixiangguanjiekou,
@@ -19,4 +20,5 @@ export default {
   youhuiquanguanlijiekou,
   chuzhikaguanli,
   guanliyuan,
+  yingjianyewuchuli,
 };

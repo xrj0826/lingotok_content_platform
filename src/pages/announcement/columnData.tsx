@@ -1,23 +1,37 @@
+import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-import { reactive, ref } from 'vue';
 
-import { delete1 } from '@/api/user/changdeguanli';
+import { delete9 } from '@/api/user/xiaochengxugonggao';
 import { useRenewDataStore } from '@/store/renewData';
 
-import Dialog from './components/Dialog.vue';
+import Detail from './components/Detail.vue';
+import Edit from './components/Edit.vue';
 
 export const columns: PrimaryTableCol[] = [
-  { colKey: 'createBy', title: '创建者' },
-  { colKey: 'createTime', title: '创建时间' },
-  { colKey: 'updateBy', title: '修改时间' },
-  { colKey: 'noticeTime', title: '通知日期' },
-  { colKey: 'noticePerson', title: '通知人' },
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+  // { colKey: 'createBy', title: '创建者' },
+  // { colKey: 'createTime', title: '创建时间', sorter: true },
+  // { colKey: 'updateBy', title: '修改人' },
+  // { colKey: 'updateTime', title: '修改时间', sorter: true },
+
+  { colKey: 'noticeTime', title: '通知时间', sorter: true },
+  // { colKey: 'noticePerson', title: '通知人' },
 
   {
     colKey: 'detail',
     title: '公告详情',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <Detail detailId={row.id}></Detail>
+        </t-space>
+      );
+    },
   },
-  { colKey: 'noticeState', title: '通知状态' },
 
   {
     colKey: 'operation',
@@ -27,38 +41,39 @@ export const columns: PrimaryTableCol[] = [
         <t-space>
           <t-link
             theme="danger"
-            onClick={() => handleDelete(row.id)}
+            onConfirm={() => handleDelete(row.id)}
           >
             删除
           </t-link>
-          <Dialog
+          <Edit // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
-          ></Dialog>
+          ></Edit>
         </t-space>
       );
     },
   },
 ];
+// for (let i = 0; i < columns.length; i++) {
+//   columns[i].align = 'center';
+// }
 
 const store = useRenewDataStore();
-const visibleNormalDrag = ref(false);
-const noticeContent = ref('');
-
-const detail = reactive({
-  noticeTitle: '',
-  noticeContent: '',
-});
 
 const handleDelete = async (id) => {
   console.log('删除的id', id);
-  const res = await delete1(id);
+  const params = {
+    id,
+  };
+  const res = await delete9(params);
   console.log('删除后', res);
+  MessagePlugin.success('删除成功');
 
-  store.renewData({ pageNmber: 1, pagaSize: 10 });
+  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
 };
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
+  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+  // 使用pinia里面的分页请求
 };

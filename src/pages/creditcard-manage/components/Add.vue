@@ -1,11 +1,11 @@
 <template>
   <div>
     <t-space>
-      <t-button @click="handleAdd">添加场地</t-button>
+      <t-button @click="handleAdd">添加储值卡</t-button>
     </t-space>
     <t-dialog
       v-model:visible="visible"
-      header="添加场地"
+      header="添加储值卡"
       body="订单保存中，请稍后"
       :confirm-btn="{
         content: '提交',
@@ -22,100 +22,134 @@
         :colon="true"
         @reset="onReset"
       >
-        <!-- <t-form-item
-          label="场地id"
-          name="storeId"
+        <t-form-item
+          label="卡名称"
+          name="cardName"
         >
           <t-input
-            v-model="formData.storeId"
+            v-model="formData.cardName"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item>
+
+        <t-form-item
+          label="卡类型"
+          name="cardType"
+        >
+          <t-radio-group v-model="formData.cardType">
+            <t-radio value="储值卡">储值卡</t-radio>
+            <t-radio value="月卡">月卡</t-radio>
+            <t-radio value="次卡">次卡</t-radio>
+          </t-radio-group>
+        </t-form-item>
+
+        <t-form-item
+          label="面值"
+          name="faceValue"
+        >
+          <t-input
+            v-model="formData.faceValue"
+            theme="normal"
+            align="right"
+            style="width: 88px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item>
+        <t-form-item
+          label="赠送金额"
+          name="bonusAmount"
+        >
+          <t-input
+            v-model="formData.bonusAmount"
+            theme="normal"
+            align="right"
+            style="width: 88px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item>
+        <!-- <t-form-item
+          label="当前余额"
+          name="currentBalance"
+        >
+          <t-input
+            v-model="formData.currentBalance"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
         </t-form-item> -->
         <t-form-item
-          label="场地名称"
-          name="venueName"
+          label="折扣值"
+          name="discountValue"
         >
           <t-input
-            v-model="formData.venueName"
-            placeholder="请输入内容"
+            v-model="formData.discountValue"
+            theme="normal"
+            align="right"
+            style="width: 88px"
             @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-
-        <t-form-item
-          label="修改者"
-          name="createBy"
-        >
-          <t-input
-            v-model="formData.createBy"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-
-        <t-form-item
-          label="半场价格"
-          name="halfPrice"
-        >
-          <t-input
-            v-model="formData.halfPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
         </t-form-item>
         <t-form-item
-          label="全场价格"
-          name="allPrice"
+          label="生效时间"
+          name="startDate"
+          ><t-date-picker
+            v-model="formData.startDate"
+            enable-time-picker
+            allow-input
+            clearable
+          /> </t-form-item
+        ><t-form-item
+          label="结束时间"
+          name="endDate"
         >
-          <t-input
-            v-model="formData.allPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item>
-        <t-form-item
-          label="价格"
-          name="price"
-        >
-          <t-input
-            v-model="formData.price"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-date-picker
+            v-model="formData.endDate"
+            enable-time-picker
+            allow-input
+            clearable
+          />
         </t-form-item> </t-form
     ></t-dialog>
   </div>
 </template>
 <script lang="ts" setup>
-import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { save6 } from '@/api/user/chuzhikaguanli';
 
 const emit = defineEmits(['add']);
 
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
-  storeId: [{ required: true, message: '门店id必填' }],
-  venueName: [{ required: true, message: '门店名称必填' }],
-  createBy: [{ required: true, message: '创建必填' }],
-  price: [{ required: true, message: '价格必填' }],
+  cardType: [{ required: true, message: '卡类型必填' }],
+  cardName: [{ required: true, message: '卡名称必填' }],
+  days: [{ required: true, message: '生效时间必填' }],
+  discountValue: [{ required: true, message: '折扣值必填' }],
+  faceValue: [{ required: true, message: '面值必填' }],
+  bonusAmount: [{ required: true, message: '赠送金额必填' }],
 };
-// nanoid配置
-const nanoid = customAlphabet('1234567890', 10);
+
 // 在此定义表单数据
 const formData = reactive({
   // id: '',
-  storeId: null,
-  venueName: '',
-  createBy: '',
-  createTime: '',
-  halfPrice: null,
-  allPrice: null,
-  price: null,
+  cardType: '',
+  cardName: '',
+  days: null,
+  startDate: '',
+  endDate: '',
+  faceValue: null,
+  discountValue: null,
+  currentBalance: null,
+  bonusAmount: null,
 });
 
 const close = () => {
@@ -131,9 +165,7 @@ const handleAdd = () => {
 const add = async (validateResult) => {
   try {
     if (validateResult === true) {
-      // 第三方库随机生成id
-      formData.storeId = nanoid();
-      const res = await save1(formData);
+      const res = await save6(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 

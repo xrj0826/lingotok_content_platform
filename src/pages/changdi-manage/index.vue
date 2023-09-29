@@ -1,16 +1,16 @@
 <!-- 客服管理 -->
 <template>
   <div>
-    <t-space>
-      <add @add="AddFinsh"></add>
-      <t-button
-        theme="danger"
-        @click="handleMoreDelete"
-      >
-        批量删除
-      </t-button>
-    </t-space>
     <t-card>
+      <t-space style="margin: 0 20px 20px 0">
+        <add @add="AddFinsh"></add>
+        <t-button
+          theme="danger"
+          @click="handleMoreDelete"
+        >
+          批量删除
+        </t-button>
+      </t-space>
       <t-select-input
         placeholder="请输入任意关键词"
         allow-input
@@ -59,8 +59,8 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import {} from 'module';
 import { SearchIcon } from 'tdesign-icons-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
@@ -111,12 +111,17 @@ const onSelectChange = (value, params) => {
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await deleteUsingDELETE({ ids });
-    console.log('批量删除后', res);
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    });
+    if (ids === '') {
+      MessagePlugin.error('未勾选删除项');
+    } else {
+      const res = await deleteUsingDELETE({ ids });
+      console.log('批量删除后', res);
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+      MessagePlugin.success('删除成功');
+    }
   } catch (error) {
     console.log(error);
   }
@@ -135,7 +140,18 @@ const onChange = (info, context) => {
   });
 };
 const onInputChange = (keyword) => {
-  console.log(keyword);
+  console.log('搜索', keyword);
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    },
+    {
+      selecte: {
+        additionalProp1: { keyword },
+      },
+    },
+  );
 };
 
 const pagination = reactive({
