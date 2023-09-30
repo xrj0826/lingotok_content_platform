@@ -19,67 +19,49 @@
       :on-confirm="add"
       :on-close="close"
     >
-      <t-form
-        ref="form"
-        :rules="FORM_RULES"
-        :data="formData"
-        :colon="true"
-        @reset="onReset"
+      <t-table
+        :row-key="index"
+        :data="data"
+        :columns="columns"
+        table-layout="fixed"
+        :bordered="true"
+        size="small"
+        :pagination="pagination"
+        cell-empty-content="-"
+        resizable
+        :loading="isLoading"
+        :hover="true"
+        :show-sort-column-bg-color="true"
+        right-fixed-column="1"
+        :selected-row-keys="selectedRowKeys"
+        select-on-row-click
+        @row-click="handleRowClick"
+        @select-change="onSelectChange"
+        @change="onChange"
       >
-        <t-form-item
-          label="生效日期"
-          name="orderSt"
-          :disable-date="[setOrderSt.values]"
-          ><t-date-picker
-            v-model="formData.orderSt"
-            enable-time-picker
-            allow-input
-            clearable
-          /> </t-form-item
-        ><t-form-item
-          label="结束日期"
-          name="orderEd"
-        >
-          <t-date-picker
-            v-model="formData.orderEd"
-            :disable-date="[setOrderEd.values]"
-            enable-time-picker
-            allow-input
-            clearable
-          />
-        </t-form-item>
-        <t-form-item
-          label="价格"
-          name="customRateValue"
-        >
-          <t-input
-            v-model="formData.customRateValue"
-            theme="normal"
-            align="right"
-            style="width: 89px"
-            @enter="onEnter"
-          >
-            <template #suffix><span>元</span></template>
-          </t-input>
-        </t-form-item>
-      </t-form></t-dialog
-    >
+        <!-- 自定义表头，title值为插槽名称  -->
+        <template #title-slot-name>
+          <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
+        </template>
+      </t-table>
+    </t-dialog>
   </div>
 </template>
-<script lang="ts" setup>
+
+<script lang="tsx" setup>
 import { MessagePlugin } from 'tdesign-vue-next';
+import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { reactive, ref } from 'vue';
 
 import { save } from '@/api/user/changdeguanli';
 
 const emit = defineEmits(['add']);
-
-const visible = ref(false); // 是否显示
+const index = ref();
+const data = ref([]);
+const isLoading = ref(false);
 const loading = ref(false);
-const FORM_RULES = {
-  storeId: [{ required: true, message: '门店id必填' }],
-};
-
+const visible = ref(false);
+const store = useRenewDataStore();
 // 在此定义表单数据
 const formData = reactive({
   // id: null,
@@ -87,6 +69,13 @@ const formData = reactive({
   orderEd: '',
   customRateValue: '',
 });
+const columns: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+];
 const setOrderSt = ref([]);
 const setOrderEd = ref([]);
 
@@ -98,6 +87,61 @@ const close = () => {
 // 外部的添加按钮
 const handleAdd = () => {
   visible.value = true;
+};
+
+// 请求数据
+const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
+  try {
+    isLoading.value = true;
+    console.log('请求', entityInfo, paginationInfo);
+    const res = await page8({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    console.log('数据已送达', res);
+
+    data.value = res.result.records; // 获得表格数据
+    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+  } catch (err) {
+    console.log(err);
+  }
+  isLoading.value = false;
+};
+const selectedRowKeys = ref([]);
+
+// const handleMoreDelete = async () => {
+//   try {
+//     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
+//     if (ids === '') {
+//       MessagePlugin.error('未勾选删除项');
+//     } else {
+//       const res = await delete17({ ids });
+//       console.log('批量删除后', res);
+//       queryData({
+//         pageNumber: pagination.current,
+//         pageSize: pagination.pageSize,
+//       });
+//       MessagePlugin.success('删除成功');
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
+// 行选中变化时
+const onSelectChange = (value, params) => {
+  selectedRowKeys.value = value;
+  console.log(value, params);
+};
+
+const handleRowClick = (e) => {
+  console.log(e);
+};
+// 排序、分页、过滤等发生变化时会出发 change 事件
+const onChange = (info, context) => {
+  console.log('change', info.sorter, context);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+    sort: info.sorter.sortBy,
+    order: info.sorter.descending === false ? 'asc' : 'desc',
+  });
 };
 // 确定添加
 const add = async () => {
@@ -135,15 +179,19 @@ const add = async () => {
     console.log(error);
   }
 };
-
-const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
-};
-
-// 禁用 Input 组件，按下 Enter 键时，触发 submit 事件
-const onEnter = (_, { e }) => {
-  e.preventDefault();
-};
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 10,
+  showJumper: true,
+  onChange: (pageInfo) => {
+    pagination.current = pageInfo.current;
+    pagination.pageSize = pageInfo.pageSize;
+    queryData({
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    }); // 分页数据改变时调用请求函数
+    console.log('pagination.onChange', pageInfo);
+  },
+});
 </script>

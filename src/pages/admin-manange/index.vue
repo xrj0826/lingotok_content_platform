@@ -59,7 +59,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delAllByIds, page9 } from '@/api/user/guanliyuan';
+import { delete19, page9 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -104,7 +104,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delAllByIds({ ids });
+      const res = await delete19({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,

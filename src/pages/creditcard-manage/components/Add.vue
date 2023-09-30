@@ -163,7 +163,7 @@ const FORM_RULES = {
 
 // 在此定义表单数据
 const formData = reactive({
-  // id: '',
+  id: null,
   storeId: '',
   cardType: '',
   cardName: '',

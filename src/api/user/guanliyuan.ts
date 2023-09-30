@@ -2,16 +2,17 @@
 /* eslint-disable */
 import request from '/@/utils/request/index';
 
-/** 批量通过ids删除 DELETE /backend/passport/user/${param0} */
-export async function delAllByIds(
+/** 批量删除 DELETE /backend/passport/user */
+export async function delete19(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delAllByIdsParams,
+  params: API.delete19Params,
   options?: { [key: string]: any },
 ) {
-  const { ids: param0, ...queryParams } = params;
-  return request<API.ResultMessageObject>(`/backend/passport/user/${param0}`, {
+  return request<API.ResultMessage>('/backend/passport/user', {
     method: 'DELETE',
-    params: { ...queryParams },
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }

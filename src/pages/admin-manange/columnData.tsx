@@ -1,7 +1,9 @@
 // import { MessagePlugin } from 'tdesign-vue-next';
+import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import {} from 'vue';
 
+import { delete19 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
@@ -29,7 +31,12 @@ export const columns: PrimaryTableCol[] = [
     cell: (h, { row }) => {
       return (
         <t-space>
-          <t-popconfirm content="确认删除吗">
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              handleDelete(row.id);
+            }}
+          >
             <t-link
               variant="text"
               hover="color"
@@ -53,22 +60,19 @@ for (let i = 0; i < columns.length; i++) {
   columns[i].align = 'center';
 }
 const store = useRenewDataStore();
-// const handleDelete = async (id) => {
-//   try {
-//     console.log('删除的id', id);
-//     // 参数要求是个对象
-//     const params = {
-//       id,
-//     };
-//     const res = await delete3(params);
-//     console.log('删除后', res);
-//     MessagePlugin.success('删除成功');
+const handleDelete = async (id) => {
+  try {
+    console.log('删除的id', id);
 
-//     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+    const res = await delete19({ ids: id });
+    console.log('删除后', res);
+    MessagePlugin.success('删除成功');
+
+    store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+  } catch (error) {
+    console.log(error);
+  }
+};
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);

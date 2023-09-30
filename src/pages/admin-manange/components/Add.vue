@@ -64,7 +64,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-// import { customAlphabet } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
@@ -80,22 +80,21 @@ const FORM_RULES = {
   mobile: [
     { required: true, message: '该项必填' },
     { min: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
-    { max: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
+    // { max: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
   ],
 };
 
 // nanoid配置
 
-// const nanoid = customAlphabet('1234567890', 10);
+const nanoid = customAlphabet('1234567890', 2);
 // 在此定义表单数据
 const formData = reactive({
-  // id: null,
-  storeId: '',
+  id: null,
+  // storeId: '', // 添加管理员必须传storeId
   username: '',
   mobile: '',
   password: '',
 });
-
 const close = () => {
   console.error('===close');
   visible.value = false;
@@ -106,14 +105,15 @@ const handleAdd = () => {
   visible.value = true;
 };
 // 确定添加
-const add = async (validateResult) => {
+const add = async ({ validateResult, _ }) => {
   try {
     if (validateResult === true) {
       // // 第三方库随机生成id
-      // formData.id = nanoid();
-      formData.storeId = '9376';
+      formData.id = nanoid();
+      // formData.storeId = '9376';
 
       const res = await save9(formData);
+
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 
@@ -127,10 +127,11 @@ const add = async (validateResult) => {
       MessagePlugin.success('添加成功');
     } else {
       console.log('Validate Errors: ');
-      MessagePlugin.warning('error,请确认已填写所有必填信息!');
+      MessagePlugin.warning('请确认已填写所有必填信息!');
     }
   } catch (error) {
     console.log(error);
+    MessagePlugin.warning(error);
   }
 };
 

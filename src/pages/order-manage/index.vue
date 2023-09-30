@@ -23,20 +23,19 @@
         <t-table
           :row-key="index"
           :data="data"
-          :columns="columns"
-          table-layout="fixed"
+          :columns="columns"        
+          resizable
+          table-layout="auto"
           :bordered="true"
-          size="large"
+          size="small"
           :pagination="pagination"
           cell-empty-content="-"
-          :selected-row-keys="selectedRowKeys"
-          onmouseover="showTooltip(this);"
+          :selected-row-keys="selectedRowKeys"        
           style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
           width: 1200px;
           "
+          @row-click="handleRowClick"
           @select-change="onSelectChange">
-
-
         </t-table>
       </t-space>
 
@@ -51,14 +50,13 @@ export default {
 <script setup lang="tsx">
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete9, page4 } from '@/api/user/dingdanguanlijiekou';
+import { page4 } from '@/api/user/dingdanguanlijiekou';
 
 import { columns } from './newFile';
 
-const store = useRenewDataStore();
+// const store = useRenewDataStore();
 const index = ref();
 const data = ref([]);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const selectedRowKeys = ref([]);
 
 const AddFinsh = (newData: any) => {
@@ -67,7 +65,6 @@ const AddFinsh = (newData: any) => {
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
   });
-
 };
 const onInputChange = (keyword: any) => {
   console.log(keyword);
@@ -78,19 +75,19 @@ const onSelectChange = (value, params) => {
   selectedRowKeys.value = value;
   console.log(value, params);
 };
-const handleMoreDelete = async () => {
-  try {
-    const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    const res = await delete9({ ids });
-    console.log('批量删除后', res);
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const handleMoreDelete = async () => {
+//   try {
+//     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
+//     const res = await delete9({ ids });
+//     console.log('批量删除后', res);
+//     queryData({
+//       pageNumber: pagination.current,
+//       pageSize: pagination.pageSize,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 // 挂载时调用请求函数
 onMounted(async () => {
   queryData({
@@ -123,14 +120,17 @@ const queryData = async (
 ) => {
   try {
     console.log('请求', entityInfo, paginationInfo);
-
     const res = await page4({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
     data.value = res.result.records; // 获得表格数据
+
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
   } catch (err) {
     console.log(err);
   }
+};
+const handleRowClick = (e) => {
+  console.log(e);
 };
 </script>
 
