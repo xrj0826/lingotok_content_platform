@@ -2,22 +2,12 @@
   <div>
     <t-space>
       <t-link
-        theme="primary"
+        theme="warning"
         @click="handlerEdit"
         >编辑</t-link
       >
     </t-space>
-    <t-radio-group
-      :default-value="radio"
-      class="radio-group-demo"
-      @change="groupChangeFn"
-    >
-      <t-radio
-        name="radio"
-        value="2"
-        label="单选"
-      />
-    </t-radio-group>
+
     <t-dialog
       v-model:visible="visible"
       header="修改场地信息"
@@ -82,17 +72,18 @@
           </t-radio-group>
         </t-form-item>
         <t-form-item
-          v-for="(item, index) in orderState"
-          :key="index"
           label="订单状态"
           name="orderState"
         >
           <t-radio-group
-            v-model="formData.deleteFlag"
-            :default-value="formData.deleteFlag"
+            v-model="formData.orderState"
+            :default-value="formData.orderState"
           >
-            <t-radio :value="true">使用中</t-radio>
-            <t-radio :value="false">待使用</t-radio>
+            <t-radio value="IN_USE">使用中</t-radio>
+            <t-radio value="WAITING_TO_USE">待使用</t-radio>
+            <t-radio value="USED(">已使用</t-radio>
+            <t-radio value="EXPIRED">已失效</t-radio>
+            <t-radio value="REFUNDED">退款</t-radio>
           </t-radio-group>
         </t-form-item>
         <t-form-item
@@ -109,11 +100,15 @@
           label="订单类型（枚举）"
           name="orderType"
         >
-          <t-input
+          <t-radio-group
             v-model="formData.orderType"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+            :default-value="formData.orderType"
+          >
+            <t-radio value="RENTAL">租场</t-radio>
+            <t-radio value="TICKET">门票</t-radio>
+            <t-radio value="TIMER(">计时</t-radio>
+            <t-radio value="EVENT">赛事</t-radio>
+          </t-radio-group>
         </t-form-item>
         <t-form-item
           label="支付方式"
@@ -183,16 +178,6 @@
 </template>
 
 <script lang="ts" setup>
-// 订单状态
-const orderState = [
-  { name: 'WAITING_TO_USE', label: '待使用' },
-  { name: 'IN_USE', label: '使用中' },
-  { name: 'USED', label: '已使用' },
-  { name: 'EXPIRED', label: '已失效' },
-  { name: 'REFUNDED', label: '待评价' },
-  { name: 'complete', label: '退款' },
-];
-
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
@@ -205,15 +190,13 @@ const emit = defineEmits(['edit']);
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
-const radio = ref('3');
-const groupChangeFn = (value: any, context: { e: Event }) => {
-  console.log(value, context);
-};
+
 // 在此定义表单数据
 const formData = reactive({
   id: null,
   storeId: '9376',
   orderPrice: null,
+  deleteFlag: false,
   orderDate: '',
   orderSt: '',
   orderEd: '',

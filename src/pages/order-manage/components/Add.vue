@@ -92,7 +92,7 @@ import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save } from '@/api/user/changdeguanli';
+import { save4 } from '@/api/user/dingdanguanlijiekou';
 
 const emit = defineEmits(['add']);
 
@@ -107,14 +107,15 @@ const FORM_RULES = {
 const nanoid = customAlphabet('1234567890', 5);
 // 在此定义表单数据
 const formData = reactive({
-  // id: null,
-  storeId: null,
+  id: null,
+  storeId: '9376',
   venueName: '',
   createBy: '',
   halfPrice: null,
   allPrice: null,
   price: null,
   specialValue: '',
+  deleteFlag: false,
 });
 
 const close = () => {
@@ -130,7 +131,7 @@ const handleAdd = () => {
 const add = async (validateResult) => {
   try {
     if (validateResult === true) {
-      const res = await save(formData);
+      const res = await save4(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 

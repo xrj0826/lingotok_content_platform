@@ -1,20 +1,35 @@
+import { log } from 'console';
+import { get } from 'lodash';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
+import { ref } from 'vue';
 
+import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
 export const columns: PrimaryTableCol[] = [
+  // {
+  //   colKey: 'row-select',
+  //   type: 'multiple',
+  // fixed: 'left',
+  //   width: 50,
+  // },
+
   {
-    colKey: 'row-select',
-    type: 'multiple',
-    width: 50,
+    colKey: 'operation',
+    title: '操作',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <Edit // @ts-ignore
+            onEdit={editFinish}
+            editId={row.id}
+          ></Edit>
+        </t-space>
+      );
+    },
   },
-  // { colKey: 'createBy', title: '创建者' },
-  // { colKey: 'createTime', title: '创建时间', width: '200px' },
-  // { colKey: 'updateBy', title: '修改者', width: '200px' },
-  // { colKey: 'updateTime', title: '修改时间', width: '200px' },
-  // { colKey: 'userId', title: '门店id', width: '200px' },
   {
     colKey: 'deleteFlag',
     title: '删除标志',
@@ -63,35 +78,46 @@ export const columns: PrimaryTableCol[] = [
       }
     },
   },
-
-  { colKey: 'orderDate', title: '预约日期', width: '200px' },
-  { colKey: 'orderSt', title: '预约开始时间', width: '200px' },
-  { colKey: 'orderEd', title: '预约结束时间', width: '200px' },
   { colKey: 'orderState', title: '订单状态', width: '200px' },
   { colKey: 'orderPrice', title: '订单价格' },
-  { colKey: 'orderType', title: '订单类型（枚举）' },
+  { colKey: 'orderType', title: '订单类型（枚举' },
   { colKey: 'paymentMethods', title: '支付方式' },
   { colKey: 'share', title: '分享次数' },
-  { colKey: 'venueId', title: '场地id' },
-  { colKey: 'phoneNumber', title: '手机号码' },
-  { colKey: 'qrCode', title: '二维码' },
-  { colKey: 'startTime', title: '用户进场时间', width: '200px' },
-  { colKey: 'endTime', title: '用户离开时间', width: '200px' },
   {
-    colKey: 'operation',
-    title: '操作',
-    cell: (h, { row }) => {
+    colKey: 'venueId',
+    title: '场地id',
+    render(h, { row }) {
+      // 调用 fetchStoreName 方法获取 storeName
+      const storeNamePromise = getStoreName(row.venueId);
+      // 使用 storeNamePromise 来渲染单元格
       return (
-        <t-space>
-          <Edit // @ts-ignore
-            onEdit={editFinish}
-            editId={row.id}
-          ></Edit>
-        </t-space>
+        <b>
+          {h('span', {}, [
+            storeNamePromise.then((storeName) => {
+              return storeName;
+            }),
+          ])}
+        </b>
       );
     },
   },
+  { colKey: 'phoneNumber', title: '手机号码', width: '200px' },
+  { colKey: 'orderDate', title: '预约日期', width: '200px' },
+  { colKey: 'orderSt', title: '预约开始时间', width: '200px' },
+  { colKey: 'orderEd', title: '预约结束时间', width: '200px' },
+  { colKey: 'startTime', title: '用户进场时间', width: '200px' },
+  { colKey: 'endTime', title: '用户离开时间', width: '200px' },
+  { colKey: 'qrCode', title: '二维码' },
+  // { colKey: 'createBy', title: '创建者' },
+  // { colKey: 'createTime', title: '创建时间', width: '200px' },
+  // { colKey: 'updateBy', title: '修改者', width: '200px' },
+  // { colKey: 'updateTime', title: '修改时间', width: '200px' },
+  // { colKey: 'userId', title: '门店id', width: '200px' },
 ];
+async function getStoreName(storeId) {
+  const res = await get2(storeId);
+  return res.result.storeName;
+}
 for (let i = 0; i < columns.length; i++) {
   columns[i].align = 'center';
 }
