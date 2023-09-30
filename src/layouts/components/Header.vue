@@ -1,24 +1,53 @@
 <template>
   <div :class="layoutCls">
-    <t-head-menu :class="menuCls" :theme="menuTheme" expand-type="popup" :value="active">
+    <t-head-menu
+      :class="menuCls"
+      :theme="menuTheme"
+      expand-type="popup"
+      :value="active"
+    >
       <template #logo>
-        <span v-if="showLogo" class="header-logo-container" @click="handleNav('/dashboard/base')">
+        <span
+          v-if="showLogo"
+          class="header-logo-container"
+          @click="handleNav('/dashboard/base')"
+        >
           <logo-full class="t-logo" />
         </span>
-        <div v-else class="header-operate-left">
-          <t-button theme="default" shape="square" variant="text" @click="changeCollapsed">
-            <t-icon class="collapsed-icon" name="view-list" />
+        <div
+          v-else
+          class="header-operate-left"
+        >
+          <t-button
+            theme="default"
+            shape="square"
+            variant="text"
+            @click="changeCollapsed"
+          >
+            <t-icon
+              class="collapsed-icon"
+              name="view-list"
+            />
           </t-button>
           <search :layout="layout" />
         </div>
       </template>
-      <template v-if="layout !== 'side'" #default>
-        <menu-content class="header-menu" :nav-data="menu" />
+      <template
+        v-if="layout !== 'side'"
+        #default
+      >
+        <menu-content
+          class="header-menu"
+          :nav-data="menu"
+        />
       </template>
       <template #operations>
         <div class="operations-container">
           <!-- 搜索框 -->
-          <search v-if="layout !== 'side'" :layout="layout" />
+          <search
+            v-if="layout !== 'side'"
+            :layout="layout"
+          />
 
           <!-- 全局通知 -->
           <notice />
@@ -28,32 +57,56 @@
               <t-icon name="logo-github" />
             </t-button>
           </t-tooltip> -->
-          <!-- <t-tooltip placement="bottom" content="帮助文档">
+          <!-- <t-tcheckboxplacement="bottom" content="帮助文档">
             <t-button theme="default" shape="square" variant="text" @click="navToHelper">
               <t-icon name="help-circle" />
             </t-button>
           </t-tooltip> -->
-          <t-dropdown :min-column-width="120" trigger="click">
+          <t-dropdown
+            :min-column-width="120"
+            trigger="click"
+          >
             <template #dropdown>
               <t-dropdown-menu>
-                <t-dropdown-item class="operations-dropdown-container-item" @click="handleNav('/user/index')">
+                <t-dropdown-item
+                  class="operations-dropdown-container-item"
+                  @click="handleNav('/user/index')"
+                >
                   <t-icon name="user-circle"></t-icon>个人中心
                 </t-dropdown-item>
-                <t-dropdown-item class="operations-dropdown-container-item" @click="handleLogout">
+                <t-dropdown-item
+                  class="operations-dropdown-container-item"
+                  @click="handleLogout"
+                >
                   <t-icon name="poweroff"></t-icon>退出登录
                 </t-dropdown-item>
               </t-dropdown-menu>
             </template>
-            <t-button class="header-user-btn" theme="default" variant="text">
+            <t-button
+              class="header-user-btn"
+              theme="default"
+              variant="text"
+            >
               <template #icon>
-                <t-icon class="header-user-avatar" name="user-circle" />
+                <t-icon
+                  class="header-user-avatar"
+                  name="user-circle"
+                />
               </template>
               <div class="header-user-account">{{ user.userInfo.name }}</div>
               <template #suffix><t-icon name="chevron-down" /></template>
             </t-button>
           </t-dropdown>
-          <t-tooltip placement="bottom" content="系统设置">
-            <t-button theme="default" shape="square" variant="text" @click="toggleSettingPanel">
+          <t-tooltip
+            placement="bottom"
+            content="系统设置"
+          >
+            <t-button
+              theme="default"
+              shape="square"
+              variant="text"
+              @click="toggleSettingPanel"
+            >
               <t-icon name="setting" />
             </t-button>
           </t-tooltip>
@@ -64,12 +117,15 @@
 </template>
 
 <script setup lang="ts">
+import TIM from 'tim-js-sdk';
 import type { PropType } from 'vue';
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { getUserSignature } from '@/api/common/imUser';
 import LogoFull from '@/assets/assets-logo-full.svg?component';
 import { prefix } from '@/config/global';
+import { SDK_APPID } from '@/constants';
 import { getActive } from '@/router';
 import { useSettingStore, useUserStore } from '@/store';
 import type { MenuRoute } from '@/types/interface';
@@ -77,9 +133,6 @@ import type { MenuRoute } from '@/types/interface';
 import MenuContent from './MenuContent.vue';
 import Notice from './Notice.vue';
 import Search from './Search.vue';
-import {getUserSignature} from "@/api/common/imUser";
-import TIM from "tim-js-sdk";
-import {SDK_APPID} from "@/constants";
 
 const props = defineProps({
   theme: {
@@ -162,7 +215,6 @@ const navToGitHub = () => {
 const navToHelper = () => {
   window.open('http://tdesign.tencent.com/starter/docs/get-started');
 };
-
 </script>
 <style lang="less" scoped>
 .@{starter-prefix}-header {
