@@ -1,11 +1,16 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { delete3, page1 } from '@/api/user/yonghuguanlixiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
+const onNameChange = async (val, _) => {
+  // console.log(val, ctx);
+  const res = await store.renewData(null, null, { name: val });
+  console.log(res);
+};
 export const columns: PrimaryTableCol[] = [
   {
     colKey: 'row-select',
@@ -19,6 +24,23 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'name',
     title: '姓名',
+    // 输入框过滤配置
+    filter: {
+      type: 'input',
+
+      // 文本域搜索
+      // component: Textarea,
+
+      resetValue: '',
+      // 按下 Enter 键时也触发确认搜索
+      confirmEvents: ['onEnter'],
+      props: {
+        placeholder: '输入关键词过滤',
+        onChange: onNameChange,
+      },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
   },
   { colKey: 'nickName', title: '昵称' },
   {
@@ -29,6 +51,22 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'status',
     title: '状态',
+    // 单选过滤配置
+    filter: {
+      // 过滤行中的列标题别名
+      // label: '申请状态 A',
+      type: 'single',
+      list: [
+        // @ts-ignore
+        { label: '禁用', value: false },
+        // @ts-ignore
+        { label: '正常', value: true },
+      ],
+    },
+    // 支持透传全部 Popup 组件属性
+    // popupProps: {
+    //   attach: () => document.body,
+    // },
     cell: (h, { row }) => {
       return (
         <t-tag

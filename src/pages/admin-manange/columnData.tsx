@@ -22,7 +22,7 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'username',
     title: '管理员用户名',
   },
-  { colKey: 'nickName', title: '昵称' },
+  // { colKey: 'nickName', title: '昵称' },
 
   { colKey: 'mobile', title: '管理员手机号' },
   {
