@@ -1,7 +1,7 @@
 <template>
   <div>
     <t-space>
-      <t-button @click="handleAdd">添加门店</t-button>
+      <t-button @click="handleAdd">添加门店图片</t-button>
     </t-space>
     <t-dialog
       v-model:visible="visible"
@@ -18,7 +18,7 @@
         :colon="true"
         @submit="add"
       >
-        <t-form-item
+        <!-- <t-form-item
           label="门店名称"
           name="storeName"
         >
@@ -80,7 +80,7 @@
             allow-input
             clearable
           />
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="门店图片"
           name="storeImages"
@@ -110,7 +110,7 @@
         </template> -->
           </t-upload>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
           label="提前预订天数"
           name="advanceDays"
         >
@@ -138,8 +138,9 @@
             v-model="formData.scheduledNotice"
             placeholder="请输入内容"
             @enter="onEnter"
-          ></t-textarea> </t-form-item
-        ><t-form-item :status-icon="false">
+          ></t-textarea> </t-form-item -->
+        <!-- > -->
+        <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
               theme="primary"

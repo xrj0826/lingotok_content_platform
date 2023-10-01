@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', {
     // token: localStorage.getItem('accessToken'), // 默认token不走权限?
     token: null,
     userInfo: { ...InitUserInfo },
+    password: '',
   }),
   getters: {
     roles: (state) => {
@@ -46,7 +47,7 @@ export const useUserStore = defineStore('user', {
       const data = {
         username: userInfo.account as string,
         // password: md5.md5(userInfo.password),
-        password: '12121212', // 改为固定密码
+        password: userInfo.password, // 改为固定密码
         // uuid: '',
       };
 

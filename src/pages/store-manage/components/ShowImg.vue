@@ -75,9 +75,9 @@ onMounted(async () => {
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
   });
-  // store.renewData = queryData; // 挂载时，将请求函数给pinia
-  // store.pagination.current = pagination.current; // 分页数据也一起给
-  // store.pagination.pageSize = pagination.pageSize;
+  store.renewData = queryData; // 挂载时，将请求函数给pinia
+  store.pagination.current = pagination.current; // 分页数据也一起给
+  store.pagination.pageSize = pagination.pageSize;
 });
 // const store = useRenewDataStore();
 // 在此定义表单数据
@@ -98,6 +98,15 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'storeImage',
     title: '门店轮播图片',
+    width: '80px',
+    cell: (h, { row }) => {
+      return (
+        <t-image
+          src={`http://139.9.38.185:666/${row.storeImage}`}
+          style={"width: '80px', height: '80px' "}
+        />
+      );
+    },
   },
   // {
   //   colKey: 'venueId',
@@ -121,7 +130,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page6({ entity: { id: props.editId }, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page6({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
