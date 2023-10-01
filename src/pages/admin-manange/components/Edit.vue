@@ -69,7 +69,7 @@ import { page9 } from '@/api/user/guanliyuan';
 
 const props = defineProps({ editId: String || Number }); // 为什么这里类型只能用大写，不然会警告?
 
-const emit = defineEmits(['edit']);
+// const emit = defineEmits(['edit']);
 
 const visible = ref(false); // 是否显示
 const loading = ref(false);
@@ -111,21 +111,22 @@ const handlerEdit = async () => {
 };
 // 确定编辑
 const edit = async () => {
-  try {
-    const res = await update1(formData);
-    console.log('編輯返回', res);
-    emit('edit', 'emit传来喜报:组件通信成功', res);
-    loading.value = true;
-    // 加载一下
-    const timer = setTimeout(() => {
-      loading.value = false;
-      visible.value = false;
-      clearTimeout(timer);
-    }, 150);
-    MessagePlugin.success('编辑成功');
-  } catch (error) {
-    console.log(error);
-  }
+  visible.value = false;
+  // try {
+  //   const res = await update1(formData);
+  //   console.log('編輯返回', res);
+  //   emit('edit', 'emit传来喜报:组件通信成功', res);
+  //   loading.value = true;
+  //   // 加载一下
+  //   const timer = setTimeout(() => {
+  //     loading.value = false;
+  //     visible.value = false;
+  //     clearTimeout(timer);
+  //   }, 150);
+  //   MessagePlugin.success('编辑成功');
+  // } catch (error) {
+  //   console.log(error);
+  // }
 };
 
 const form = ref(null);

@@ -1,45 +1,40 @@
-<!-- eslint-disable prettier/prettier -->
 <!-- 订单管理 -->
 <template>
   <div>
-    <t-space>
-      <add @add="AddFinsh"></add>
-    </t-space>
-      <t-space>
-        </t-space>
-      <t-space direction="vertical">
-        <t-card> <t-button theme="primary">
+    <t-space style="margin: 0 20px 20px 0">
+      <!-- <add @add="AddFinsh"></add> -->
+      <!-- <t-button theme="primary">
           <template #icon><add-icon /></template>
           订单导出
-        </t-button>
-        <t-select-input
+        </t-button> -->
+      <t-select-input
         placeholder="请输入任意关键词"
         allow-input
         clearable
-        style="width: 500px ;margin-left:100px;"  @input-change="onInputChange"
->
+        style="width: 400px"
+        @input-change="onInputChange"
+      >
         <template #suffixIcon><search-icon /></template>
-      </t-select-input></t-card>
-        <t-table
-          :row-key="index"
-          :data="data"
-          :columns="columns"        
-          resizable
-          table-layout="auto"
-          :bordered="true"
-          size="small"
-          :pagination="pagination"
-          cell-empty-content="-"
-          :selected-row-keys="selectedRowKeys"        
-          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-          width: 1200px;
-          "
-          @row-click="handleRowClick"
-          @select-change="onSelectChange">
-        </t-table>
-      </t-space>
-
-    </div>
+      </t-select-input>
+    </t-space>
+    <t-card>
+      <t-table
+        :row-key="index"
+        :data="data"
+        :columns="columns"
+        resizable
+        table-layout="fixed"
+        :bordered="true"
+        size="small"
+        :pagination="pagination"
+        cell-empty-content="-"
+        :selected-row-keys="selectedRowKeys"
+        @row-click="handleRowClick"
+        @select-change="onSelectChange"
+      >
+      </t-table>
+    </t-card>
+  </div>
 </template>
 
 <script lang="tsx">
@@ -48,8 +43,10 @@ export default {
 };
 </script>
 <script setup lang="tsx">
+import { SearchIcon } from 'tdesign-icons-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
+// import { get, page } from '@/api/user/changdeguanli';
 import { page4 } from '@/api/user/dingdanguanlijiekou';
 
 import { columns } from './newFile';
@@ -59,13 +56,13 @@ const index = ref();
 const data = ref([]);
 const selectedRowKeys = ref([]);
 
-const AddFinsh = (newData: any) => {
-  console.log(newData);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
-};
+// const AddFinsh = (newData: any) => {
+//   console.log(newData);
+//   queryData({
+//     pageNumber: pagination.current,
+//     pageSize: pagination.pageSize,
+//   });
+// };
 const onInputChange = (keyword: any) => {
   console.log(keyword);
 };
@@ -121,12 +118,20 @@ const queryData = async (
   try {
     console.log('请求', entityInfo, paginationInfo);
     const res = await page4({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+
     console.log('数据已送达', res);
     data.value = res.result.records; // 获得表格数据
 
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
   } catch (err) {
     console.log(err);
+  }
+  // 这段代码会安全地检查data.value数组中的每个对象是否具有venueId属性，如果存在，则替换为data2.venueName。
+  for (let i = 0; i < data.value.length; i++) {
+    if (Object.prototype.hasOwnProperty.call(data.value[i], 'venueId')) {
+      // data.value[i].venueId = get({ id: data.value[i].venueId });//将id替换成name
+      // console.log(data.value[i].venueId);
+    }
   }
 };
 const handleRowClick = (e) => {

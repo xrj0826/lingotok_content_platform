@@ -4,12 +4,12 @@
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
         <add @add="AddFinsh"></add>
-        <!-- <t-button
-          theme="danger"
-          @click="handleMoreDelete"
+        <t-popconfirm
+          content="确认删除吗"
+          :on-confirm="handleMoreDelete"
         >
-          批量删除
-        </t-button> -->
+          <t-button theme="danger"> 批量删除 </t-button>
+        </t-popconfirm>
       </t-space>
       <t-select-input
         placeholder="请输入任意关键词"

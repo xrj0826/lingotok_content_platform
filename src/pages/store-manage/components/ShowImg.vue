@@ -3,187 +3,194 @@
     <t-space>
       <t-link
         theme="primary"
-        @click="handlerEdit"
+        @click="handleAdd"
         >查看</t-link
       >
     </t-space>
     <t-dialog
       v-model:visible="visible"
-      header="查看图片信息"
-      body="保存中，请稍后"
-      :confirm-btn="{
-        content: '修改',
-        theme: 'primary',
-        loading,
-      }"
-      :on-confirm="editImg"
-      :on-close="close"
+      width="900px"
+      header="修改区间价格"
+      body="订单保存中，请稍后"
+      :confirm-btn="null"
+      :on-confirm="close"
+      :on-close="null"
     >
-      <t-space
-        :key="loadingCount"
-        direction="vertical"
+      <addTimePrice
+        style="margin: 0 900px 20px 0"
+        @add="AddFinsh"
+      ></addTimePrice>
+      <t-button
+        theme="danger"
+        @click="handleMoreDelete"
       >
-        <!-- <t-space
-          :break-line="true"
-          :style="{ height: '240px', 'overflow-y': 'scroll' }"
-        >
-          <t-image
-            v-for="item in list2"
-            :key="item"
-            :src="`list[${item}].img`"
-            :style="{ width: '230px', height: '120px' }"
-            :lazy="true"
-          />
-        </t-space> -->
-        <t-image
-          :src="list[0].img"
-          :style="{ width: '120px', height: '120px' }"
-        /><t-image
-          :src="list[1].img"
-          :style="{ width: '120px', height: '120px' }"
-        /><t-image
-          :src="list[2].img"
-          :style="{ width: '120px', height: '120px' }"
-        /><t-image
-          :src="list[3].img"
-          :style="{ width: '120px', height: '120px' }"
-        />
-      </t-space>
-      <t-form
-        :ref="form"
-        :data="formData"
-        :colon="true"
-        @submit="editImg"
+        批量删除
+      </t-button>
+      <t-table
+        :row-key="index"
+        :data="data"
+        :columns="columns"
+        table-layout="fixed"
+        :bordered="true"
+        size="large"
+        :pagination="pagination"
+        cell-empty-content="-"
+        resizable
+        :loading="isLoading"
+        :hover="true"
+        :show-sort-column-bg-color="true"
+        right-fixed-column="1"
+        :selected-row-keys="selectedRowKeys"
+        select-on-row-click
+        @row-click="handleRowClick"
+        @select-change="onSelectChange"
+        @change="onChange"
       >
-        <t-form-item> <div style="height: 20px"></div></t-form-item>
-
-        <t-form-item
-          label="要替换的图片"
-          name="formData.id"
-        >
-          <t-radio-group v-model="formData.id">
-            <t-radio :value="0">第一张</t-radio>
-            <t-radio :value="1">第二张</t-radio>
-            <t-radio :value="2">第三张</t-radio>
-            <t-radio :value="3">第四张</t-radio>
-          </t-radio-group></t-form-item
-        >
-
-        <t-form-item
-          label="门店图片"
-          name="storeImages"
-        >
-          <!-- action="http://139.9.38.185:8887/v3/api-docs/user/common/upload" -->
-          <t-upload
-            ref="uploadRef"
-            v-model="file"
-            :request-method="requestMethod"
-            placeholder="选择要替换的图片"
-            :on-fail="handleFail"
-          ></t-upload>
-        </t-form-item>
-      </t-form>
+      </t-table>
     </t-dialog>
   </div>
 </template>
+
 <script lang="tsx" setup>
 import { MessagePlugin } from 'tdesign-vue-next';
-import { reactive, ref } from 'vue';
+import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
+import { onMounted, reactive, ref } from 'vue';
 
-import { page6, save6, update6 } from '@/api/user/mendiantupianjiekou';
+import { page6 } from '@/api/user/mendiantupianjiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
-const emit = defineEmits(['show']);
+const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
+
+// const emit = defineEmits(['add']);
+const index = ref();
+const data = ref([]);
+const isLoading = ref(false);
+// const loading = ref(false);
+const visible = ref(false);
 const store = useRenewDataStore();
 
-const file = ref([]);
-
-const form = ref(null);
-const visible = ref(false); // 是否显示
-const loading = ref(false); // 加载
-const loadingCount = ref(0);
-const list = reactive([{ img: '' }, { img: '' }, { img: '' }, { img: '' }]);
-// 在此定义表单数据
-const formData = reactive({
-  id: null,
+// 挂载时调用请求函数
+onMounted(async () => {
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+  // store.renewData = queryData; // 挂载时，将请求函数给pinia
+  // store.pagination.current = pagination.current; // 分页数据也一起给
+  // store.pagination.pageSize = pagination.pageSize;
 });
-const ImageParams = reactive({ id: null, storeImage: '' });
+// const store = useRenewDataStore();
+// 在此定义表单数据
+// const submitData = reactive({
+//   // id: null,
+//   venueId: null,
+//   orderst: '',
+//   ordered: '',
+//   specialValue: null,
+// });
+const columns: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+
+  {
+    colKey: 'storeImage',
+    title: '门店轮播图片',
+  },
+  // {
+  //   colKey: 'venueId',
+  //   title: '场地id',
+  // },
+];
 
 const close = () => {
-  console.error('===close');
+  console.error('突然的关闭');
   visible.value = false;
 };
 
-// 外部的编辑按钮
-const handlerEdit = async () => {
+// 外部的添加按钮
+const handleAdd = () => {
+  visible.value = true;
+  store.storeId = props.editId; // 当点击添加区间价格时，发送从表格传过来的row.id，存储到pinia给价格区间表格
+};
+
+// 请求数据
+const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
-    visible.value = true;
-    // console.log('list.value', list.value);
+    isLoading.value = true;
+    console.log('请求', entityInfo, paginationInfo);
+    const res = await page6({ entity: { id: props.editId }, searchVo, page: paginationInfo }); // 在此发送请求
+    console.log('数据已送达', res);
 
-    const res = await page6({ entity: null, searchVo: null, page: { pageNumber: 1, pageSize: 10 } }); // 使用分页查询用于获得当前的数据
-    const data = res.result.records;
-    store.imgNum = data.length; // 校正
-    for (let index = 0; index < 4; index++) {
-      list[index].img = data[index].storeImage;
-    }
-
-    // 以下操作用于更新数据
-  } catch (error) {
-    console.log(error);
+    data.value = res.result.records; // 获得表格数据
+    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+  } catch (err) {
+    console.log(err);
   }
+  isLoading.value = false;
 };
-// // 确定编辑
-const editImg = async () => {
-  try {
-    const res = await update6(ImageParams);
-    console.log('編輯返回', res);
-    emit('show', 'emit传来喜报:组件通信成功', res);
-    loading.value = true;
-    // 加载一下
-    const timer = setTimeout(() => {
-      loading.value = false;
-      visible.value = false;
-      clearTimeout(timer);
-    }, 200);
-    MessagePlugin.success('编辑成功');
-  } catch (error) {
-    console.log(error);
-  }
-};
-const handleFail = ({ file }) => {
-  MessagePlugin.error(`文件 ${file.name} 上传失败`);
+const selectedRowKeys = ref([]);
+
+// 行选中变化时
+const onSelectChange = (value, params) => {
+  selectedRowKeys.value = value;
+  console.log(value, params);
 };
 
-// file 为等待上传的文件信息，用于提供给上传接口。file.raw 表示原始文件
-const requestMethod = async (file) => {
-  const reader = new FileReader();
-  // 当文件加载完成时触发事件
-  reader.onload = (event) => {
-    // event.target.result包含了Base64编码的图片数据
-    const base64String = event.target.result;
-    // tempSrc.value = base64String; // 暂存src，用于储存原始图片
-    // console.log(base64String);
-    const storeImages = base64String;
-    // @ts-ignore
-    ImageParams.storeImage = storeImages;
-    ImageParams.id = formData.id;
-    // ImageParams.imageId = nanoid();
-    // console.log(ImageParams.storeImage);
-    // update6(ImageParams);
+// const handleMoreDelete = async () => {
+//   try {
+//     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
+//     if (ids === '') {
+//       MessagePlugin.error('未勾选删除项');
+//     } else {
+//       const res = await delete7({ ids });
+//       console.log('批量删除后', res);
+//       queryData({
+//         pageNumber: pagination.current,
+//         pageSize: pagination.pageSize,
+//       });
+//       MessagePlugin.success('删除成功');
+//     }
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
-    // const storeImages = { images: [base64String] };
-    // const toJsonString = JSON.stringify({ storeImages });
-    // const formattedJsonString = `"storeImages": ${JSON.stringify(toJsonString)}`;
-    // formData.storeImages = formattedJsonString;
-    // formData.storeImages = storeImages;
-  };
-
-  // 以DataURL格式读取文件（即Base64格式）
-  reader.readAsDataURL(file.raw);
-  // save2(formData);
-  return new Promise((resolve) => {
-    // resolve 参数为关键代码
-    resolve({ status: 'success' });
+const handleRowClick = (e) => {
+  console.log(e.target.row);
+};
+// 排序、分页、过滤等发生变化时会出发 change 事件
+const onChange = (info, context) => {
+  console.log('change', info.sorter, context);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+    sort: info.sorter.sortBy,
+    order: info.sorter.descending === false ? 'asc' : 'desc',
   });
 };
+const AddFinsh = (newData) => {
+  console.log(newData);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+};
+const pagination = reactive({
+  current: 1,
+  pageSize: 10,
+  total: 10,
+  showJumper: true,
+  onChange: (pageInfo) => {
+    pagination.current = pageInfo.current;
+    pagination.pageSize = pageInfo.pageSize;
+    queryData({
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    }); // 分页数据改变时调用请求函数
+    console.log('pagination.onChange', pageInfo);
+  },
+});
 </script>

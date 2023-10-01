@@ -28,9 +28,9 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-
+        <!-- 
         <t-form-item
-          label="修改者"
+          label="创建者"
           name="createBy"
         >
           <t-input
@@ -38,7 +38,7 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
+        </t-form-item> -->
 
         <t-form-item
           label="半场价格"
@@ -70,6 +70,16 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
+        <t-form-item
+          label="场地购买须知"
+          name="purchaseInstructions"
+        >
+          <t-textarea
+            v-model="formData.purchaseInstructions"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-textarea>
+        </t-form-item>
         <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
@@ -84,7 +94,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { customAlphabet } from 'nanoid';
+// import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
@@ -101,14 +111,17 @@ const loading = ref(false);
 const FORM_RULES = {
   storeId: [{ required: true, message: '门店id必填' }],
   venueName: [{ required: true, message: '门店名称必填' }],
-  createBy: [{ required: true, message: '创建必填' }],
+  halfPrice: [{ required: true, message: '半场价格必填' }],
+  allPrice: [{ required: true, message: '全场价格必填' }],
+
+  // createBy: [{ required: true, message: '创建必填' }],
   price: [{ required: true, message: '价格必填' }],
 };
 // nanoid配置 纯数字，五位
-const nanoid = customAlphabet('1234567890', 5);
+// const nanoid = customAlphabet('1234567890', 5);
 // 在此定义表单数据
 const formData = reactive({
-  id: null,
+  // id: null,
   storeId: '9376',
   venueName: '',
   createBy: '',
@@ -116,6 +129,7 @@ const formData = reactive({
   allPrice: null,
   price: null,
   specialValue: '',
+  purchaseInstructions: '',
 });
 
 const close = () => {
@@ -132,7 +146,7 @@ const add = async ({ validateResult, _ }) => {
   try {
     if (validateResult === true) {
       // // 第三方库随机生成id
-      formData.id = nanoid();
+      // formData.storeId = nanoid();
       formData.storeId = '9376';
 
       const res = await save(formData);

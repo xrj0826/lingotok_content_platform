@@ -4,12 +4,12 @@
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
         <add @add="AddFinsh"></add>
-        <t-button
-          theme="danger"
-          @click="handleMoreDelete"
+        <t-popconfirm
+          content="确认删除吗"
+          :on-confirm="handleMoreDelete"
         >
-          批量删除
-        </t-button>
+          <t-button theme="danger"> 批量删除 </t-button>
+        </t-popconfirm>
         <t-select-input
           placeholder="请输入任意关键词"
           allow-input
@@ -60,6 +60,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 import { delete17, page8 } from '@/api/user/chuzhikaguanli';
+import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -90,6 +91,13 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
+    // 这段代码会安全地检查data.value数组中的每个对象是否具有storeId属性，如果存在，则替换为storeName。
+    for (let i = 0; i < data.value.length; i++) {
+      if (Object.prototype.hasOwnProperty.call(data.value[i], 'storeId')) {
+        data.value[i].storeId = (await get2({ id: data.value[i].storeId })).result.storeName;
+        // console.log(data.value[i].storeId);
+      }
+    }
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
   } catch (err) {
     console.log(err);

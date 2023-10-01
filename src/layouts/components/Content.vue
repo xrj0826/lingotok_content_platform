@@ -1,6 +1,12 @@
 <template>
-  <router-view v-if="!isRefreshing" v-slot="{ Component }">
-    <transition name="fade" mode="out-in">
+  <router-view
+    v-if="!isRefreshing"
+    v-slot="{ Component }"
+  >
+    <transition
+      name="fade"
+      mode="out-in"
+    >
       <keep-alive :include="aliveViews">
         <component :is="Component" />
       </keep-alive>

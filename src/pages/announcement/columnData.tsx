@@ -32,7 +32,7 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-
+  { colKey: 'storeId', title: '门店' },
   {
     colKey: 'operation',
     title: '操作',

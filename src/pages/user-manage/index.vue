@@ -5,12 +5,12 @@
 
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
-        <t-button
-          theme="danger"
-          @click="handleMoreDelete"
+        <t-popconfirm
+          content="确认删除吗"
+          :on-confirm="handleMoreDelete"
         >
-          批量删除
-        </t-button>
+          <t-button theme="danger"> 批量删除 </t-button>
+        </t-popconfirm>
         <t-select-input
           placeholder="请输入任意关键词"
           allow-input
@@ -25,7 +25,7 @@
         :row-key="index"
         :data="data"
         :columns="columns"
-        table-layout="fixed"
+        table-layout="auto"
         :bordered="true"
         size="small"
         :pagination="pagination"

@@ -4,8 +4,11 @@ import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { delete1 } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
+import BuyIns from './components/BuyIns.vue';
 import Edit from './components/Edit.vue';
 import TimePrice from './components/TimePrice.vue';
+
+const store = useRenewDataStore();
 
 export const columns: PrimaryTableCol[] = [
   {
@@ -46,7 +49,20 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-
+  {
+    colKey: 'purchaseInstructions',
+    title: '场地购买须知',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <BuyIns
+            // onAdd={editFinish}
+            data={row.purchaseInstructions}
+          ></BuyIns>
+        </t-space>
+      );
+    },
+  },
   {
     colKey: 'operation',
     title: '操作',
@@ -78,7 +94,6 @@ for (let i = 0; i < columns.length; i++) {
   columns[i].align = 'center';
 }
 
-const store = useRenewDataStore();
 const handleDelete = async (id) => {
   try {
     console.log('删除的id', id);
@@ -90,7 +105,7 @@ const handleDelete = async (id) => {
     const res = await delete1(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
-    store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    await store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
   } catch (error) {
     console.log(error);
   }

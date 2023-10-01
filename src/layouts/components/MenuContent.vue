@@ -1,19 +1,43 @@
 <template>
   <div>
-    <template v-for="item in list" :key="item.path">
+    <template
+      v-for="item in list"
+      :key="item.path"
+    >
       <template v-if="!item.children || !item.children.length || item.meta?.single">
-        <t-menu-item v-if="getHref(item)" :name="item.path" :value="getPath(item)" @click="openHref(getHref(item)[0])">
+        <t-menu-item
+          v-if="getHref(item)"
+          :name="item.path"
+          :value="getPath(item)"
+          @click="openHref(getHref(item)[0])"
+        >
           <template #icon>
-            <component :is="menuIcon(item)" class="t-icon"></component>
+            <component
+              :is="menuIcon(item)"
+              class="t-icon"
+            ></component>
           </template>
           {{ item.title }}
         </t-menu-item>
-        <t-menu-item style="overflow:visible;" width="200px" v-else :name="item.path" :value="getPath(item)" :to="item.path">
+        <t-menu-item
+          v-else
+          style="overflow: visible"
+          width="200px"
+          :name="item.path"
+          :value="getPath(item)"
+          :to="item.path"
+        >
           <template #icon>
-            <component :is="menuIcon(item)" class="t-icon"></component>
+            <component
+              :is="menuIcon(item)"
+              class="t-icon"
+            ></component>
           </template>
-          <div style=" padding: 2px 0; padding-right: 20px;">
-            <t-badge v-if="item.title === '在线接入'" :count="unreadCount">
+          <div style="padding: 2px 0; padding-right: 20px">
+            <t-badge
+              v-if="item.title === '在线接入'"
+              :count="unreadCount"
+            >
               <div>
                 {{ item.title }}
               </div>
@@ -24,24 +48,35 @@
           </div>
         </t-menu-item>
       </template>
-      <t-submenu v-else :name="item.path" :value="item.path" :title="item.title">
+      <t-submenu
+        v-else
+        :name="item.path"
+        :value="item.path"
+        :title="item.title"
+      >
         <template #icon>
-          <component :is="menuIcon(item)" class="t-icon"></component>
+          <component
+            :is="menuIcon(item)"
+            class="t-icon"
+          ></component>
         </template>
-        <menu-content v-if="item.children" :nav-data="item.children" />
+        <menu-content
+          v-if="item.children"
+          :nav-data="item.children"
+        />
       </t-submenu>
     </template>
   </div>
 </template>
 <script setup lang="tsx">
+import TIM from 'tim-js-sdk';
 import type { PropType } from 'vue';
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
+import { getUserSignature } from '@/api/common/imUser';
+import { SDK_APPID } from '@/constants';
 import { getActive } from '@/router';
 import type { MenuRoute } from '@/types/interface';
-import {SDK_APPID} from "@/constants";
-import TIM from "tim-js-sdk";
-import {getUserSignature} from "@/api/common/imUser";
 
 type ListItemType = MenuRoute & { icon?: string };
 
@@ -113,12 +148,12 @@ const getPath = (item: ListItemType) => {
 const openHref = (url: string) => {
   window.open(url);
 };
-const chatId = ref("SERVICES" + localStorage.getItem('userId'))
+const chatId = ref(`SERVICES${localStorage.getItem('userId')}`);
 const options = {
   SDKAppID: Number(SDK_APPID), // 接入时需要将0替换为您的云通信应用的 SDKAppID，类型为 Number
 };
 const chat = TIM.create(options);
-const usersig = ref('')
+const usersig = ref('');
 
 const getUserSig = async () => {
   const data = {
@@ -145,21 +180,21 @@ const chatLogin = async () => {
       console.warn('login error:', imError); // 登录失败的相关信息
     });
 };
-const unreadCount = ref('0')
-const getMark = (()=>{
-  let totalUnreadCount = chat.getTotalUnreadMessageCount();
-  let onTotalUnreadMessageCountUpdated = function(event) {
-    unreadCount.value = event.data
-    console.log('未读变化',event.data); // 当前单聊和群聊会话的未读总数
+const unreadCount = ref('0');
+const getMark = () => {
+  const totalUnreadCount = chat.getTotalUnreadMessageCount();
+  const onTotalUnreadMessageCountUpdated = function (event) {
+    unreadCount.value = event.data;
+    console.log('未读变化', event.data); // 当前单聊和群聊会话的未读总数
   };
   chat.on(TIM.EVENT.TOTAL_UNREAD_MESSAGE_COUNT_UPDATED, onTotalUnreadMessageCountUpdated);
-  unreadCount.value = String(totalUnreadCount)
-  console.log('未读总数', totalUnreadCount)
-})
-onMounted(()=>{
+  unreadCount.value = String(totalUnreadCount);
+  console.log('未读总数', totalUnreadCount);
+};
+onMounted(() => {
   window.reLogin = () => {
-    getUserSig()
+    getUserSig();
   };
-  getUserSig()
-})
+  getUserSig();
+});
 </script>

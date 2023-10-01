@@ -4,12 +4,12 @@
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
         <add @add="AddFinsh"></add>
-        <t-button
-          theme="danger"
-          @click="handleMoreDelete"
+        <t-popconfirm
+          content="确认删除吗"
+          :on-confirm="handleMoreDelete"
         >
-          批量删除
-        </t-button>
+          <t-button theme="danger"> 批量删除 </t-button>
+        </t-popconfirm>
       </t-space>
       <t-select-input
         placeholder="请输入任意关键词"
@@ -63,7 +63,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete1, page } from '@/api/user/changdeguanli';
+import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -114,7 +114,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete1({ ids });
+      const res = await deleteUsingDELETE({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,
