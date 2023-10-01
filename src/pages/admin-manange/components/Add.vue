@@ -11,6 +11,7 @@
       :cancel-btn="null"
       :on-confirm="close"
     >
+      <!-- @vue-ignore -->
       <t-form
         ref="form"
         :rules="FORM_RULES"

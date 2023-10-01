@@ -6,8 +6,9 @@ import { useRenewDataStore } from '@/store/renewData';
 
 import AddAnno from './components/AddAnno.vue';
 import Edit from './components/Edit.vue';
-import EditAnno from './components/EditAnno.vue';
+// import EditAnno from './components/EditAnno.vue';
 import Introduction from './components/Introduction.vue';
+import NeedKnow from './components/NeedKnow.vue';
 import ShowImg from './components/ShowImg.vue';
 
 const store = useRenewDataStore();
@@ -58,8 +59,9 @@ export const columns: PrimaryTableCol[] = [
     title: '门店图片',
     cell: (h, { row }) => {
       return (
+        // @ts-ignore
         <ShowImg
-          rowimg={row}
+          editId={row.id}
           onShow={showFinish}
         ></ShowImg>
       );
@@ -97,10 +99,10 @@ export const columns: PrimaryTableCol[] = [
             onAdd={addFinish}
             editId={row.id}
           ></AddAnno>
-          <EditAnno // @ts-ignore
+          {/* <EditAnno // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
-          ></EditAnno>
+          ></EditAnno> */}
         </t-space>
       );
     },
@@ -108,6 +110,13 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'scheduledNotice',
     title: '订场须知',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <NeedKnow data={row.scheduledNotice}></NeedKnow>
+        </t-space>
+      );
+    },
   },
 
   {

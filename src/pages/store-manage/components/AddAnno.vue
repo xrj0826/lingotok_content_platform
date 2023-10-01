@@ -80,7 +80,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { AddIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 

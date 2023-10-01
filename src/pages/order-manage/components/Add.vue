@@ -88,7 +88,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { customAlphabet } from 'nanoid';
+// import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
@@ -104,7 +104,7 @@ const FORM_RULES = {
   price: [{ required: true, message: '价格必填' }],
 };
 // nanoid配置 纯数字，五位
-const nanoid = customAlphabet('1234567890', 5);
+// const nanoid = customAlphabet('1234567890', 5);
 // 在此定义表单数据
 const formData = reactive({
   id: null,

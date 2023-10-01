@@ -6,7 +6,7 @@
       theme="card"
       :class="`${prefix}-layout-tabs-nav`"
       :value="$route.path"
-      :style="{ position: 'sticky', top: 0, width: '100%' }"
+      :style="{ position: 'sticky', top: 0, width: '100%', height: '25px' }"
       @change="handleChangeCurrentTab"
       @remove="handleRemove"
       @drag-sort="handleDragend"
@@ -31,14 +31,20 @@
             <template v-if="!routeItem.isHome">
               {{ routeItem.title }}
             </template>
-            <t-icon v-else name="home" />
+            <t-icon
+              v-else
+              name="home"
+            />
             <template #dropdown>
               <t-dropdown-menu>
                 <t-dropdown-item @click="() => handleRefresh(routeItem, index)">
                   <t-icon name="refresh" />
                   刷新
                 </t-dropdown-item>
-                <t-dropdown-item v-if="index > 1" @click="() => handleCloseAhead(routeItem.path, index)">
+                <t-dropdown-item
+                  v-if="index > 1"
+                  @click="() => handleCloseAhead(routeItem.path, index)"
+                >
                   <t-icon name="arrow-left" />
                   关闭左侧
                 </t-dropdown-item>
@@ -49,7 +55,10 @@
                   <t-icon name="arrow-right" />
                   关闭右侧
                 </t-dropdown-item>
-                <t-dropdown-item v-if="tabRouters.length > 2" @click="() => handleCloseOther(routeItem.path, index)">
+                <t-dropdown-item
+                  v-if="tabRouters.length > 2"
+                  @click="() => handleCloseOther(routeItem.path, index)"
+                >
                   <t-icon name="close-circle" />
                   关闭其它
                 </t-dropdown-item>
@@ -63,7 +72,10 @@
       <l-breadcrumb v-if="settingStore.showBreadcrumb" />
       <l-content />
     </t-content>
-    <t-footer v-if="settingStore.showFooter" :class="`${prefix}-footer-layout`">
+    <t-footer
+      v-if="settingStore.showFooter"
+      :class="`${prefix}-footer-layout`"
+    >
       <l-footer />
     </t-footer>
   </t-layout>

@@ -129,4 +129,5 @@ const changeSearchFocus = (value: boolean) => {
       opacity: 0;
     }
   }
-}</style>
+}
+</style>

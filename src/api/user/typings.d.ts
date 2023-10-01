@@ -1,5 +1,6 @@
 declare namespace API {
   type AdminUser = {
+    /** id */
     id?: number;
     createBy?: string;
     createTime?: string;
@@ -308,6 +309,8 @@ declare namespace API {
     price?: number;
     /** 特殊价格 */
     specialValue?: string;
+    /** 场地购买须知 */
+    purchaseInstructions?: string;
   };
 
   type delete10Params = {
@@ -407,6 +410,11 @@ declare namespace API {
   type editPasswordParams = {
     password: string;
     newPassword: string;
+  };
+
+  type formatCustomRateParams = {
+    specialValues: CbSpecialValue[];
+    targetDate: string;
   };
 
   type get1Params = {
@@ -891,5 +899,9 @@ declare namespace API {
   type Token = {
     accessToken?: string;
     refreshToken?: string;
+  };
+
+  type upload1Params = {
+    entity: CbStore;
   };
 }

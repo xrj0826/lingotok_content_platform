@@ -1,6 +1,11 @@
 <template>
   <t-row :gutter="[16, 16]">
-    <t-col v-for="(item, index) in PANE_LIST" :key="item.title" :xs="6" :xl="3">
+    <t-col
+      v-for="(item, index) in PANE_LIST"
+      :key="item.title"
+      :xs="6"
+      :xl="3"
+    >
       <t-card
         :title="item.title"
         :bordered="false"
@@ -22,10 +27,16 @@
             class="dashboard-chart-container"
             :style="{ width: `${resizeTime * 120}px`, height: '56px', marginTop: '-24px' }"
           ></div>
-          <span v-else-if="index === 2" :style="{ marginTop: `-24px` }">
+          <span
+            v-else-if="index === 2"
+            :style="{ marginTop: `-24px` }"
+          >
             <usergroup-icon />
           </span>
-          <span v-else :style="{ marginTop: '-24px' }">
+          <span
+            v-else
+            :style="{ marginTop: '-24px' }"
+          >
             <file-icon />
           </span>
         </div>
@@ -164,19 +175,19 @@ watch(
   }
 
   :deep(.t-card__title) {
-    font: var(--td-font-body-medium);
     color: var(--td-text-color-secondary);
+    font: var(--td-font-body-medium);
   }
 
   :deep(.t-card__body) {
+    position: relative;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: space-between;
-    flex: 1;
-    position: relative;
-    padding: 0;
     margin-top: var(--td-comp-margin-s);
     margin-bottom: var(--td-comp-margin-xxl);
+    padding: 0;
   }
 
   &:hover {
@@ -199,12 +210,12 @@ watch(
   &-bottom {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 
     > .t-icon {
-      cursor: pointer;
       font-size: var(--td-comp-size-xxxs);
+      cursor: pointer;
     }
   }
 
@@ -234,16 +245,16 @@ watch(
       border-radius: 50%;
 
       .t-icon {
-        font-size: 24px;
         color: var(--td-brand-color);
+        font-size: 24px;
       }
     }
   }
 
   // 针对第一个卡片需要反色处理
   &--main-color {
-    background: var(--td-brand-color);
     color: var(--td-text-color-primary);
+    background: var(--td-brand-color);
 
     :deep(.t-card__title),
     .dashboard-item-top span,

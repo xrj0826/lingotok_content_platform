@@ -1,5 +1,8 @@
 <template>
-  <t-card theme="poster2" :bordered="false">
+  <t-card
+    theme="poster2"
+    :bordered="false"
+  >
     <template #avatar>
       <t-avatar size="56px">
         <template #icon>
@@ -12,16 +15,21 @@
       </t-avatar>
     </template>
     <template #status>
-      <t-tag :theme="product.isSetup ? 'success' : 'default'" :disabled="!product.isSetup">{{
-        product.isSetup ? '已启用' : '已停用'
-      }}</t-tag>
+      <t-tag
+        :theme="product.isSetup ? 'success' : 'default'"
+        :disabled="!product.isSetup"
+        >{{ product.isSetup ? '已启用' : '已停用' }}</t-tag
+      >
     </template>
     <template #content>
       <p class="list-card-item_detail--name">{{ product.name }}</p>
       <p class="list-card-item_detail--desc">{{ product.description }}</p>
     </template>
     <template #footer>
-      <t-avatar-group cascading="left-up" :max="2">
+      <t-avatar-group
+        cascading="left-up"
+        :max="2"
+      >
         <t-avatar>{{ typeMap[product.type - 1] }}</t-avatar>
         <t-avatar
           ><template #icon>
@@ -44,9 +52,16 @@
             content: '删除',
             value: 'delete',
             onClick: () => handleClickDelete(product),
-          },]">
-        <t-button theme="default" :disabled="!product.isSetup" shape="square" variant="text">
-          <more-icon/>
+          },
+        ]"
+      >
+        <t-button
+          theme="default"
+          :disabled="!product.isSetup"
+          shape="square"
+          variant="text"
+        >
+          <more-icon />
         </t-button>
       </t-dropdown>
     </template>

@@ -18,7 +18,9 @@ const defaultRouterList: Array<RouteRecordRaw> = [
   },
   {
     path: '/',
-    redirect: '/dashboard/base',
+    // redirect: '/dashboard/base',
+    redirect: '/admin/base',
+
   },
 ];
 // 存放固定路由

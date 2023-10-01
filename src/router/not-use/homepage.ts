@@ -16,7 +16,7 @@ export default [
     },
     children: [
       {
-        path: 'base',
+        path: 'base2',
         name: 'DashboardBase',
         component: () => import('@/pages/dashboard/base/index.vue'),
         meta: {

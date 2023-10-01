@@ -19,10 +19,7 @@ export const columns: PrimaryTableCol[] = [
   // },
 
   // { colKey: 'userId', title: '用户id' },
-  {
-    colKey: 'storeId',
-    title: '门店id',
-  },
+
   { colKey: 'cardName', title: '卡名称' },
   {
     colKey: 'cardType',
@@ -48,7 +45,10 @@ export const columns: PrimaryTableCol[] = [
   // { colKey: 'days', title: '有效期', sorter: true },
   { colKey: 'startDate', title: '生效日期', sorter: true },
   { colKey: 'endDate', title: '结束日期', sorter: true },
-
+  {
+    colKey: 'storeId',
+    title: '门店',
+  },
   // { colKey: 'createBy', title: '创建者' },
   // { colKey: 'createTime', title: '创建时间', sorter: true },
   // { colKey: 'updateBy', title: '修改者' },

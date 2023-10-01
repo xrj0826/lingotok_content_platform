@@ -89,3 +89,25 @@ export async function page2(
     ...(options || {}),
   });
 }
+
+/** 文件上传接口 POST /staff/cbstore/upload */
+export async function upload1(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.upload1Params,
+  body: {},
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessage>('/staff/cbstore/upload', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: {
+      ...params,
+      entity: undefined,
+      ...params['entity'],
+    },
+    data: body,
+    ...(options || {}),
+  });
+}

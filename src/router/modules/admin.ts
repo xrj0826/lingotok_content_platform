@@ -8,14 +8,14 @@ export default [
     path: '/admin',
     name: 'admin',
     component: Layout,
-    redirect: '/admin/admin-manange',
+    redirect: '/admin/base',
     meta: {
       title: '管理员管理',
       icon: shallowRef(UsergroupIcon),
     },
     children: [
       {
-        path: 'admin-manange',
+        path: 'base',
         name: 'AdminManage',
         component: () => import('@/pages/admin-manange/index.vue'),
         meta: { title: '管理员管理', hidden: true },

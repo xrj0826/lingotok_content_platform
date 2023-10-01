@@ -86,7 +86,16 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item> </t-form
+        </t-form-item>
+        <t-form-item
+          label="场地购买须知"
+          name="purchaseInstructions"
+        >
+          <t-textarea
+            v-model="formData.purchaseInstructions"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-textarea> </t-form-item></t-form
     ></t-dialog>
   </div>
 </template>
@@ -114,6 +123,7 @@ const formData = reactive({
   halfPrice: null,
   allPrice: null,
   price: null,
+  purchaseInstructions: '',
 });
 
 const close = () => {
@@ -138,10 +148,10 @@ const handlerEdit = async () => {
     formData.storeId = data.storeId;
     formData.venueName = data.venueName;
     formData.updateBy = data.updateBy;
-    // formData.updateTime = data.updateTime;
     formData.halfPrice = data.halfPrice;
     formData.allPrice = data.allPrice;
     formData.price = data.price;
+    formData.purchaseInstructions = data.purchaseInstructions;
   } catch (error) {
     console.log(error);
   }

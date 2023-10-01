@@ -17,7 +17,7 @@
           resizable
           @row-click="handleRowClick"
         >
-          <template #op="slotProps">
+          <template #op="">
             <t-space>
               <t-link
                 theme="danger"
@@ -39,9 +39,6 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { SizeEnum } from 'tdesign-vue-next';
-import { Ref, ref } from 'vue';
-
 import { columns } from './columnData';
 import { useSomeFeature } from './constants';
 // import Drawer from '../customer-service/component/Drawer.vue'

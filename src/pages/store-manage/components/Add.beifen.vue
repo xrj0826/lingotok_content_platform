@@ -89,26 +89,10 @@
           <t-upload
             ref="uploadRef"
             v-model="file"
-            action="/test/staff/cbupload/upload"
-            theme="image"
-            tips="单张图片文件上传（上传成功状态演示"
-            accept="image/*"
-            :disabled="false"
-            :auto-upload="true"
-            :on-remove="deleteImg"
-            :upload-all-files-in-one-request="true"
-            :locale="{
-              triggerUploadText: {
-                image: '请选择图片',
-              },
-            }"
-            @fail="handleFail"
-          >
-            <!-- custom UI -->
-            <!-- <template #fileListDisplay="{ files }">
-          <div>{{ JSON.stringify(files) }}</div>
-        </template> -->
-          </t-upload>
+            :request-method="requestMethod"
+            placeholder="上传一张图片"
+            :on-fail="handleFail"
+          ></t-upload>
         </t-form-item>
         <t-form-item
           label="提前预订天数"
@@ -158,6 +142,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
 import { save2 } from '@/api/user/mendianguanlijiekou';
+import { save6 } from '@/api/user/mendiantupianjiekou';
 // import { upload } from '@/api/user/wenjianxiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
@@ -189,7 +174,7 @@ const formData = reactive({
   announcement: null,
   scheduledNotice: '',
 });
-// const ImageParams = reactive({ id: null, storeImage: '' });
+const ImageParams = reactive({ id: null, storeImage: '' });
 const close = () => {
   console.error('===close');
   visible.value = false;
@@ -230,12 +215,42 @@ const add = async () => {
 const handleFail = ({ file }) => {
   MessagePlugin.error(`文件 ${file.name} 上传失败`);
 };
-const deleteImg = async (file) => {
-  console.log(file);
+
+// file 为等待上传的文件信息，用于提供给上传接口。file.raw 表示原始文件
+const requestMethod = async (file) => {
+  const reader = new FileReader();
+  // 当文件加载完成时触发事件
+  reader.onload = (event) => {
+    // event.target.result包含了Base64编码的图片数据
+    const base64String = event.target.result;
+    // tempSrc.value = base64String; // 暂存src，用于储存原始图片
+    // console.log(base64String);
+    const storeImages = base64String;
+    // @ts-ignore
+    ImageParams.storeImage = storeImages;
+    ImageParams.imageId = store.imgNum;
+    // ImageParams.imageId = nanoid();
+    // console.log(ImageParams.storeImage);
+    if (store.imgNum !== 4) {
+      save6(ImageParams);
+    } else MessagePlugin.warning('error,最多设置四张图片');
+
+    // const storeImages = { images: [base64String] };
+    // const toJsonString = JSON.stringify({ storeImages });
+    // const formattedJsonString = `"storeImages": ${JSON.stringify(toJsonString)}`;
+    // formData.storeImages = formattedJsonString;
+    // formData.storeImages = storeImages;
+  };
+
+  // 以DataURL格式读取文件（即Base64格式）
+  reader.readAsDataURL(file.raw);
+  // save2(formData);
+  return new Promise((resolve) => {
+    // resolve 参数为关键代码
+    resolve({ status: 'success' });
+  });
 };
-// const formatResponse = () => {
-//   return { name: 'FileName', error: '网络异常，图片上传失败' };
-// };
+
 // 禁用 Input 组件，按下 Enter 键时，触发 submit 事件
 const onEnter = (_, { e }) => {
   e.preventDefault();
