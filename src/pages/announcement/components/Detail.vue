@@ -10,6 +10,7 @@
 
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="公告详情"
       draggable
       :on-confirm="() => (visible = false)"

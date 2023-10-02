@@ -2,7 +2,7 @@
   <div>
     <t-space>
       <t-link
-        theme="warning"
+        theme="primary"
         @click="handlerEdit"
         >编辑</t-link
       >
@@ -10,6 +10,7 @@
 
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改场地信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -26,7 +27,7 @@
         :data="formData"
         :colon="true"
       >
-        <t-form-item
+        <!-- <t-form-item
           label="订单价格"
           name="orderPrice"
         >
@@ -35,8 +36,8 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
-        <t-form-item
+        </t-form-item> -->
+        <!-- <t-form-item
           label="预约开始时间"
           name="orderSt"
         >
@@ -57,8 +58,8 @@
             allow-input
             clearable
           />
-        </t-form-item>
-
+        </t-form-item> -->
+        <!-- 
         <t-form-item
           label="删除标志"
           name="deleteFlag"
@@ -70,20 +71,18 @@
             <t-radio :value="true">删除</t-radio>
             <t-radio :value="false">恢复为未删除</t-radio>
           </t-radio-group>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="订单状态"
           name="orderState"
         >
-          <t-radio-group
-            v-model="formData.orderState"
-            :default-value="formData.orderState"
-          >
+          <t-radio-group v-model="formData.orderState">
             <t-radio value="IN_USE">使用中</t-radio>
             <t-radio value="WAITING_TO_USE">待使用</t-radio>
             <t-radio value="USED(">已使用</t-radio>
             <t-radio value="EXPIRED">已失效</t-radio>
             <t-radio value="REFUNDED">退款</t-radio>
+            <t-radio value="PAYMENT_SUCCESSFUL">支付成功</t-radio>
           </t-radio-group>
         </t-form-item>
         <t-form-item
@@ -92,18 +91,19 @@
         >
           <t-input
             v-model="formData.orderPrice"
-            placeholder="请输入内容"
+            theme="normal"
+            align="right"
+            style="width: 110px"
             @enter="onEnter"
-          ></t-input>
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
         </t-form-item>
         <t-form-item
           label="订单类型"
           name="orderType"
         >
-          <t-radio-group
-            v-model="formData.orderType"
-            :default-value="formData.orderType"
-          >
+          <t-radio-group v-model="formData.orderType">
             <t-radio value="RENTAL">租场</t-radio>
             <t-radio value="TICKET">门票</t-radio>
             <t-radio value="TIMER(">计时</t-radio>
@@ -114,13 +114,12 @@
           label="支付方式"
           name="paymentMethods"
         >
-          <t-input
-            v-model="formData.paymentMethods"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+          <t-radio-group v-model="formData.paymentMethods">
+            <t-radio value="WECHAT">微信支付</t-radio>
+            <t-radio value="CARD">储值卡支付</t-radio>
+          </t-radio-group>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
           label="分享次数"
           name="share"
         >
@@ -129,8 +128,8 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
-        <t-form-item
+        </t-form-item> -->
+        <!-- <t-form-item
           label="手机号码"
           name="phoneNumber"
         >
@@ -139,8 +138,8 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
-        <t-form-item
+        </t-form-item> -->
+        <!-- <t-form-item
           label="用户进场时间"
           name="startTime"
         >
@@ -161,7 +160,7 @@
             allow-input
             clearable
           />
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="预约日期"
           name="orderDate"
@@ -196,7 +195,7 @@ const formData = reactive({
   id: null,
   storeId: '9376',
   orderPrice: null,
-  deleteFlag: false,
+  // deleteFlag: false,
   orderDate: '',
   orderSt: '',
   orderEd: '',
@@ -228,7 +227,7 @@ const handlerEdit = async () => {
     // }
     // 以下操作用于更新数据
     formData.id = data.id;
-    formData.deleteFlag = data.deleteFlag;
+    // formData.deleteFlag = data.deleteFlag;
     formData.storeId = data.storeId;
     formData.orderPrice = data.orderPrice;
     formData.orderDate = data.orderDate;

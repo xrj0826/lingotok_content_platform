@@ -36,6 +36,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'address',
     title: '门店地址 ',
+    width: '150px',
   },
   {
     colKey: 'venueIntroduction',
@@ -61,7 +62,7 @@ export const columns: PrimaryTableCol[] = [
       return (
         // @ts-ignore
         <ShowImg
-          editId={row.id}
+          editId={row.id} // @ts-ignore
           onShow={showFinish}
         ></ShowImg>
       );
@@ -74,6 +75,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'serviceHotline',
     title: '服务热线',
+    width: '110px',
   },
   {
     colKey: 'realTime',
@@ -91,6 +93,8 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'announcement',
     title: '公告',
+    fixed: 'right',
+
     // @ts-ignore
     cell: (h, { row }) => {
       return (
@@ -110,6 +114,8 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'scheduledNotice',
     title: '订场须知',
+    fixed: 'right',
+
     cell: (h, { row }) => {
       return (
         <t-space>

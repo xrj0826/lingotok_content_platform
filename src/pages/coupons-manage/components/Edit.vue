@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改优惠卷信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -128,7 +129,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page5, update5 } from '@/api/user/youhuiquanguanlijiekou';
+// import { page5, update5 } from '@/api/user/youhuiquanguanlijiekou';
 
 const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 

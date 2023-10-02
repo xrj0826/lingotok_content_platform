@@ -32,10 +32,18 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
-  { colKey: 'storeId', title: '门店' },
+  {
+    colKey: 'storeId',
+    title: '门店',
+    cell: () => {
+      return <span>恒跃体育广钢公园体育中心</span>; // 写死门店，一分钱一分货
+    },
+  },
   {
     colKey: 'operation',
     title: '操作',
+    fixed: 'right',
+
     cell: (h, { row }) => {
       return (
         <t-space>

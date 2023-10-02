@@ -12,6 +12,7 @@ export default [
     meta: {
       title: '管理员管理',
       icon: shallowRef(UsergroupIcon),
+      orderNo: 1,
     },
     children: [
       {

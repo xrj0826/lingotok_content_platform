@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改门店信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -60,9 +61,8 @@
         <t-form-item
           label="开店时间"
           name="openingTime"
-          ><t-date-picker
+          ><t-time-picker
             v-model="formData.openingTime"
-            enable-time-picker
             allow-input
             clearable
           /> </t-form-item
@@ -70,9 +70,8 @@
           label="关店时间"
           name="closingTime"
         >
-          <t-date-picker
+          <t-time-picker
             v-model="formData.closingTime"
-            enable-time-picker
             allow-input
             clearable
           />
@@ -81,12 +80,11 @@
           label="起订时间"
           name="leadTime"
         >
-          <t-date-picker
+          <t-input
             v-model="formData.leadTime"
-            enable-time-picker
-            allow-input
-            clearable
-          />
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
         </t-form-item>
         <t-form-item
           label="门店图片"
@@ -183,8 +181,8 @@ const formData = reactive({
   storeName: '',
   address: '',
   venueIntroduction: '',
-  openingTime: null,
-  closingTime: null,
+  openingTime: '',
+  closingTime: '',
   storeImages: '',
   serviceHotline: '',
   advanceDays: '',

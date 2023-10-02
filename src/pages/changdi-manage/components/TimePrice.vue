@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       width="900px"
       header="修改区间价格"
       body="订单保存中，请稍后"
@@ -16,17 +17,15 @@
       :on-confirm="close"
       :on-close="null"
     >
-      <addTimePrice
-        style="margin: 0 900px 20px 0"
-        @add="AddFinsh"
-      ></addTimePrice>
-      <t-button
-        theme="danger"
-        style="margin: -77px 450px 20px 0"
-        @click="handleMoreDelete"
-      >
-        批量删除
-      </t-button>
+      <t-space style="margin-bottom: 20px">
+        <addTimePrice @add="AddFinsh"></addTimePrice>
+        <t-button
+          theme="danger"
+          @click="handleMoreDelete"
+        >
+          批量删除
+        </t-button>
+      </t-space>
       <t-table
         :row-key="index"
         :data="data"

@@ -10,7 +10,7 @@
         >
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
-
+        <!-- 
         <t-select-input
           placeholder="请输入任意关键词"
           allow-input
@@ -19,7 +19,7 @@
           @input-change="onInputChange"
         >
           <template #suffixIcon><search-icon /></template>
-        </t-select-input>
+        </t-select-input> -->
       </t-space>
       <t-table
         :row-key="index"
@@ -55,7 +55,7 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { SearchIcon } from 'tdesign-icons-vue-next';
+// import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -75,7 +75,10 @@ onMounted(async () => {
   store.pagination.current = pagination.current; // 分页数据也一起给
   store.pagination.pageSize = pagination.pageSize;
 });
-
+const querySave = reactive({
+  sort: '',
+  order: null,
+});
 const index = ref();
 const data = ref([]);
 const isLoading = ref(false);
@@ -127,12 +130,32 @@ const handleRowClick = (e) => {
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
-  console.log('change', info, context);
+  console.log('change', info.sorter, context.trigger);
+
+  if (context.trigger === 'sorter') {
+    if (info.sorter === undefined) {
+      querySave.sort = '';
+      querySave.order = null;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } else {
+      querySave.sort = info.sorter.sortBy;
+      querySave.order = info.sorter.descending;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      });
+    }
+  }
 };
 // 搜索框
-const onInputChange = (keyword) => {
-  console.log(keyword);
-};
+// const onInputChange = (keyword) => {
+//   console.log(keyword);
+// };
 
 const pagination = reactive({
   current: 1,

@@ -3,7 +3,7 @@
   <div>
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
-        <add @add="AddFinsh"></add>
+        <!-- <add @add="AddFinsh"></add> -->
         <t-popconfirm
           content="确认删除吗"
           :on-confirm="handleMoreDelete"
@@ -46,18 +46,21 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { get2 } from '@/api/user/mendianguanlijiekou';
+// import { get2 } from '@/api/user/mendianguanlijiekou';
 import { delete11, page5 } from '@/api/user/xiaochengxugonggao';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
-import Add from './components/Add.vue';
+// import Add from './components/Add.vue';
 
 const index = ref();
 const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
-
+const querySave = reactive({
+  sort: '',
+  order: null,
+});
 // 挂载时调用请求函数
 onMounted(async () => {
   queryData({
@@ -94,13 +97,27 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
-  console.log('change', info.sorter, context);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-    sort: info.sorter.sortBy,
-    order: info.sorter.descending === false ? 'asc' : 'desc',
-  });
+  console.log('change', info.sorter, context.trigger);
+
+  if (context.trigger === 'sorter') {
+    if (info.sorter === undefined) {
+      querySave.sort = '';
+      querySave.order = null;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } else {
+      querySave.sort = info.sorter.sortBy;
+      querySave.order = info.sorter.descending;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      });
+    }
+  }
 };
 const pagination = reactive({
   current: 1,
@@ -113,6 +130,8 @@ const pagination = reactive({
     queryData({
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
     }); // 分页数据改变时调用请求函数
     console.log('pagination.onChange', pageInfo);
   },
@@ -146,13 +165,13 @@ const handleMoreDelete = async () => {
     console.log(error);
   }
 };
-const AddFinsh = (newData) => {
-  console.log(newData);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
-};
+// const AddFinsh = (newData) => {
+//   console.log(newData);
+//   queryData({
+//     pageNumber: pagination.current,
+//     pageSize: pagination.pageSize,
+//   });
+// };
 </script>
 
 <style lang="less" scoped>

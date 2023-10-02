@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改储值卡信息"
       body="保存中，请稍后"
       :confirm-btn="null"
@@ -23,15 +24,6 @@
         @submit="edit"
       >
         <t-form-item
-          label="id"
-          name="storeId"
-        >
-          <t-input
-            v-model="formData.storeId"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input> </t-form-item
-        ><t-form-item
           label="储值卡名称"
           name="cardName"
         >
@@ -49,11 +41,11 @@
           <t-radio-group v-model="formData.cardType">
             <t-radio value="STORED_VALUE">储值卡</t-radio>
             <t-radio value="MONTHLY">月卡</t-radio>
-            <t-radio value="TIME_BASED">次卡</t-radio>
+            <t-radio value="TICKET">次卡</t-radio>
           </t-radio-group>
         </t-form-item>
 
-        <!-- <t-form-item
+        <t-form-item
           label="有效期"
           name="days"
         >
@@ -62,11 +54,12 @@
             theme="normal"
             align="right"
             style="width: 70px"
+            placeholder=""
             @enter="onEnter"
           >
             <template #suffix><span>天</span></template>
           </t-input>
-        </t-form-item> -->
+        </t-form-item>
         <t-form-item
           label="折扣值"
           name="discountValue"
@@ -82,6 +75,20 @@
           </t-input>
         </t-form-item>
         <t-form-item
+          label="面值"
+          name="faceValue"
+        >
+          <t-input
+            v-model="formData.faceValue"
+            theme="normal"
+            align="right"
+            style="width: 120px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item>
+        <!-- <t-form-item
           label="生效时间"
           name="startDate"
           ><t-date-picker
@@ -100,7 +107,7 @@
             allow-input
             clearable
           />
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
@@ -132,6 +139,7 @@ const FORM_RULES = {
     { min: 1.0, message: '折扣应在0~1之间', type: 'error', trigger: 'blur' },
     { max: 10.0, message: '折扣应在0~1之间', type: 'error', trigger: 'blur' },
   ],
+  faceValue: [{ required: true, message: '该项必填' }],
 };
 
 // 在此定义表单数据

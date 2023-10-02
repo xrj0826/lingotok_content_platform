@@ -23,7 +23,8 @@
         :selected-row-keys="selectedRowKeys"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
-        @filter-change="onChange"
+        @filter-change="onFilterChange"
+        @change="onChange"
       >
       </t-table>
     </t-card>
@@ -50,10 +51,22 @@ const data = ref([]);
 const selectedRowKeys = ref([]);
 // 暂存查询条件
 const querySave = reactive({
-  ordertype: '',
+  orderType: '',
   orderState: '',
+  paymentMethods: '',
+  sort: '',
+  order: null,
 });
-
+// 挂载时调用请求函数
+onMounted(async () => {
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+  });
+  store.renewData = queryData; // 挂载时，将请求函数给pinia
+  store.pagination.current = pagination.current; // 分页数据也一起给
+  store.pagination.pageSize = pagination.pageSize;
+});
 // const AddFinsh = (newData: any) => {
 //   console.log(newData);
 //   queryData({
@@ -62,23 +75,54 @@ const querySave = reactive({
 //   });
 // };
 
-// 排序、分页、过滤等发生变化时会出发 change 事件
-const onChange = (filterValue, context) => {
-  console.log('onchange', filterValue, context);
-  querySave.orderState = filterValue.orderState;
-  querySave.orderState = filterValue.orderType;
-
-  // if (info.filter.orderState === '' || info.filter.orderType === '') {
-  //   queryData({
-  //     pageNumber: pagination.current,
-  //     pageSize: pagination.pageSize,
-  //   });
+// 过滤等发生变化时会出发 change 事件
+const onFilterChange = (filterValue, context) => {
+  // console.log('onchange', filterValue, context);
+  // if ('orderType' in filterValue) {
+  //   querySave.orderType = filterValue.orderType;
   // }
+  // if ('orderType' in filterValue) {
+  //   querySave.orderState = filterValue.orderState;
+  // }
+  querySave.orderType = filterValue.orderType;
+  querySave.orderState = filterValue.orderState;
+  querySave.paymentMethods = filterValue.paymentMethods;
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    },
+    // @ts-ignore
+    querySave,
+  );
 };
 // 行选中变化时
 const onSelectChange = (value, params) => {
   selectedRowKeys.value = value;
   console.log(value, params);
+};
+const onChange = (info, context) => {
+  console.log('change', info.sorter, context.trigger);
+
+  if (context.trigger === 'sorter') {
+    if (info.sorter === undefined) {
+      querySave.sort = '';
+      querySave.order = null;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } else {
+      querySave.sort = info.sorter.sortBy;
+      querySave.order = info.sorter.descending;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      });
+    }
+  }
 };
 // const handleMoreDelete = async () => {
 //   try {
@@ -93,16 +137,6 @@ const onSelectChange = (value, params) => {
 //     console.log(error);
 //   }
 // };
-// 挂载时调用请求函数
-onMounted(async () => {
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
-  store.renewData = queryData; // 挂载时，将请求函数给pinia
-  store.pagination.current = pagination.current; // 分页数据也一起给
-  store.pagination.pageSize = pagination.pageSize;
-});
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const pagination = reactive({
@@ -113,19 +147,21 @@ const pagination = reactive({
   onChange: (pageInfo: { current: number; pageSize: number }) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
-    queryData({
-      // 分页改变时更新数据
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    });
+    queryData(
+      {
+        // 分页改变时更新数据
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      },
+      null, // @ts-ignore
+      querySave,
+    );
     console.log('pagination.onChange', pageInfo);
   },
 });
-const queryData = async (
-  paginationInfo?: { pageNumber: number; pageSize: number },
-  searchVo?: undefined,
-  entityInfo?: undefined,
-) => {
+const queryData = async (paginationInfo?, searchVo?: undefined, entityInfo?: undefined) => {
   try {
     console.log('请求', entityInfo, paginationInfo);
     const res = await page4({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求

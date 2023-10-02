@@ -4,7 +4,7 @@
       <div class="user-left-greeting">
         <div>
           Hi，Image
-          <span class="regular"> 下午好，今天是你加入鹅厂的第 100 天～</span>
+          <span class="regular"> 18:00-22:00好，今天是你加入鹅厂的第 100 天～</span>
         </div>
         <img
           src="@/assets/assets-tencent-logo.png"

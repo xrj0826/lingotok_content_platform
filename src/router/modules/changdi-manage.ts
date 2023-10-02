@@ -10,6 +10,7 @@ export default [
     component: Layout,
     redirect: '/changdi-manage/changdi-manage',
     meta: { title: '场地管理', icon: shallowRef(BacktopRectangleIcon) },
+    orderNo: 6,
     children: [
       {
         path: 'changdi-manage',

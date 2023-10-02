@@ -10,7 +10,7 @@
         >
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
-        <t-select-input
+        <!-- <t-select-input
           placeholder="请输入任意关键词"
           allow-input
           clearable
@@ -18,7 +18,7 @@
           @input-change="onInputChange"
         >
           <template #suffixIcon><search-icon /></template>
-        </t-select-input>
+        </t-select-input> -->
       </t-space>
       <t-table
         :row-key="index"
@@ -35,7 +35,6 @@
         :show-sort-column-bg-color="true"
         right-fixed-column="1"
         :selected-row-keys="selectedRowKeys"
-        select-on-row-click
         @row-click="handleRowClick"
         @select-change="onSelectChange"
         @change="onChange"
@@ -55,7 +54,7 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { SearchIcon } from 'tdesign-icons-vue-next';
+// import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -81,7 +80,10 @@ const index = ref();
 const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
-
+const querySave = reactive({
+  sort: '',
+  order: null,
+});
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
@@ -135,18 +137,32 @@ const handleRowClick = (e) => {
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
-  console.log('change', info.sorter, context);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-    sort: info.sorter.sortBy,
-    order: info.sorter.descending === false ? 'asc' : 'desc',
-  });
+  console.log('change', info.sorter, context.trigger);
+
+  if (context.trigger === 'sorter') {
+    if (info.sorter === undefined) {
+      querySave.sort = '';
+      querySave.order = null;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } else {
+      querySave.sort = info.sorter.sortBy;
+      querySave.order = info.sorter.descending;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      });
+    }
+  }
 };
 // 搜索框
-const onInputChange = (keyword) => {
-  console.log(keyword);
-};
+// const onInputChange = (keyword) => {
+//   console.log(keyword);
+// };
 
 const pagination = reactive({
   current: 1,
@@ -159,6 +175,8 @@ const pagination = reactive({
     queryData({
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
     }); // 分页数据改变时调用请求函数
     console.log('pagination.onChange', pageInfo);
   },

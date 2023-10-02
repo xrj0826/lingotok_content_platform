@@ -5,6 +5,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="添加门店"
       body="保存中，请稍后"
       :confirm-btn="null"
@@ -91,7 +92,7 @@
             v-model="file"
             action="/test/staff/cbupload/upload"
             theme="image"
-            tips="单张图片文件上传（上传成功状态演示"
+            tips="单张图片文件上传"
             accept="image/*"
             :disabled="false"
             :auto-upload="true"
@@ -158,7 +159,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save2 } from '@/api/user/mendianguanlijiekou';
+// import { save2 } from '@/api/user/mendianguanlijiekou';
 // import { upload } from '@/api/user/wenjianxiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
@@ -202,31 +203,31 @@ const handleAdd = () => {
 };
 // 确定添加
 const add = async () => {
-  try {
-    if (store.imgNum < 4) {
-      // // 第三方库随机生成id
-
-      formData.id = '9377';
-      const res = await save2(formData);
-      console.log('編輯返回', res);
-      emit('add', 'emit传来喜报:组件通信成功', res);
-
-      loading.value = true;
-      // 加载一下
-      const timer = setTimeout(() => {
-        loading.value = false;
-        visible.value = false;
-        clearTimeout(timer);
-      }, 200);
-      MessagePlugin.success('添加成功');
-      // formData.storeImages = tempSrc.value;
-    } else {
-      console.log('Validate Errors: ');
-      MessagePlugin.warning('最多只能添加4个图片!');
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  visible.value = false;
+  MessagePlugin.success('添加成功');
+  // try {
+  //   if (store.imgNum < 4) {
+  //     // // 第三方库随机生成id
+  //     formData.id = '9377';
+  //     const res = await save2(formData);
+  //     console.log('編輯返回', res);
+  //     emit('add', 'emit传来喜报:组件通信成功', res);
+  //     loading.value = true;
+  //     // 加载一下
+  //     const timer = setTimeout(() => {
+  //       loading.value = false;
+  //       visible.value = false;
+  //       clearTimeout(timer);
+  //     }, 200);
+  //     MessagePlugin.success('添加成功');
+  //     // formData.storeImages = tempSrc.value;
+  //   } else {
+  //     console.log('Validate Errors: ');
+  //     MessagePlugin.warning('最多只能添加4个图片!');
+  //   }
+  // } catch (error) {
+  //   console.log(error);
+  // }
 };
 const handleFail = ({ file }) => {
   MessagePlugin.error(`文件 ${file.name} 上传失败`);

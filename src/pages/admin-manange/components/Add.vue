@@ -5,6 +5,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="添加管理员"
       body="保存中，请稍后"
       :confirm-btn="null"

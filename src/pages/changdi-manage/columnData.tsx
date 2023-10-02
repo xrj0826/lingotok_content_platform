@@ -16,14 +16,15 @@ export const columns: PrimaryTableCol[] = [
     type: 'multiple',
     width: 40,
   },
-  // {
-  //   colKey: 'id',
-  //   title: 'id',
-  // },
+  {
+    colKey: 'id',
+    title: 'id',
+    width: '120px',
+  },
   {
     colKey: 'venueName',
     title: '场地名称',
-    width: '80px',
+    width: '100px',
   },
   {
     colKey: 'venueType',
@@ -61,12 +62,17 @@ export const columns: PrimaryTableCol[] = [
   // { colKey: 'storeId', title: '门店id' },
   { colKey: 'amAllPrice', title: '9:30-11:30与16:00-18:00全场价格', sorter: true },
   { colKey: 'pmAllPrice', title: '18:00-22:00全场价格', sorter: true },
-  { colKey: 'amHalfPrice', title: '9:30-11:30与16:00-18:00篮球场半场价格', sorter: true },
-  { colKey: 'pmHalfPrice', title: '18:00-22:00篮球场半场价格', sorter: true },
-  { colKey: 'price', title: '普通场价格', sorter: true },
+  // { colKey: 'amHalfPrice', title: '9:30-11:30与16:00-18:00篮球场半场价格', sorter: true },
+  // { colKey: 'pmHalfPrice', title: '18:00-22:00篮球场半场价格', sorter: true },
+  // { colKey: 'price', title: '普通场价格', sorter: true },
+  // {
+  //   colKey: 'relevancyId',
+  //   title: '篮球半场关联篮球全场id',
+  // },
   {
     colKey: 'specialValue',
     title: '区间价格',
+    width: '90px',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -81,6 +87,8 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'purchaseInstructions',
     title: '购买须知',
+    width: '90px',
+
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -96,6 +104,7 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'operation',
     title: '操作',
     width: '100px',
+    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>

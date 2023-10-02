@@ -1,20 +1,20 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete3, page1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
-const onNameChange = async (val, _) => {
-  // console.log(val, ctx);
-  if (val === '' || null) {
-    store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
-  } else {
-    const res = await store.renewData(null, null, { name: val });
-    console.log(res);
-  }
-};
+// const onNameChange = async (val, _) => {
+//   // console.log(val, ctx);
+//   if (val === '' || null) {
+//     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+//   } else {
+//     const res = await store.renewData(null, null, { name: val });
+//     console.log(res);
+//   }
+// };
 export const columns: PrimaryTableCol[] = [
   {
     colKey: 'row-select',
@@ -108,7 +108,19 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'sex',
     title: '性别',
     cell: (h, { row }) => {
-      return <span>{row.sex === 0 ? '男' : '女'}</span>;
+      let cellValue;
+      switch (row.sex) {
+        case 0:
+          cellValue = <span>男</span>;
+          break;
+        case 1:
+          cellValue = <span>女</span>;
+          break;
+        default:
+          cellValue = <span>用户未设置</span>;
+          break;
+      }
+      return cellValue;
     },
   },
 
@@ -119,6 +131,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'operation',
     title: '操作',
+    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -168,7 +181,7 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
+  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
 };
 
 // const loadingCount = ref(0);

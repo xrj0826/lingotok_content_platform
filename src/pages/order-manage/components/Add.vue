@@ -5,6 +5,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="添加场地"
       body="订单保存中，请稍后"
       :confirm-btn="{

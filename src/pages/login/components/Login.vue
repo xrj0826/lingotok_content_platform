@@ -12,7 +12,7 @@
         <t-input
           v-model="formData.account"
           size="large"
-          placeholder="请输入账号：12121212"
+          placeholder="请输入账号:"
         >
           <template #prefix-icon>
             <t-icon name="user" />
@@ -24,9 +24,10 @@
         <t-input
           v-model="formData.password"
           size="large"
+          :on-focus="giveCookies"
           :type="showPsw ? 'text' : 'password'"
           clearable
-          placeholder="请输入登录密码：666666"
+          placeholder="请输入登录密码:"
         >
           <template #prefix-icon>
             <t-icon name="lock-on" />
@@ -41,14 +42,7 @@
       </t-form-item>
 
       <div class="check-container remember-pwd">
-        <t-checkbox>记住账号</t-checkbox>
-        <!-- <edit-password
-          @edit="
-            {
-              editFinish;
-            }
-          "
-        ></edit-password> -->
+        <t-checkbox v-model="userWantsToSavePassword">记住密码</t-checkbox>
       </div>
     </template>
 
@@ -77,22 +71,26 @@
 </template>
 
 <script setup lang="ts">
+// import { LoginIcon } from 'tdesign-icons-vue-next';
 import type { FormInstanceFunctions, FormRule, SubmitContext } from 'tdesign-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { ref } from 'vue';
+import VueCookies from 'vue-cookies';
 import { useRoute, useRouter } from 'vue-router';
 
 // import { useCounter } from '@/hooks';
 import { useUserStore } from '@/store';
-
 // import EditPassword from './EditPassword.vue';
 
 const userStore = useUserStore();
+const userWantsToSavePassword = ref(false); // @ts-ignore
+const savedPassword = VueCookies.get('password'); // @ts-ignore
+const savedAccount = VueCookies.get('account');
 
 const INITIAL_DATA = {
   phone: '',
-  account: '12121212',
-  password: '12121212',
+  account: '',
+  password: '',
   verifyCode: '',
   checked: false,
 };
@@ -111,6 +109,15 @@ const formData = ref({ ...INITIAL_DATA });
 const showPsw = ref(false);
 
 // const [countDown, handleCounter] = useCounter();
+const giveCookies = () => {
+  // 获取保存的密码Cookie
+  console.log('是否勾选', userWantsToSavePassword.value, savedPassword);
+
+  // 将密码填充到输入框中
+  if (savedPassword && formData.value.account === savedAccount) {
+    formData.value.password = savedPassword;
+  }
+};
 
 const switchType = (val: string) => {
   type.value = val;
@@ -123,7 +130,14 @@ const onSubmit = async (ctx: SubmitContext) => {
   if (ctx.validateResult === true) {
     try {
       await userStore.login(formData.value);
-
+      // 勾选则缓存cookies
+      if (userWantsToSavePassword.value === true) {
+        // @ts-ignore
+        VueCookies.set('password', formData.value.password, { expires: '7d' }); // 设置密码Cookie，有效期7天
+        // @ts-ignore
+        VueCookies.set('account', formData.value.account, { expires: '7d' }); // 设置密码Cookie，有效期7天
+        console.log('检查是否记住了密码', formData.value.password);
+      }
       MessagePlugin.success('登陆成功');
       const redirect = route.query.redirect as string;
       const redirectUrl = redirect ? decodeURIComponent(redirect) : '/dashboard';

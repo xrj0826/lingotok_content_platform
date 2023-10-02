@@ -25,7 +25,7 @@
         :row-key="index"
         :data="data"
         :columns="columns"
-        table-layout="auto"
+        table-layout="fixed"
         :bordered="true"
         size="small"
         :pagination="pagination"
@@ -80,7 +80,11 @@ const index = ref();
 const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
-
+const querySave = reactive({
+  name: '',
+  sort: '',
+  order: null,
+});
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
@@ -127,23 +131,38 @@ const handleRowClick = (e) => {
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context, customInfo) => {
-  // if (info.filter.name === '') {
-  //   queryData({
-  //     pageNumber: pagination.current,
-  //     pageSize: pagination.pageSize,
-  //   });
-
-  queryData(
-    {
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    },
-    null,
-    { name: customInfo },
-  );
+  if (context.trigger === 'sorter') {
+    if (info.sorter === undefined) {
+      querySave.sort = '';
+      querySave.order = null;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } else {
+      querySave.sort = info.sorter.sortBy;
+      querySave.order = info.sorter.descending;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      });
+    }
+  } else {
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      },
+      null,
+      { name: customInfo },
+    );
+  }
 };
 // 搜索框
 const onInputChange = (keyword) => {
+  querySave.name = keyword;
   onChange(null, null, keyword);
 };
 
@@ -155,10 +174,14 @@ const pagination = reactive({
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    }); // 分页数据改变时调用请求函数
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      },
+      null,
+      querySave,
+    ); // 分页数据改变时调用请求函数
     console.log('pagination.onChange', pageInfo);
   },
 });

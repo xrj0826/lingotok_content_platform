@@ -27,6 +27,7 @@ export const columns: PrimaryTableCol[] = [
   { colKey: 'mobile', title: '管理员手机号' },
   {
     colKey: 'operation',
+    fixed: 'right',
     title: '操作',
     cell: (h, { row }) => {
       return (

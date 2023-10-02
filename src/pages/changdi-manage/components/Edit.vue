@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改场地信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -60,7 +61,8 @@
           ></t-input> -->
         <!-- </t-form-item> -->
 
-        <t-form-item
+        <!-- <t-form-item
+          v-if="formData.venueType === '0'"
           label="9:30-11:30与16:00-18:00篮球场半场价格"
           name="amHalfPrice"
         >
@@ -74,7 +76,8 @@
           </t-input>
         </t-form-item>
         <t-form-item
-          label="下午篮球场半场价格"
+          v-if="formData.venueType === '0'"
+          label="18:00-22:00篮球场半场价格"
           name="pmHalfPrice"
         >
           <t-input
@@ -85,7 +88,7 @@
           >
             <template #suffix><span>元</span></template>
           </t-input>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="9:30-11:30与16:00-18:00全场价格"
           name="amAllPrice"
@@ -99,7 +102,7 @@
           </t-input>
         </t-form-item>
         <t-form-item
-          label="下午全场价格"
+          label="18:00-22:00全场价格"
           name="pmAllPrice"
         >
           <t-input
@@ -111,7 +114,19 @@
             <template #suffix><span>元</span></template>
           </t-input>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
+          label="篮球半场关联篮球全场id"
+          name="relevancyId"
+        >
+          <t-input
+            v-model="formData.relevancyId"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+          >
+          </t-input>
+        </t-form-item> -->
+        <!-- <t-form-item
           label="价格"
           name="price"
         >
@@ -122,7 +137,7 @@
             @enter="onEnter"
             ><template #suffix><span>元</span></template></t-input
           >
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="场地购买须知"
           name="purchaseInstructions"
@@ -147,7 +162,12 @@ const emit = defineEmits(['edit']);
 
 const visible = ref(false); // 是否显示
 const loading = ref(false);
-const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
+const FORM_RULES = {
+  venueName: [
+    { required: true, message: '门店名称必填' },
+    { max: 7, message: '门店名称超过限制长度,小程序将会显示异常', type: 'error', trigger: 'blur' },
+  ],
+};
 
 // 在此定义表单数据
 const formData = reactive({
@@ -161,6 +181,7 @@ const formData = reactive({
   pmHalfPrice: null,
   amAllPrice: null,
   pmAllPrice: null,
+  relevancyId: null,
   price: null,
   purchaseInstructions: '',
 });
@@ -185,6 +206,7 @@ const handlerEdit = async () => {
     // 以下操作用于更新数据
     formData.id = data.id;
     formData.storeId = data.storeId;
+    formData.relevancyId = data.relevancyId;
     formData.venueName = data.venueName;
     formData.venueType = data.venueType;
     formData.updateBy = data.updateBy;
@@ -192,7 +214,7 @@ const handlerEdit = async () => {
     formData.pmHalfPrice = data.pmHalfPrice;
     formData.amAllPrice = data.amAllPrice;
     formData.pmAllPrice = data.pmAllPrice;
-    formData.price = data.price;
+    // formData.price = data.price;
     formData.purchaseInstructions = data.purchaseInstructions;
   } catch (error) {
     console.log(error);

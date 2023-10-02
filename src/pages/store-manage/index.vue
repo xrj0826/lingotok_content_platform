@@ -11,7 +11,7 @@
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
       </t-space>
-      <t-select-input
+      <!-- <t-select-input
         placeholder="请输入任意关键词"
         allow-input
         clearable
@@ -19,7 +19,7 @@
         @input-change="onInputChange"
       >
         <template #suffixIcon><search-icon /></template>
-      </t-select-input>
+      </t-select-input> -->
       <t-table
         :row-key="index"
         :data="data"
@@ -51,7 +51,7 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { SearchIcon } from 'tdesign-icons-vue-next';
+// import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -121,30 +121,10 @@ const handleMoreDelete = async () => {
 const handleRowClick = (e) => {
   console.log(e);
 };
-// 排序、分页、过滤等发生变化时会出发 change 事件
-const onChange = (info, context) => {
-  console.log('change', info.sorter, context);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-    sort: info.sorter.sortBy,
-    order: info.sorter.descending === false ? 'asc' : 'desc',
-  });
-};
-const onInputChange = (keyword) => {
-  console.log('搜索', keyword);
-  queryData(
-    {
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    },
-    {
-      selecte: {
-        additionalProp1: { keyword },
-      },
-    },
-  );
-};
+
+// const onInputChange = (keyword) => {
+//   console.log('搜索', keyword);
+// };
 
 const pagination = reactive({
   current: 1,
@@ -167,6 +147,16 @@ const AddFinsh = (newData) => {
   queryData({
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
+  });
+};
+// 排序、分页、过滤等发生变化时会出发 change 事件
+const onChange = (info, context) => {
+  console.log('change', info.sorter, context);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
+    sort: info.sorter.sortBy,
+    order: info.sorter.descending === false ? 'asc' : 'desc',
   });
 };
 </script>

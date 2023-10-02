@@ -304,16 +304,16 @@ declare namespace API {
     venueName?: string;
     /** 门店id */
     storeId?: string;
-    /** 9:30-11:30与16:00-18:00篮球场半场价格 */
+    /** 上午篮球场半场价格 */
     amHalfPrice?: number;
     /** 下午篮球场半场价格 */
     pmHalfPrice?: number;
-    /** 9:30-11:30与16:00-18:00全场价格 */
+    /** 全场价格 */
     amAllPrice?: number;
-    /** 下午全场价格 */
+    /** 全场价格 */
     pmAllPrice?: number;
-    /** 价格 */
-    price?: number;
+    /** 篮球半场关联篮球全场id */
+    relevancyId?: number;
     /** 特殊价格 */
     specialValue?: string;
     /** 场地购买须知 */
@@ -464,80 +464,80 @@ declare namespace API {
 
   type IPageAdminUser = {
     total?: number;
-    current?: number;
     records?: AdminUser[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbCard = {
     total?: number;
-    current?: number;
     records?: CbCard[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbCoupon = {
     total?: number;
-    current?: number;
     records?: CbCoupon[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbImage = {
     total?: number;
-    current?: number;
     records?: CbImage[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbNotice = {
     total?: number;
-    current?: number;
     records?: CbNotice[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbOrderInfo = {
     total?: number;
-    current?: number;
     records?: CbOrderInfo[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbSpecialValue = {
     total?: number;
-    current?: number;
     records?: CbSpecialValue[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbStore = {
     total?: number;
-    current?: number;
     records?: CbStore[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbUser = {
     total?: number;
-    current?: number;
     records?: CbUser[];
+    current?: number;
     pages?: number;
     size?: number;
   };
 
   type IPageCbVenue = {
     total?: number;
-    current?: number;
     records?: CbVenue[];
+    current?: number;
     pages?: number;
     size?: number;
   };

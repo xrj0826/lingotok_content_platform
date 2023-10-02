@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改公告信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -47,7 +48,7 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item> -->
-        <t-form-item
+        <!-- <t-form-item
           label="修改人"
           name="updateBy"
         >
@@ -56,7 +57,7 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="通知内容"
           name="noticeContent"

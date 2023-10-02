@@ -5,12 +5,15 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="添加储值卡"
       body="订单保存中，请稍后"
       :confirm-btn="null"
       :cancel-btn="null"
       :on-confirm="close"
     >
+      <!-- @vue-ignore -->
+
       <t-form
         ref="form"
         :rules="FORM_RULES"
@@ -36,11 +39,11 @@
           <t-radio-group v-model="formData.cardType">
             <t-radio value="STORED_VALUE">储值卡</t-radio>
             <t-radio value="MONTHLY">月卡</t-radio>
-            <t-radio value="TIME_BASED">次卡</t-radio>
+            <t-radio value="TICKET">次卡</t-radio>
           </t-radio-group>
         </t-form-item>
 
-        <!-- <t-form-item
+        <t-form-item
           label="有效期"
           name="days"
         >
@@ -53,7 +56,7 @@
           >
             <template #suffix><span>天</span></template>
           </t-input>
-        </t-form-item> -->
+        </t-form-item>
         <t-form-item
           label="面值"
           name="faceValue"
@@ -68,7 +71,7 @@
             <template #suffix><span>元</span></template>
           </t-input>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
           label="赠送金额"
           name="bonusAmount"
         >
@@ -81,7 +84,7 @@
           >
             <template #suffix><span>元</span></template>
           </t-input>
-        </t-form-item>
+        </t-form-item> -->
         <!-- <t-form-item
           label="当前余额"
           name="currentBalance"
@@ -106,7 +109,7 @@
             <template #suffix><span>折</span></template>
           </t-input>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
           label="生效时间"
           name="startDate"
           ><t-date-picker
@@ -125,7 +128,8 @@
             allow-input
             clearable
           /> </t-form-item
-        ><t-form-item :status-icon="false">
+        > -->
+        <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
               theme="primary"
@@ -168,8 +172,8 @@ const formData = reactive({
   cardType: '',
   cardName: '',
   days: null,
-  startDate: '',
-  endDate: '',
+  startDate: '2023-10-02 10:00:00',
+  endDate: '2023-10-03 10:00:00',
   faceValue: null,
   discountValue: null,
   currentBalance: null,

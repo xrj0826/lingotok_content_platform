@@ -10,12 +10,19 @@ export default [
     component: Layout,
     redirect: '/store-manage/store-manage',
     meta: { title: '门店管理', icon: shallowRef(BacktopRectangleIcon) },
+    orderNo: 2,
     children: [
       {
         path: 'store-manage',
         name: 'StoreManage',
         component: () => import('@/pages/store-manage/index.vue'),
-        meta: { title: '门店管理', hidden: true },
+        meta: { title: '门店管理' },
+      },
+      {
+        path: 'announcement',
+        name: 'Announcement',
+        component: () => import('@/pages/announcement/index.vue'),
+        meta: { title: '公告管理' },
       },
     ],
   },

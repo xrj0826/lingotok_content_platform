@@ -65,7 +65,7 @@ import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete10, page5 } from '@/api/user/youhuiquanguanlijiekou';
+import { delete15, page7 } from '@/api/user/youhuiquanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';

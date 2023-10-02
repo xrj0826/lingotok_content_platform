@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       width="900px"
       header="修改区间价格"
       body="订单保存中，请稍后"
@@ -52,7 +53,7 @@
 </template>
 
 <script lang="tsx" setup>
-import { MessagePlugin } from 'tdesign-vue-next';
+// import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -75,9 +76,6 @@ onMounted(async () => {
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
   });
-  store.renewData = queryData; // 挂载时，将请求函数给pinia
-  store.pagination.current = pagination.current; // 分页数据也一起给
-  store.pagination.pageSize = pagination.pageSize;
 });
 // const store = useRenewDataStore();
 // 在此定义表单数据
@@ -102,7 +100,7 @@ const columns: PrimaryTableCol[] = [
     cell: (h, { row }) => {
       return (
         <t-image
-          src={`https://139.9.38.185:666/${row.storeImage}`}
+          src={`https://139.9.38.185:80/${row.storeImage}`}
           style={"width: '80px', height: '80px' "}
         />
       );
