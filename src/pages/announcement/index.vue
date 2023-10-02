@@ -80,12 +80,12 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
     data.value = res.result.records; // 获得表格数据
     console.log('data.value', data.value);
     // 这段代码会安全地检查data.value数组中的每个对象是否具有storeId属性，如果存在，则替换为storeName。
-    for (let i = 0; i < data.value.length; i++) {
-      if (Object.prototype.hasOwnProperty.call(data.value[i], 'storeId')) {
-        data.value[i].storeId = (await get2({ id: data.value[i].storeId })).result.storeName;
-        // console.log(data.value[i].storeId);
-      }
-    }
+    // for (let i = 0; i < data.value.length; i++) {
+    //   if (Object.prototype.hasOwnProperty.call(data.value[i], 'storeId')) {
+    //     data.value[i].storeId = (await get2({ id: data.value[i].storeId })).result.storeName;
+    //     // console.log(data.value[i].storeId);
+    //   }
+    // }
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
   } catch (err) {
     console.log(err);

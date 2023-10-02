@@ -14,6 +14,8 @@
       <!-- @vue-ignore -->
       <t-form
         ref="form"
+        label-width="120px"
+        label-align="left"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"

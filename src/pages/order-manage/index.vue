@@ -7,15 +7,6 @@
           <template #icon><add-icon /></template>
           订单导出
         </t-button> -->
-      <t-select-input
-        placeholder="请输入任意关键词"
-        allow-input
-        clearable
-        style="width: 400px"
-        @input-change="onInputChange"
-      >
-        <template #suffixIcon><search-icon /></template>
-      </t-select-input>
     </t-space>
     <t-card>
       <t-table
@@ -27,10 +18,12 @@
         :bordered="true"
         size="small"
         :pagination="pagination"
+        :filter-row="null"
         cell-empty-content="-"
         :selected-row-keys="selectedRowKeys"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
+        @filter-change="onChange"
       >
       </t-table>
     </t-card>
@@ -43,18 +36,23 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-import { SearchIcon } from 'tdesign-icons-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 // import { get, page } from '@/api/user/changdeguanli';
 import { page4 } from '@/api/user/dingdanguanlijiekou';
+import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './newFile';
 
-// const store = useRenewDataStore();
+const store = useRenewDataStore();
 const index = ref();
 const data = ref([]);
 const selectedRowKeys = ref([]);
+// 暂存查询条件
+const querySave = reactive({
+  ordertype: '',
+  orderState: '',
+});
 
 // const AddFinsh = (newData: any) => {
 //   console.log(newData);
@@ -63,10 +61,20 @@ const selectedRowKeys = ref([]);
 //     pageSize: pagination.pageSize,
 //   });
 // };
-const onInputChange = (keyword: any) => {
-  console.log(keyword);
-};
 
+// 排序、分页、过滤等发生变化时会出发 change 事件
+const onChange = (filterValue, context) => {
+  console.log('onchange', filterValue, context);
+  querySave.orderState = filterValue.orderState;
+  querySave.orderState = filterValue.orderType;
+
+  // if (info.filter.orderState === '' || info.filter.orderType === '') {
+  //   queryData({
+  //     pageNumber: pagination.current,
+  //     pageSize: pagination.pageSize,
+  //   });
+  // }
+};
 // 行选中变化时
 const onSelectChange = (value, params) => {
   selectedRowKeys.value = value;
@@ -91,6 +99,9 @@ onMounted(async () => {
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
   });
+  store.renewData = queryData; // 挂载时，将请求函数给pinia
+  store.pagination.current = pagination.current; // 分页数据也一起给
+  store.pagination.pageSize = pagination.pageSize;
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -117,7 +128,7 @@ const queryData = async (
 ) => {
   try {
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page4({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page4({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
 
     console.log('数据已送达', res);
     data.value = res.result.records; // 获得表格数据
@@ -127,12 +138,12 @@ const queryData = async (
     console.log(err);
   }
   // 这段代码会安全地检查data.value数组中的每个对象是否具有venueId属性，如果存在，则替换为data2.venueName。
-  for (let i = 0; i < data.value.length; i++) {
-    if (Object.prototype.hasOwnProperty.call(data.value[i], 'venueId')) {
-      // data.value[i].venueId = get({ id: data.value[i].venueId });//将id替换成name
-      // console.log(data.value[i].venueId);
-    }
-  }
+  // for (let i = 0; i < data.value.length; i++) {
+  //   if (Object.prototype.hasOwnProperty.call(data.value[i], 'venueId')) {
+  //     // data.value[i].venueId = get({ id: data.value[i].venueId });//将id替换成name
+  //     // console.log(data.value[i].venueId);
+  //   }
+  // }
 };
 const handleRowClick = (e) => {
   console.log(e);

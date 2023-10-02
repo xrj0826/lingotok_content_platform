@@ -12,7 +12,7 @@
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
         <t-select-input
-          placeholder="请输入任意关键词"
+          placeholder="根据姓名搜素"
           allow-input
           clearable
           style="width: 300px"
@@ -126,12 +126,25 @@ const handleRowClick = (e) => {
   console.log(e);
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
-const onChange = (info, context) => {
-  console.log('change', info, context);
+const onChange = (info, context, customInfo) => {
+  // if (info.filter.name === '') {
+  //   queryData({
+  //     pageNumber: pagination.current,
+  //     pageSize: pagination.pageSize,
+  //   });
+
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    },
+    null,
+    { name: customInfo },
+  );
 };
 // 搜索框
 const onInputChange = (keyword) => {
-  console.log(keyword);
+  onChange(null, null, keyword);
 };
 
 const pagination = reactive({

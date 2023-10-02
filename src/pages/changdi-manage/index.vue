@@ -21,34 +21,32 @@
         <template #suffixIcon><search-icon /></template>
       </t-select-input>
 
-      <t-space direction="vertical">
-        <t-table
-          :row-key="index"
-          :data="data"
-          :columns="columns"
-          table-layout="fixed"
-          :bordered="true"
-          size="small"
-          :pagination="pagination"
-          cell-empty-content="-"
-          resizable
-          :loading="isLoading"
-          :hover="true"
-          :show-sort-column-bg-color="true"
-          right-fixed-column="1"
-          :selected-row-keys="selectedRowKeys"
-          @row-click="handleRowClick"
-          @select-change="onSelectChange"
-          @change="onChange"
-        >
-          <!-- select-on-row-click -->
+      <t-table
+        :row-key="index"
+        :data="data"
+        :columns="columns"
+        table-layout="fixed"
+        :bordered="true"
+        size="small"
+        :pagination="pagination"
+        cell-empty-content="-"
+        resizable
+        :loading="isLoading"
+        :hover="true"
+        :show-sort-column-bg-color="true"
+        right-fixed-column="1"
+        :selected-row-keys="selectedRowKeys"
+        @row-click="handleRowClick"
+        @select-change="onSelectChange"
+        @change="onChange"
+      >
+        <!-- select-on-row-click -->
 
-          <!-- 自定义表头，title值为插槽名称  -->
-          <template #title-slot-name>
-            <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
-          </template>
-        </t-table>
-      </t-space>
+        <!-- 自定义表头，title值为插槽名称  -->
+        <template #title-slot-name>
+          <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
+        </template>
+      </t-table>
     </t-card>
   </div>
 </template>

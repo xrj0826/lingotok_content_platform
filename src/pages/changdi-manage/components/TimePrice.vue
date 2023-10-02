@@ -4,7 +4,7 @@
       <t-link
         theme="primary"
         @click="handleAdd"
-        >设置时间区间价格</t-link
+        >区间价格</t-link
       >
     </t-space>
     <t-dialog
@@ -22,6 +22,7 @@
       ></addTimePrice>
       <t-button
         theme="danger"
+        style="margin: -77px 450px 20px 0"
         @click="handleMoreDelete"
       >
         批量删除

@@ -97,7 +97,7 @@
           ></t-input>
         </t-form-item>
         <t-form-item
-          label="订单类型（枚举）"
+          label="订单类型"
           name="orderType"
         >
           <t-radio-group

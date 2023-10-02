@@ -6,6 +6,24 @@ import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
+const onOrderStateChange = async (val, ctx) => {
+  console.log('订单状态过滤', val, ctx);
+  const res = await store.renewData(
+    { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+    null,
+    { orderState: val },
+  );
+  console.log(res);
+};
+// const onOrderTypeChange = async (val, ctx) => {
+//   console.log('订单状态过滤', val, ctx);
+//   const res = await store.renewData(
+//     { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+//     null,
+//     { orderType: val },
+//   );
+//   console.log(res);
+// };
 export const columns: PrimaryTableCol[] = [
   // {
   //   colKey: 'row-select',
@@ -52,33 +70,78 @@ export const columns: PrimaryTableCol[] = [
       }
     },
   },
+  // {
+  //   colKey: 'orderState',
+  //   title: '订单状态',
+  //   cell: (h, { row }) => {
+  //     return <b>{row.deleteFlag === true ? '待使用' : '使用中'}</b>;
+  //   },
+  //   // eslint-disable-next-line consistent-return
+  //   attrs: ({ row }) => {
+  //     if (row.deleteFlag === false) {
+  //       return {
+  //         style: {
+  //           color: 'rgb(117, 211, 175)',
+  //         },
+  //       };
+  //     }
+  //     if (row.deleteFlag === true) {
+  //       return {
+  //         style: {
+  //           color: 'rgb(249, 62, 62)',
+  //         },
+  //       };
+  //     }
+  //   },
+  // },
   {
     colKey: 'orderState',
     title: '订单状态',
-    cell: (h, { row }) => {
-      return <b>{row.deleteFlag === true ? '待使用' : '使用中'}</b>;
-    },
-    // eslint-disable-next-line consistent-return
-    attrs: ({ row }) => {
-      if (row.deleteFlag === false) {
-        return {
-          style: {
-            color: 'rgb(117, 211, 175)',
-          },
-        };
-      }
-      if (row.deleteFlag === true) {
-        return {
-          style: {
-            color: 'rgb(249, 62, 62)',
-          },
-        };
-      }
+    width: '200px', // 输入框过滤配置
+    // 单选过滤配置
+    filter: {
+      // 过滤行中的列标题别名
+      // label: '申请状态 A',
+      type: 'single',
+      list: [
+        { label: '使用中', value: 'IN_USE' },
+        { label: '待使用', value: 'WAITING_TO_USE' },
+        { label: '已使用', value: 'USED' },
+        { label: '已失效', value: 'EXPIRED' },
+        { label: '退款', value: 'REFUNDED' },
+      ],
+      resetValue: '',
+      props: {
+        placeholder: '输入关键词过滤',
+        onChange: onOrderStateChange,
+      },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
     },
   },
-  { colKey: 'orderState', title: '订单状态', width: '200px' },
-  { colKey: 'orderPrice', title: '订单价格' },
-  { colKey: 'orderType', title: '订单类型（枚举' },
+  { colKey: 'orderPrice', title: '订单价格', sorter: true },
+  {
+    colKey: 'orderType',
+    title: '订单类型', // 单选过滤配置
+    filter: {
+      // 过滤行中的列标题别名
+      // label: '申请状态 A',
+      type: 'single',
+      list: [
+        { label: '租场', value: 'RENTAL' },
+        { label: '门票', value: 'TICKET' },
+        { label: '计时', value: 'TIMER' },
+        { label: '赛事', value: 'EVENT' },
+      ],
+      resetValue: '',
+      // props: {
+      //   placeholder: '输入关键词过滤',
+      //   onChange: onOrderTypeChange,
+      // },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
+  },
   { colKey: 'paymentMethods', title: '支付方式' },
   { colKey: 'share', title: '分享次数' },
   {

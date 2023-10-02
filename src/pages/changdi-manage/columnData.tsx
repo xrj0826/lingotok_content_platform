@@ -14,7 +14,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'row-select',
     type: 'multiple',
-    width: 50,
+    width: 40,
   },
   // {
   //   colKey: 'id',
@@ -23,6 +23,33 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'venueName',
     title: '场地名称',
+    width: '80px',
+  },
+  {
+    colKey: 'venueType',
+    title: '场地类型',
+    width: '80px',
+    cell: (h, { row }) => {
+      let cellValue;
+
+      // 使用 switch 语句检查 row 的值
+      switch (row.venueType) {
+        case '0':
+          cellValue = <b style={{ color: 'rgb(117, 211, 175)' }}>篮球场</b>;
+          break;
+        case '1':
+          cellValue = <b style={{ color: 'rgb(165, 105, 91)' }}>羽毛球场</b>;
+          break;
+        case '2':
+          cellValue = <b style={{ color: 'rgb(185, 155, 10)' }}>乒乓球场</b>;
+          break;
+        default:
+          cellValue = <b>未设置</b>;
+          break;
+      }
+
+      return cellValue;
+    },
   },
   // {
   //   colKey: 'createBy',
@@ -32,12 +59,14 @@ export const columns: PrimaryTableCol[] = [
   // { colKey: 'updateBy', title: '修改者' },
   // { colKey: 'updateTime', title: '修改时间', sorter: true },
   // { colKey: 'storeId', title: '门店id' },
-  { colKey: 'halfPrice', title: '半场价格' },
-  { colKey: 'allPrice', title: '全场价格' },
+  { colKey: 'amAllPrice', title: '9:30-11:30与16:00-18:00全场价格', sorter: true },
+  { colKey: 'pmAllPrice', title: '18:00-22:00全场价格', sorter: true },
+  { colKey: 'amHalfPrice', title: '9:30-11:30与16:00-18:00篮球场半场价格', sorter: true },
+  { colKey: 'pmHalfPrice', title: '18:00-22:00篮球场半场价格', sorter: true },
   { colKey: 'price', title: '普通场价格', sorter: true },
   {
     colKey: 'specialValue',
-    title: '设置时间区间价格',
+    title: '区间价格',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -51,7 +80,7 @@ export const columns: PrimaryTableCol[] = [
   },
   {
     colKey: 'purchaseInstructions',
-    title: '场地购买须知',
+    title: '购买须知',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -66,6 +95,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'operation',
     title: '操作',
+    width: '100px',
     cell: (h, { row }) => {
       return (
         <t-space>

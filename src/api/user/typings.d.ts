@@ -191,6 +191,9 @@ declare namespace API {
     startTime?: string;
     /** 用户离开时间 */
     endTime?: string;
+    /** 卡id */
+    cardId?: string;
+    /** id */
     transactionId?: string;
   };
 
@@ -301,16 +304,22 @@ declare namespace API {
     venueName?: string;
     /** 门店id */
     storeId?: string;
-    /** 半场价格 */
-    halfPrice?: number;
-    /** 全场价格 */
-    allPrice?: number;
+    /** 9:30-11:30与16:00-18:00篮球场半场价格 */
+    amHalfPrice?: number;
+    /** 下午篮球场半场价格 */
+    pmHalfPrice?: number;
+    /** 9:30-11:30与16:00-18:00全场价格 */
+    amAllPrice?: number;
+    /** 下午全场价格 */
+    pmAllPrice?: number;
     /** 价格 */
     price?: number;
     /** 特殊价格 */
     specialValue?: string;
     /** 场地购买须知 */
     purchaseInstructions?: string;
+    /** 场地类型 */
+    venueType?: string;
   };
 
   type delete10Params = {
