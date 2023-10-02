@@ -38,6 +38,7 @@
         :selected-row-keys="selectedRowKeys"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
+        @filter-change="onFilterChange"
         @change="onChange"
       >
         <!-- select-on-row-click -->
@@ -69,6 +70,7 @@ import Add from './components/Add.vue';
 
 const querySave = reactive({
   sort: '',
+  venueType: '',
   order: null,
 });
 // 挂载时调用请求函数
@@ -92,7 +94,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -131,10 +133,21 @@ const handleMoreDelete = async () => {
 const handleRowClick = (e) => {
   console.log(e);
 };
+// 过滤等发生变化时会出发 change 事件
+const onFilterChange = (filterValue, context) => {
+  querySave.venueType = filterValue.venueType;
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+    },
+    // @ts-ignore
+    querySave,
+  );
+};
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
   console.log('change', info.sorter, context.trigger);
-
   if (context.trigger === 'sorter') {
     if (info.sorter === undefined) {
       querySave.sort = '';
@@ -178,12 +191,16 @@ const pagination = reactive({
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-      sort: querySave.sort,
-      order: querySave.order === false ? 'asc' : 'desc',
-    }); // 分页数据改变时调用请求函数
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      },
+      null, // @ts-ignore
+      querySave,
+    ); // 分页数据改变时调用请求函数
     console.log('pagination.onChange', pageInfo);
   },
 });

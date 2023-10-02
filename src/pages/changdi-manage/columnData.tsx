@@ -29,7 +29,24 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'venueType',
     title: '场地类型',
-    width: '80px',
+    width: '100px', // 单选过滤配置
+    filter: {
+      // 过滤行中的列标题别名
+      // label: '申请状态 A',
+      type: 'single',
+      list: [
+        { label: '篮球场', value: '0' },
+        { label: '羽毛球场', value: '1' },
+        { label: '乒乓球场', value: '2' },
+      ],
+      resetValue: '',
+      // props: {
+      //   placeholder: '输入关键词过滤',
+      //   onChange: onOrderStateChange,
+      // },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
     cell: (h, { row }) => {
       let cellValue;
 

@@ -11,16 +11,13 @@
       v-model:visible="visible"
       attach="body"
       width="900px"
-      header="修改区间价格"
+      header="查看图片"
       body="订单保存中，请稍后"
       :confirm-btn="null"
       :on-confirm="close"
       :on-close="null"
     >
-      <addTimePrice
-        style="margin: 0 900px 20px 0"
-        @add="AddFinsh"
-      ></addTimePrice>
+      <addTimePrice @add="AddFinsh"></addTimePrice>
       <t-button
         theme="danger"
         @click="handleMoreDelete"

@@ -153,6 +153,16 @@
             v-model="formData.scheduledNotice"
             placeholder="请输入内容"
             @enter="onEnter"
+          ></t-textarea>
+        </t-form-item>
+        <t-form-item
+          label="门店公告"
+          name="announcement"
+        >
+          <t-textarea
+            v-model="formData.announcement"
+            placeholder="请输入内容"
+            @enter="onEnter"
           ></t-textarea> </t-form-item></t-form
     ></t-dialog>
   </div>
@@ -187,7 +197,7 @@ const formData = reactive({
   serviceHotline: '',
   advanceDays: '',
   leadTime: null,
-  announcement: null,
+  announcement: '',
   scheduledNotice: '',
 });
 
@@ -217,6 +227,8 @@ const handlerEdit = async () => {
     formData.closingTime = data.closingTime;
     formData.storeImages = data.storeImages;
     formData.serviceHotline = data.serviceHotline;
+    formData.announcement = data.announcement;
+
     formData.advanceDays = data.advanceDays;
     formData.leadTime = data.leadTime;
     formData.scheduledNotice = data.scheduledNotice;

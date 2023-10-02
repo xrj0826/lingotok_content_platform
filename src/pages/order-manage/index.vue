@@ -115,12 +115,17 @@ const onChange = (info, context) => {
     } else {
       querySave.sort = info.sorter.sortBy;
       querySave.order = info.sorter.descending;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      });
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null,
+        // @ts-ignore
+        querySave,
+      );
     }
   }
 };

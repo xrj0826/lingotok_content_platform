@@ -96,20 +96,20 @@ export const columns: PrimaryTableCol[] = [
     fixed: 'right',
 
     // @ts-ignore
-    cell: (h, { row }) => {
-      return (
-        <t-space>
-          <AddAnno // @ts-ignore
-            onAdd={addFinish}
-            editId={row.id}
-          ></AddAnno>
-          {/* <EditAnno // @ts-ignore
-            onEdit={editFinish}
-            editId={row.id}
-          ></EditAnno> */}
-        </t-space>
-      );
-    },
+    // cell: (h, { row }) => {
+    //   return (
+    //     <t-space>
+    //       <AddAnno // @ts-ignore
+    //         onAdd={addFinish}
+    //         editId={row.id}
+    //       ></AddAnno>
+    //       {/* <EditAnno // @ts-ignore
+    //         onEdit={editFinish}
+    //         editId={row.id}
+    //       ></EditAnno> */}
+    //     </t-space>
+    //   );
+    // },
   },
   {
     colKey: 'scheduledNotice',
