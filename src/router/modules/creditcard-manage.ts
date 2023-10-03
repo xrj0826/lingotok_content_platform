@@ -10,6 +10,7 @@ export default [
     component: Layout,
     redirect: '/creditcard-manage/creditcard-manage',
     meta: { title: '储值卡管理', icon: shallowRef(CalendarIcon) },
+    orderNo: 5,
     children: [
       {
         path: 'creditcard-manage',

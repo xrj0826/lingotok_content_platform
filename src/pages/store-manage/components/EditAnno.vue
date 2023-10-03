@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改公告信息"
       body="保存中，请稍后"
       :confirm-btn="{

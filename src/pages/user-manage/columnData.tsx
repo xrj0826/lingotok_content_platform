@@ -6,6 +6,15 @@ import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';
 
+// const onNameChange = async (val, _) => {
+//   // console.log(val, ctx);
+//   if (val === '' || null) {
+//     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+//   } else {
+//     const res = await store.renewData(null, null, { name: val });
+//     console.log(res);
+//   }
+// };
 export const columns: PrimaryTableCol[] = [
   {
     colKey: 'row-select',
@@ -19,6 +28,23 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'name',
     title: '姓名',
+    // // 输入框过滤配置
+    // filter: {
+    //   type: 'input',
+
+    //   // 文本域搜索
+    //   // component: Textarea,
+
+    //   resetValue: '',
+    //   // 按下 Enter 键时也触发确认搜索
+    //   confirmEvents: ['onEnter', 'onReset'],
+    //   props: {
+    //     placeholder: '输入关键词过滤',
+    //     onChange: onNameChange,
+    //   },
+    //   // 是否显示重置取消按钮，一般情况不需要显示
+    //   showConfirmAndReset: true,
+    // },
   },
   { colKey: 'nickName', title: '昵称' },
   {
@@ -26,21 +52,37 @@ export const columns: PrimaryTableCol[] = [
     title: '累计消费',
     sorter: true,
   },
-  {
-    colKey: 'status',
-    title: '状态',
-    cell: (h, { row }) => {
-      return (
-        <t-tag
-          shape="round"
-          theme={row.status === false ? 'danger' : 'success'}
-          variant="light-outline"
-        >
-          {row.status === false ? '禁用' : '正常'}
-        </t-tag>
-      );
-    },
-  },
+  // {
+  //   colKey: 'status',
+  //   title: '状态',
+  //   // 单选过滤配置
+  //   filter: {
+  //     // 过滤行中的列标题别名
+  //     // label: '申请状态 A',
+  //     type: 'single',
+  //     list: [
+  //       // @ts-ignore
+  //       { label: '禁用', value: false },
+  //       // @ts-ignore
+  //       { label: '正常', value: true },
+  //     ],
+  //   },
+  //   // 支持透传全部 Popup 组件属性
+  //   // popupProps: {
+  //   //   attach: () => document.body,
+  //   // },
+  //   // cell: (h, { row }) => {
+  //   //   return (
+  //   //     <t-tag
+  //   //       shape="round"
+  //   //       theme={row.status === false ? 'danger' : 'success'}
+  //   //       variant="light-outline"
+  //   //     >
+  //   //       {row.status === false ? '禁用' : '正常'}
+  //   //     </t-tag>
+  //   //   );
+  //   // },
+  // },
 
   { colKey: 'phoneNumber', title: '手机号', width: '110px' },
   { colKey: 'email', title: '邮件', width: '150px' },
@@ -66,7 +108,19 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'sex',
     title: '性别',
     cell: (h, { row }) => {
-      return <span>{row.sex === 0 ? '男' : '女'}</span>;
+      let cellValue;
+      switch (row.sex) {
+        case 0:
+          cellValue = <span>男</span>;
+          break;
+        case 1:
+          cellValue = <span>女</span>;
+          break;
+        default:
+          cellValue = <span>用户未设置</span>;
+          break;
+      }
+      return cellValue;
     },
   },
 
@@ -77,6 +131,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'operation',
     title: '操作',
+    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -126,7 +181,7 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
+  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
 };
 
 // const loadingCount = ref(0);

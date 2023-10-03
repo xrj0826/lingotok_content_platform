@@ -5,6 +5,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="添加管理员"
       body="保存中，请稍后"
       :confirm-btn="null"
@@ -14,6 +15,8 @@
       <!-- @vue-ignore -->
       <t-form
         ref="form"
+        label-width="120px"
+        label-align="left"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
@@ -29,7 +32,16 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-
+        <!-- <t-form-item
+          label="管理员昵称"
+          name="nickName"
+        >
+          <t-input
+            v-model="formData.nickName"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item> -->
         <t-form-item
           label="密码"
           name="password"
@@ -93,6 +105,7 @@ const formData = reactive({
   id: null,
   // storeId: '', // 添加管理员必须传storeId
   username: '',
+  // nickName: '',
   mobile: '',
   password: '',
 });

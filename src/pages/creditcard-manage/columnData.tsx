@@ -25,16 +25,37 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'cardType',
     title: '卡类型（储值卡、月卡、次卡）',
     width: '220px',
+    cell: (h, { row }) => {
+      let cellValue;
+
+      // 使用 switch 语句检查 row 的值
+      switch (row.cardType) {
+        case 'STORED_VALUE':
+          cellValue = <span>储值卡</span>;
+          break;
+        case 'MONTHLY':
+          cellValue = <span>月卡</span>;
+          break;
+        case 'TICKET':
+          cellValue = <span>次卡</span>;
+          break;
+        default:
+          cellValue = <span>null</span>;
+          break;
+      }
+
+      return cellValue;
+    },
   },
   // {
   //   colKey: 'currentBalance',
   //   title: '当前余额',
   //   sorter: true,
   // },
-  {
-    colKey: 'bonusAmount',
-    title: '赠送金额',
-  },
+  // {
+  //   colKey: 'bonusAmount',
+  //   title: '赠送金额',
+  // },
 
   { colKey: 'faceValue', title: '面值', sorter: true },
 
@@ -42,9 +63,10 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'discountValue',
     title: '折扣值/折',
   },
-  // { colKey: 'days', title: '有效期', sorter: true },
-  { colKey: 'startDate', title: '生效日期', sorter: true },
-  { colKey: 'endDate', title: '结束日期', sorter: true },
+  { colKey: 'days', title: '有效期', sorter: true },
+
+  // { colKey: 'startDate', title: '生效日期', sorter: true },
+  // { colKey: 'endDate', title: '结束日期', sorter: true },
   {
     colKey: 'storeId',
     title: '门店',
@@ -56,6 +78,8 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'operation',
     title: '操作',
+    fixed: 'right',
+
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -105,5 +129,5 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
+  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
 };

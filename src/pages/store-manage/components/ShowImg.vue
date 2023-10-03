@@ -9,17 +9,15 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       width="900px"
-      header="修改区间价格"
+      header="查看图片"
       body="订单保存中，请稍后"
       :confirm-btn="null"
       :on-confirm="close"
       :on-close="null"
     >
-      <addTimePrice
-        style="margin: 0 900px 20px 0"
-        @add="AddFinsh"
-      ></addTimePrice>
+      <addTimePrice @add="AddFinsh"></addTimePrice>
       <t-button
         theme="danger"
         @click="handleMoreDelete"
@@ -52,7 +50,7 @@
 </template>
 
 <script lang="tsx" setup>
-import { MessagePlugin } from 'tdesign-vue-next';
+// import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -75,9 +73,6 @@ onMounted(async () => {
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
   });
-  // store.renewData = queryData; // 挂载时，将请求函数给pinia
-  // store.pagination.current = pagination.current; // 分页数据也一起给
-  // store.pagination.pageSize = pagination.pageSize;
 });
 // const store = useRenewDataStore();
 // 在此定义表单数据
@@ -98,6 +93,15 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'storeImage',
     title: '门店轮播图片',
+    width: '80px',
+    cell: (h, { row }) => {
+      return (
+        <t-image
+          src={`https://139.9.38.185:80/${row.storeImage}`}
+          style={"width: '80px', height: '80px' "}
+        />
+      );
+    },
   },
   // {
   //   colKey: 'venueId',
@@ -121,7 +125,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page6({ entity: { id: props.editId }, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page6({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据

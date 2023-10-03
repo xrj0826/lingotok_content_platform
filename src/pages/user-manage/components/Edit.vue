@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改场地信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -171,10 +172,6 @@ const edit = async () => {
 };
 
 const form = ref(null);
-
-const onReset = () => {
-  MessagePlugin.success('重置成功');
-};
 
 // const onSubmit = ({ validateResult, firstError }) => {
 //   if (validateResult === true) {

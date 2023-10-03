@@ -5,6 +5,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="添加场地"
       body="订单保存中，请稍后"
       :confirm-btn="null"
@@ -13,6 +14,8 @@
     >
       <t-form
         ref="form"
+        label-width="280px"
+        label-align="top"
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
@@ -24,9 +27,19 @@
         >
           <t-input
             v-model="formData.venueName"
-            placeholder="请输入内容"
+            placeholder="请输入内容,如(A1半场)"
             @enter="onEnter"
           ></t-input>
+        </t-form-item>
+        <t-form-item
+          label="场地类型"
+          name="venueType"
+        >
+          <t-radio-group v-model="formData.venueType">
+            <t-radio value="0">篮球场</t-radio>
+            <t-radio value="1">羽毛球场</t-radio>
+            <t-radio value="2">乒乓球场</t-radio>
+          </t-radio-group>
         </t-form-item>
         <!-- 
         <t-form-item
@@ -40,36 +53,83 @@
           ></t-input>
         </t-form-item> -->
 
-        <t-form-item
-          label="半场价格"
-          name="halfPrice"
+        <!-- <t-form-item
+          v-if="formData.venueType === '0'"
+          label="9:30-11:30与16:00-18:00篮球场半场价格"
+          name="amHalfPrice"
         >
           <t-input
-            v-model="formData.halfPrice"
-            placeholder="请输入内容"
+            v-model="formData.amHalfPrice"
+            placeholder="请输入"
+            style="width: 100px"
             @enter="onEnter"
-          ></t-input>
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
         </t-form-item>
         <t-form-item
-          label="全场价格"
-          name="allPrice"
+          v-if="formData.venueType === '0'"
+          label="18:00-22:00篮球场半场价格"
+          name="pmHalfPrice"
         >
           <t-input
-            v-model="formData.allPrice"
-            placeholder="请输入内容"
+            v-model="formData.pmHalfPrice"
+            placeholder="请输入"
+            style="width: 100px"
             @enter="onEnter"
-          ></t-input>
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item> -->
+        <t-form-item
+          label="9:30-11:30与16:00-18:00全场价格"
+          name="amAllPrice"
+        >
+          <t-input
+            v-model="formData.amAllPrice"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+            ><template #suffix><span>元</span></template>
+          </t-input>
         </t-form-item>
         <t-form-item
+          label="18:00-22:00全场价格"
+          name="pmAllPrice"
+        >
+          <t-input
+            v-model="formData.pmAllPrice"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item>
+        <!-- <t-form-item
+          label="篮球半场关联篮球全场id"
+          name="relevancyId"
+        >
+          <t-input
+            v-model="formData.relevancyId"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+          >
+          </t-input>
+        </t-form-item> -->
+        <!-- <t-form-item
           label="价格"
           name="price"
         >
           <t-input
             v-model="formData.price"
-            placeholder="请输入内容"
+            placeholder="请输入"
+            style="width: 100px"
             @enter="onEnter"
-          ></t-input>
-        </t-form-item>
+            ><template #suffix><span>元</span></template></t-input
+          >
+        </t-form-item> -->
         <t-form-item
           label="场地购买须知"
           name="purchaseInstructions"
@@ -110,10 +170,16 @@ const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
   storeId: [{ required: true, message: '门店id必填' }],
-  venueName: [{ required: true, message: '门店名称必填' }],
-  halfPrice: [{ required: true, message: '半场价格必填' }],
-  allPrice: [{ required: true, message: '全场价格必填' }],
-
+  venueName: [
+    { required: true, message: '门店名称必填' },
+    // { min: 0, message: '门店名称应在5字以内', type: 'error', trigger: 'blur' },
+    { max: 7, message: '门店名称超过限制长度,小程序将会显示异常', type: 'error', trigger: 'blur' },
+  ],
+  venueType: [{ required: true, message: '门店类型必选' }],
+  // amHalfPrice: [{ required: true, message: '必填' }],
+  // pmHalfPrice: [{ required: true, message: '必填' }],
+  amAllPrice: [{ required: true, message: '必填' }],
+  pmAllPrice: [{ required: true, message: '必填' }],
   // createBy: [{ required: true, message: '创建必填' }],
   price: [{ required: true, message: '价格必填' }],
 };
@@ -124,10 +190,14 @@ const formData = reactive({
   // id: null,
   storeId: '9376',
   venueName: '',
+  venueType: '1',
   createBy: '',
-  halfPrice: null,
-  allPrice: null,
+  amHalfPrice: null,
+  pmHalfPrice: null,
+  amAllPrice: null,
+  pmAllPrice: null,
   price: null,
+  relevancyId: null,
   specialValue: '',
   purchaseInstructions: '',
 });
@@ -177,3 +247,11 @@ const onEnter = (_, { e }) => {
   e.preventDefault();
 };
 </script>
+<style lang="less" scoped>
+.block {
+  display: block;
+}
+.none {
+  display: none;
+}
+</style>

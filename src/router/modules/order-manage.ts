@@ -10,6 +10,7 @@ export default [
     component: Layout,
     redirect: '/order/orderManage',
     meta: { title: '订单管理页', icon: shallowRef(OrderDescendingIcon) },
+    orderNo: 4,
     children: [
       {
         path: 'orderManage',

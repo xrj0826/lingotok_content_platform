@@ -40,7 +40,6 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       }),
       svgLoader(),
     ],
-
     server: {
       port: 8888,
       cors: true,
@@ -88,6 +87,14 @@ export default ({ mode }: ConfigEnv): UserConfig => {
             return path.replace(/^\/test2/, '');
           },
         },
+        // '/images/.*\\.(gif|jpg|jpeg|png|bmp|swf)$': {
+        //   target: 'https://139.9.38.185:37848/',
+        //   ws: true,
+        //   changeOrigin: false,
+        //   rewrite: (path) => {
+        //     return path.replace(/^\/test2/, '');
+        //   },
+        // },
       },
     },
   };

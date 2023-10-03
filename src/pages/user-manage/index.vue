@@ -12,7 +12,7 @@
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
         <t-select-input
-          placeholder="请输入任意关键词"
+          placeholder="根据姓名搜素"
           allow-input
           clearable
           style="width: 300px"
@@ -25,7 +25,7 @@
         :row-key="index"
         :data="data"
         :columns="columns"
-        table-layout="auto"
+        table-layout="fixed"
         :bordered="true"
         size="small"
         :pagination="pagination"
@@ -80,13 +80,17 @@ const index = ref();
 const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
-
+const querySave = reactive({
+  name: '',
+  sort: '',
+  order: null,
+});
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page1({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page1({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -126,12 +130,40 @@ const handleRowClick = (e) => {
   console.log(e);
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
-const onChange = (info, context) => {
-  console.log('change', info, context);
+const onChange = (info, context, customInfo) => {
+  if (context.trigger === 'sorter') {
+    if (info.sorter === undefined) {
+      querySave.sort = '';
+      querySave.order = null;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      });
+    } else {
+      querySave.sort = info.sorter.sortBy;
+      querySave.order = info.sorter.descending;
+      queryData({
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      });
+    }
+  } else {
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      },
+      null,
+      { name: customInfo },
+    );
+  }
 };
 // 搜索框
 const onInputChange = (keyword) => {
-  console.log(keyword);
+  querySave.name = keyword;
+  onChange(null, null, keyword);
 };
 
 const pagination = reactive({
@@ -142,10 +174,14 @@ const pagination = reactive({
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    }); // 分页数据改变时调用请求函数
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+      },
+      null,
+      querySave,
+    ); // 分页数据改变时调用请求函数
     console.log('pagination.onChange', pageInfo);
   },
 });

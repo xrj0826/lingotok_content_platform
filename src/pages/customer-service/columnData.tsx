@@ -81,6 +81,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'operation',
     title: '操作',
+    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
@@ -101,11 +102,10 @@ export const columns: PrimaryTableCol[] = [
 ];
 
 const handlerDelete = () => {
-  alert('你确定要删除该用户吗?删除后数据将无法恢复。');
+  // alert('你确定要删除该用户吗?删除后数据将无法恢复。');
 };
 
 // 发送编辑行后执行回调
 const editRow = (newData) => {
-  alert('编辑完成');
-  alert(newData);
+  console.log(newData);
 };

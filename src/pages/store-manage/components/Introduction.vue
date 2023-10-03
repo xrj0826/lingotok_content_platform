@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="场馆介绍"
       :confirm-btn="{
         content: '确认',

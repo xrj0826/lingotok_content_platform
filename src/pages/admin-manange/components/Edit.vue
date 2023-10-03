@@ -9,6 +9,7 @@
     </t-space>
     <t-dialog
       v-model:visible="visible"
+      attach="body"
       header="修改场地信息"
       body="保存中，请稍后"
       :confirm-btn="{
@@ -93,6 +94,7 @@ const handlerEdit = async () => {
   try {
     visible.value = true;
     console.log(props.editId);
+    // @ts-ignore
     const res = await page9({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
     const [data] = res.result.records; // 解构赋值records
     // for (const key in formData) {
