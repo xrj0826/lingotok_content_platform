@@ -24,7 +24,8 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'cardType',
     title: '卡类型（储值卡、月卡、次卡）',
-    width: '220px',
+    width: '240px',
+
     cell: (h, { row }) => {
       let cellValue;
 
@@ -45,6 +46,23 @@ export const columns: PrimaryTableCol[] = [
       }
 
       return cellValue;
+    },
+    filter: {
+      // 过滤行中的列标题别名
+      // label: '申请状态 A',
+      type: 'single',
+      list: [
+        { label: '储值卡', value: 'STORED_VALUE' },
+        { label: '月卡', value: 'MONTHLY' },
+        { label: '次卡', value: 'TICKET' },
+      ],
+      resetValue: '',
+      // props: {
+      //   placeholder: '输入关键词过滤',
+      //   onChange: onOrderStateChange,
+      // },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
     },
   },
   // {
@@ -121,7 +139,16 @@ const handleDelete = async (id) => {
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
 
-    store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    store.renewData(
+      {
+        pageNmber: store.pagination.current,
+        pagaSize: store.pagination.pageSize,
+        sort: 'createTime',
+        order: 'asc',
+      },
+      null,
+      store.querySave,
+    );
   } catch (error) {
     console.log(error);
   }
@@ -129,5 +156,14 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+  store.renewData(
+    {
+      pageNmber: store.pagination.current,
+      pagaSize: store.pagination.pageSize,
+      sort: 'createTime',
+      order: 'asc',
+    },
+    null,
+    store.querySave,
+  );
 };

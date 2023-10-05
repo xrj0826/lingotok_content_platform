@@ -125,7 +125,7 @@ export const columns: PrimaryTableCol[] = [
     cell: (h, { row }) => {
       return (
         <t-space>
-          {/* <t-popconfirm
+          <t-popconfirm
             content="确认删除吗"
             onConfirm={() => handleDelete(row.id)}
           >
@@ -136,7 +136,7 @@ export const columns: PrimaryTableCol[] = [
             >
               删除
             </t-link>
-          </t-popconfirm> */}
+          </t-popconfirm>
           <Edit // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
@@ -173,5 +173,9 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }, null, store.querySave); // 使用pinia里面的分页请求
+  store.renewData(
+    { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
+    null,
+    store.querySave,
+  ); // 使用pinia里面的分页请求
 };

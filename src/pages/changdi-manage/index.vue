@@ -4,12 +4,12 @@
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
         <add @add="AddFinsh"></add>
-        <t-popconfirm
+        <!-- <t-popconfirm
           content="确认删除吗"
           :on-confirm="handleMoreDelete"
         >
           <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
+        </t-popconfirm> -->
       </t-space>
       <!-- <t-select-input
         placeholder="请输入任意关键词"
@@ -70,19 +70,22 @@ import { columns } from './columnData';
 import Add from './components/Add.vue';
 
 const querySave = reactive({
-  sort: '',
+  sort: 'createTime',
+  order: false,
   venueType: '',
-  order: null,
 });
 // 挂载时调用请求函数
 onMounted(async () => {
   queryData({
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
+    sort: 'createTime',
+    order: 'asc',
   });
   store.renewData = queryData; // 挂载时，将请求函数给pinia
   store.pagination.current = pagination.current; // 分页数据也一起给
   store.pagination.pageSize = pagination.pageSize;
+  store.querySave = querySave;
 });
 
 const index = ref();
@@ -100,7 +103,6 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
-    store.querySave = querySave;
   } catch (err) {
     console.log(err);
   }
@@ -142,7 +144,10 @@ const onFilterChange = (filterValue, context) => {
     {
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
     },
+    null,
     // @ts-ignore
     querySave,
   );
@@ -152,12 +157,14 @@ const onChange = (info, context) => {
   console.log('change', info.sorter, context.trigger);
   if (context.trigger === 'sorter') {
     if (info.sorter === undefined) {
-      querySave.sort = '';
-      querySave.order = null;
+      querySave.sort = 'createTime';
+      querySave.order = false;
       queryData(
         {
           pageNumber: pagination.current,
           pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
         },
         null, // @ts-ignore
         querySave,

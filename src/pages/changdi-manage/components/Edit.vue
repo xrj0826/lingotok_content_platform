@@ -38,7 +38,17 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-
+        <!-- <t-form-item
+          label="创建时间"
+          name="createTime"
+        >
+          <t-date-picker
+            v-model="formData.createTime"
+            enable-time-picker
+            allow-input
+            clearable
+          />
+        </t-form-item> -->
         <!-- <t-form-item
           label="修改者"
           name="updateBy"
@@ -177,6 +187,7 @@ const formData = reactive({
   venueType: '',
   updateBy: '',
   // updateTime: '',
+  // createTime: '',
   amHalfPrice: null,
   pmHalfPrice: null,
   amAllPrice: null,
@@ -214,6 +225,8 @@ const handlerEdit = async () => {
     formData.pmHalfPrice = data.pmHalfPrice;
     formData.amAllPrice = data.amAllPrice;
     formData.pmAllPrice = data.pmAllPrice;
+    // formData.createTime = data.createTime;
+
     // formData.price = data.price;
     formData.purchaseInstructions = data.purchaseInstructions;
   } catch (error) {

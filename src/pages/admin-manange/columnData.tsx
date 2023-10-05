@@ -6,7 +6,7 @@ import {} from 'vue';
 import { delete19 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
-import Edit from './components/Edit.vue';
+// import Edit from './components/Edit.vue';
 
 export const columns: PrimaryTableCol[] = [
   {
@@ -46,11 +46,11 @@ export const columns: PrimaryTableCol[] = [
               删除
             </t-link>
           </t-popconfirm>
-          <Edit
+          {/* <Edit
             // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
-          ></Edit>
+          ></Edit> */}
         </t-space>
       );
     },
@@ -75,7 +75,7 @@ const handleDelete = async (id) => {
   }
 };
 // 发送编辑行后执行回调
-const editFinish = async (newData) => {
-  console.log('edit传回', newData);
-  store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
-};
+// const editFinish = async (newData) => {
+//   console.log('edit传回', newData);
+//   store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
+// };
