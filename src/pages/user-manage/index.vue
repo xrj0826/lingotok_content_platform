@@ -11,7 +11,7 @@
         >
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
-        <t-select-input
+        <!-- <t-select-input
           placeholder="根据姓名搜素"
           allow-input
           clearable
@@ -19,7 +19,7 @@
           @input-change="onInputChange"
         >
           <template #suffixIcon><search-icon /></template>
-        </t-select-input>
+        </t-select-input> -->
       </t-space>
       <t-table
         :row-key="index"
@@ -81,7 +81,6 @@ const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
 const querySave = reactive({
-  name: '',
   sort: '',
   order: null,
 });
@@ -156,15 +155,15 @@ const onChange = (info, context, customInfo) => {
         pageSize: pagination.pageSize,
       },
       null,
-      { name: customInfo },
+      querySave,
     );
   }
 };
-// 搜索框
-const onInputChange = (keyword) => {
-  querySave.name = keyword;
-  onChange(null, null, keyword);
-};
+// // 搜索框
+// const onInputChange = (keyword) => {
+//   querySave.name = keyword;
+//   onChange(null, null, keyword);
+// };
 
 const pagination = reactive({
   current: 1,

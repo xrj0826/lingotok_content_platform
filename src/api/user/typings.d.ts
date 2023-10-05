@@ -308,12 +308,12 @@ declare namespace API {
     amHalfPrice?: number;
     /** 下午篮球场半场价格 */
     pmHalfPrice?: number;
-    /** 全场价格 */
+    /** 上午全场价格 */
     amAllPrice?: number;
-    /** 全场价格 */
+    /** 下午全场价格 */
     pmAllPrice?: number;
     /** 篮球半场关联篮球全场id */
-    relevancyId?: number;
+    relevancyId?: string;
     /** 特殊价格 */
     specialValue?: string;
     /** 场地购买须知 */
@@ -382,6 +382,7 @@ declare namespace API {
 
   type delete4Params = {
     name: string;
+    id: string;
   };
 
   type delete5Params = {

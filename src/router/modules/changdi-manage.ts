@@ -9,8 +9,8 @@ export default [
     name: 'changdi-manage',
     component: Layout,
     redirect: '/changdi-manage/changdi-manage',
-    meta: { title: '场地管理', icon: shallowRef(BacktopRectangleIcon) },
-    orderNo: 6,
+    meta: { title: '场地管理', icon: shallowRef(BacktopRectangleIcon), orderNo: 2 },
+
     children: [
       {
         path: 'changdi-manage',

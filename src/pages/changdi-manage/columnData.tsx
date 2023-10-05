@@ -11,11 +11,11 @@ import TimePrice from './components/TimePrice.vue';
 const store = useRenewDataStore();
 
 export const columns: PrimaryTableCol[] = [
-  {
-    colKey: 'row-select',
-    type: 'multiple',
-    width: 40,
-  },
+  // {
+  //   colKey: 'row-select',
+  //   type: 'multiple',
+  //   width: 40,
+  // },
   {
     colKey: 'id',
     title: 'id',
@@ -125,7 +125,7 @@ export const columns: PrimaryTableCol[] = [
     cell: (h, { row }) => {
       return (
         <t-space>
-          <t-popconfirm
+          {/* <t-popconfirm
             content="确认删除吗"
             onConfirm={() => handleDelete(row.id)}
           >
@@ -136,7 +136,7 @@ export const columns: PrimaryTableCol[] = [
             >
               删除
             </t-link>
-          </t-popconfirm>
+          </t-popconfirm> */}
           <Edit // @ts-ignore
             onEdit={editFinish}
             editId={row.id}
@@ -161,7 +161,11 @@ const handleDelete = async (id) => {
     const res = await delete1(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
-    await store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    await store.renewData(
+      { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+      null,
+      store.querySave,
+    );
   } catch (error) {
     console.log(error);
   }
@@ -169,5 +173,5 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }, null, store.querySave); // 使用pinia里面的分页请求
 };

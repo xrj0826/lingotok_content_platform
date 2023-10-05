@@ -7,6 +7,12 @@
           <template #icon><add-icon /></template>
           订单导出
         </t-button> -->
+      <t-popconfirm
+        content="确认删除吗"
+        :on-confirm="handleMoreDelete"
+      >
+        <t-button theme="danger"> 批量删除 </t-button>
+      </t-popconfirm>
     </t-space>
     <t-card>
       <t-table
@@ -37,10 +43,11 @@ export default {
 };
 </script>
 <script setup lang="tsx">
+import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 // import { get, page } from '@/api/user/changdeguanli';
-import { page4 } from '@/api/user/dingdanguanlijiekou';
+import { delete9, page4 } from '@/api/user/dingdanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './newFile';
@@ -92,7 +99,7 @@ const onFilterChange = (filterValue, context) => {
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
     },
-    // @ts-ignore
+    null, // @ts-ignore
     querySave,
   );
 };
@@ -129,19 +136,31 @@ const onChange = (info, context) => {
     }
   }
 };
-// const handleMoreDelete = async () => {
-//   try {
-//     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-//     const res = await delete9({ ids });
-//     console.log('批量删除后', res);
-//     queryData({
-//       pageNumber: pagination.current,
-//       pageSize: pagination.pageSize,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+const handleMoreDelete = async () => {
+  try {
+    const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
+    if (ids === '') {
+      MessagePlugin.error('未勾选删除项');
+    } else {
+      const res = await delete9({ ids });
+      console.log('批量删除后', res);
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null,
+        // @ts-ignore
+        querySave,
+      );
+      MessagePlugin.success('删除成功');
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const pagination = reactive({
@@ -175,6 +194,7 @@ const queryData = async (paginationInfo?, searchVo?: undefined, entityInfo?: und
     data.value = res.result.records; // 获得表格数据
 
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.querySave = querySave;
   } catch (err) {
     console.log(err);
   }

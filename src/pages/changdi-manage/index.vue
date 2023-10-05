@@ -32,10 +32,11 @@
         cell-empty-content="-"
         resizable
         :loading="isLoading"
-        :hover="true"
         :show-sort-column-bg-color="true"
+        :hover="true"
         right-fixed-column="1"
         :selected-row-keys="selectedRowKeys"
+        :disable-data-page="true"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
         @filter-change="onFilterChange"
@@ -99,6 +100,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.querySave = querySave;
   } catch (err) {
     console.log(err);
   }
@@ -152,19 +154,27 @@ const onChange = (info, context) => {
     if (info.sorter === undefined) {
       querySave.sort = '';
       querySave.order = null;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-      });
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+        },
+        null, // @ts-ignore
+        querySave,
+      );
     } else {
       querySave.sort = info.sorter.sortBy;
       querySave.order = info.sorter.descending;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      });
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
     }
   }
 };
@@ -207,15 +217,17 @@ const pagination = reactive({
 
 const AddFinsh = (newData) => {
   console.log(newData);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
+    },
+    null, // @ts-ignore
+    querySave,
+  );
 };
 </script>
 
-<style lang="less" scoped>
-:deep([class*='t-table-expandable-icon-cell']) .t-icon {
-  background-color: transparent;
-}
-</style>
+<style lang="less" scoped></style>

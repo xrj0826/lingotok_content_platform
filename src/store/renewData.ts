@@ -3,6 +3,8 @@ import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
 
 const renewData = undefined; // 接收请求函数，用于页面的更新
+const querySave = undefined; // 用于删除后，保持页面的排序
+
 const storeIdArr = ref([undefined]);
 const storeId = ref();
 
@@ -20,6 +22,7 @@ export const useRenewDataStore = defineStore('renewData', {
     storeId,
     storeIdArr,
     imgNum,
+    querySave,
   }),
   actions: () => ({
     // async getStroeName(storeId) {

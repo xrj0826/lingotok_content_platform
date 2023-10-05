@@ -9,8 +9,11 @@ export default [
     name: 'store-manage',
     component: Layout,
     redirect: '/store-manage/store-manage',
-    meta: { title: '门店管理', icon: shallowRef(BacktopRectangleIcon) },
-    orderNo: 2,
+    meta: {
+      title: '门店管理',
+      icon: shallowRef(BacktopRectangleIcon),
+      orderNo: 2,
+    },
     children: [
       {
         path: 'store-manage',

@@ -93,7 +93,7 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'announcement',
     title: '公告',
-    fixed: 'right',
+    // fixed: 'right',
 
     // @ts-ignore
     // cell: (h, { row }) => {
