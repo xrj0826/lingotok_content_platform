@@ -59,7 +59,7 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete19, page9 } from '@/api/user/guanliyuan';
+import { delete21, page10 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -89,11 +89,12 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page9({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page10({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
   } catch (err) {
     console.log(err);
   }
@@ -102,21 +103,25 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 const selectedRowKeys = ref([]);
 
 const handleMoreDelete = async () => {
-  try {
-    const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    if (ids === '') {
-      MessagePlugin.error('未勾选删除项');
-    } else {
-      const res = await delete19({ ids });
-      console.log('批量删除后', res);
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-      });
-      MessagePlugin.success('删除成功');
+  if (data.value.length === 1) {
+    MessagePlugin.error('至少保留一位管理员');
+  } else {
+    try {
+      const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
+      if (ids === '') {
+        MessagePlugin.error('未勾选删除项');
+      } else {
+        const res = await delete21({ ids });
+        console.log('批量删除后', res);
+        queryData({
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+        });
+        MessagePlugin.success('删除成功');
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
 };
 // 行选中变化时
@@ -165,6 +170,8 @@ const pagination = reactive({
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
+    store.pagination.current = pagination.current; // 分页数据也一起给
+    store.pagination.pageSize = pagination.pageSize;
     queryData({
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,

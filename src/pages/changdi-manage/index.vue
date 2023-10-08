@@ -63,7 +63,7 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
+import { deleteUsingDELETE, page, watch } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -102,7 +102,22 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
-    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    pagination.total = res.result.total; // 数据加载完成，设置数据总条数 // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
+    // 如果总页数小于当前页数
+    if (res.result.pages < res.result.current) {
+      pagination.current = res.result.pages;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
+    }
   } catch (err) {
     console.log(err);
   }
@@ -139,7 +154,10 @@ const handleRowClick = (e) => {
 };
 // 过滤等发生变化时会出发 change 事件
 const onFilterChange = (filterValue, context) => {
+  console.log('过滤函数', filterValue, context);
+
   querySave.venueType = filterValue.venueType;
+
   queryData(
     {
       pageNumber: pagination.current,
@@ -205,6 +223,7 @@ const pagination = reactive({
   pageSize: 10,
   total: 10,
   showJumper: true,
+
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;

@@ -97,6 +97,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
   } catch (err) {
     console.log(err);
   }

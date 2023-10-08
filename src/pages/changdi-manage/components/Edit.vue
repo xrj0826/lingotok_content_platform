@@ -124,6 +124,19 @@
             <template #suffix><span>元</span></template>
           </t-input>
         </t-form-item>
+        <t-form-item
+          label="场地起订时间"
+          name="leadTime"
+        >
+          <t-input
+            v-model="formData.leadTime"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>分钟</span></template>
+          </t-input>
+        </t-form-item>
         <!-- <t-form-item
           label="篮球半场关联篮球全场id"
           name="relevancyId"
@@ -195,6 +208,7 @@ const formData = reactive({
   relevancyId: null,
   price: null,
   purchaseInstructions: '',
+  leadTime: null,
 });
 
 const close = () => {
@@ -225,6 +239,8 @@ const handlerEdit = async () => {
     formData.pmHalfPrice = data.pmHalfPrice;
     formData.amAllPrice = data.amAllPrice;
     formData.pmAllPrice = data.pmAllPrice;
+    formData.leadTime = data.leadTime;
+
     // formData.createTime = data.createTime;
 
     // formData.price = data.price;

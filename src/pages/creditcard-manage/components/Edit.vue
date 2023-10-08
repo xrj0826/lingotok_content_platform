@@ -60,7 +60,7 @@
             <template #suffix><span>天</span></template>
           </t-input>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
           label="折扣值"
           name="discountValue"
         >
@@ -73,7 +73,7 @@
           >
             <template #suffix><span>折</span></template>
           </t-input>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="面值"
           name="faceValue"
@@ -87,6 +87,56 @@
           >
             <template #suffix><span>元</span></template>
           </t-input>
+        </t-form-item>
+        <t-form-item
+          v-if="formData.cardType === 'STORED_VALUE'"
+          label="赠送金额"
+          name="bonusAmount"
+        >
+          <t-input
+            v-model="formData.bonusAmount"
+            theme="normal"
+            align="right"
+            style="width: 88px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item>
+        <t-form-item
+          v-if="formData.cardType === 'TICKET'"
+          label="次卡次数"
+          name="times"
+        >
+          <t-input
+            v-model="formData.times"
+            theme="normal"
+            align="right"
+            style="width: 88px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>次</span></template>
+          </t-input>
+        </t-form-item>
+        <t-form-item
+          label="详情简介"
+          name="detailedIntroduction"
+        >
+          <t-textarea
+            v-model="formData.detailedIntroduction"
+            placeholder="填写你要展示的内容吧"
+            clearable
+          />
+        </t-form-item>
+        <t-form-item
+          label="使用说明"
+          name="usageInstructions"
+        >
+          <t-textarea
+            v-model="formData.usageInstructions"
+            placeholder="填写你要展示的内容吧"
+            clearable
+          />
         </t-form-item>
         <!-- <t-form-item
           label="生效时间"
@@ -125,7 +175,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page8, update8 } from '@/api/user/chuzhikaguanli';
+import { page8, update9 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 
 const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -135,11 +185,9 @@ const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
   discountValue: [
-    { required: true, message: '该项必填' },
     { min: 1.0, message: '折扣应在0~1之间', type: 'error', trigger: 'blur' },
     { max: 10.0, message: '折扣应在0~1之间', type: 'error', trigger: 'blur' },
   ],
-  faceValue: [{ required: true, message: '该项必填' }],
 };
 
 // 在此定义表单数据
@@ -149,12 +197,13 @@ const formData = reactive({
   cardType: '',
   cardName: '',
   days: null,
-  startDate: '',
-  endDate: '',
   faceValue: null,
   discountValue: null,
-  currentBalance: null,
+  // currentBalance: null,
   bonusAmount: null,
+  times: null,
+  detailedIntroduction: '',
+  usageInstructions: '',
   // openId: '',
   // avatar: '',
 });
@@ -176,18 +225,22 @@ const handlerEdit = async () => {
     //     formData[key] = data[formData[key]];
     //   }
     // }
+
     // 以下操作用于更新数据
     formData.id = data.id;
     // formData.storeId = data.storeId;
     formData.cardType = data.cardType;
     formData.cardName = data.cardName;
     formData.days = data.days;
-    formData.startDate = data.startDate;
-    formData.endDate = data.endDate;
     formData.faceValue = data.faceValue;
+    if (formData.cardType === 'STORED_VALUE') {
+      formData.bonusAmount = data.bonusAmount;
+    }
     formData.discountValue = data.discountValue;
-    formData.currentBalance = data.currentBalance;
-    formData.bonusAmount = data.bonusAmount;
+
+    formData.times = data.times;
+    formData.detailedIntroduction = data.detailedIntroduction;
+    formData.usageInstructions = data.usageInstructions;
     // formData.openId = data.openId;
     // formData.avatar = data.avatar;
   } catch (error) {
@@ -198,7 +251,13 @@ const handlerEdit = async () => {
 const edit = async ({ validateResult, _ }) => {
   try {
     if (validateResult === true) {
-      const res = await update8(formData);
+      if (formData.cardType !== 'STORED_VALUE') {
+        formData.bonusAmount = 0;
+      }
+      if (formData.cardType !== 'TICKET') {
+        formData.times = 0;
+      }
+      const res = await update9(formData);
       console.log('編輯返回', res);
       emit('edit', 'emit传来喜报:组件通信成功', res);
       loading.value = true;

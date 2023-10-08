@@ -11,6 +11,7 @@ import * as xiaochengxugonggao from './xiaochengxugonggao';
 import * as mendiantupianjiekou from './mendiantupianjiekou';
 import * as youhuiquanguanlijiekou from './youhuiquanguanlijiekou';
 import * as chuzhikaguanli from './chuzhikaguanli';
+import * as guanliyuanguanlichuzhikajiekou from './guanliyuanguanlichuzhikajiekou';
 import * as guanliyuan from './guanliyuan';
 import * as wenjianshangchuanjiekou from './wenjianshangchuanjiekou';
 import * as yingjianyewuchuli from './yingjianyewuchuli';
@@ -24,6 +25,7 @@ export default {
   mendiantupianjiekou,
   youhuiquanguanlijiekou,
   chuzhikaguanli,
+  guanliyuanguanlichuzhikajiekou,
   guanliyuan,
   wenjianshangchuanjiekou,
   yingjianyewuchuli,

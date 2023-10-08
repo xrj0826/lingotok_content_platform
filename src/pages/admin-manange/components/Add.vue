@@ -81,7 +81,7 @@ import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save9 } from '@/api/user/guanliyuan';
+import { save10 } from '@/api/user/guanliyuan';
 
 const emit = defineEmits(['add']);
 const form = ref(null);
@@ -126,7 +126,7 @@ const add = async ({ validateResult, _ }) => {
       formData.id = nanoid();
       // formData.storeId = '9376';
 
-      const res = await save9(formData);
+      const res = await save10(formData);
 
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);

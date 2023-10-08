@@ -59,7 +59,7 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete17, page8 } from '@/api/user/chuzhikaguanli';
+import { delete18, page8 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
@@ -108,6 +108,21 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
       }
     }
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
+    // 如果总页数小于当前页数
+    if (res.result.pages < res.result.current) {
+      pagination.current = res.result.pages;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
+    }
   } catch (err) {
     console.log(err);
   }
@@ -121,7 +136,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete17({ ids });
+      const res = await delete18({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,
@@ -208,8 +223,11 @@ const pagination = reactive({
   total: 10,
   showJumper: true,
   onChange: (pageInfo) => {
+    console.log('当前分页数据', pageInfo);
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
+    store.pagination.current = pagination.current; // 分页数据也一起给
+    store.pagination.pageSize = pagination.pageSize;
     queryData(
       {
         pageNumber: pagination.current,

@@ -236,9 +236,9 @@ const handleAdd = () => {
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
-    console.log('请求', entityInfo, paginationInfo);
+    // console.log('请求', entityInfo, paginationInfo);
     const res = await page3({ entity: { venueId: props.editId }, searchVo, page: paginationInfo }); // 在此发送请求
-    console.log('数据已送达', res);
+    // console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数

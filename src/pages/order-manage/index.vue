@@ -63,6 +63,7 @@ const querySave = reactive({
   paymentMethods: '',
   sort: '',
   order: null,
+  phoneNumber: '',
 });
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -73,6 +74,7 @@ onMounted(async () => {
   store.renewData = queryData; // 挂载时，将请求函数给pinia
   store.pagination.current = pagination.current; // 分页数据也一起给
   store.pagination.pageSize = pagination.pageSize;
+  store.querySave = querySave;
 });
 // const AddFinsh = (newData: any) => {
 //   console.log(newData);
@@ -94,10 +96,16 @@ const onFilterChange = (filterValue, context) => {
   querySave.orderType = filterValue.orderType;
   querySave.orderState = filterValue.orderState;
   querySave.paymentMethods = filterValue.paymentMethods;
+  querySave.phoneNumber = filterValue.phoneNumber;
+
+  console.log(' pagination.current', pagination.current, 'total', pagination.total, 'size', pagination.pageSize);
+
   queryData(
     {
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
     },
     null, // @ts-ignore
     querySave,
@@ -171,6 +179,8 @@ const pagination = reactive({
   onChange: (pageInfo: { current: number; pageSize: number }) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
+    store.pagination.current = pagination.current; // 分页数据也一起给
+    store.pagination.pageSize = pagination.pageSize;
     queryData(
       {
         // 分页改变时更新数据
@@ -194,7 +204,22 @@ const queryData = async (paginationInfo?, searchVo?: undefined, entityInfo?: und
     data.value = res.result.records; // 获得表格数据
 
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
     store.querySave = querySave;
+    // 如果总页数小于当前页数
+    if (res.result.pages < res.result.current) {
+      pagination.current = res.result.pages;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
+    }
   } catch (err) {
     console.log(err);
   }

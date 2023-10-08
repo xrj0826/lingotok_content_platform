@@ -75,6 +75,31 @@ declare namespace API {
     discountValue?: number;
   };
 
+  type CbCardAdmin = {
+    /** id */
+    id?: number;
+    /** 卡名称 */
+    cardName?: string;
+    /** 卡类型（储值卡，月卡，次卡，散客储值卡枚举） */
+    cardType?: string;
+    /** 有效期 */
+    days?: number;
+    /** 面值 */
+    faceValue?: number;
+    /** 赠送金额 */
+    bonusAmount?: number;
+    /** 折扣值 */
+    discountValue?: number;
+    /** 创建时间 */
+    createTime?: string;
+    /** 次卡次数 */
+    times?: number;
+    /** 详情简介 */
+    detailedIntroduction?: string;
+    /** 使用说明 */
+    usageInstructions?: string;
+  };
+
   type CbCoupon = {
     /** id */
     id?: number;
@@ -320,6 +345,8 @@ declare namespace API {
     purchaseInstructions?: string;
     /** 场地类型 */
     venueType?: string;
+    /** 场地起订时间 */
+    leadTime?: number;
   };
 
   type delete10Params = {
@@ -359,16 +386,25 @@ declare namespace API {
   };
 
   type delete18Params = {
-    id: string;
-  };
-
-  type delete19Params = {
     /** ID集合 */
     ids: string;
   };
 
+  type delete19Params = {
+    id: string;
+  };
+
   type delete1Params = {
     id: string;
+  };
+
+  type delete20Params = {
+    id: string;
+  };
+
+  type delete21Params = {
+    /** ID集合 */
+    ids: string;
   };
 
   type delete2Params = {
@@ -459,6 +495,10 @@ declare namespace API {
     id: number;
   };
 
+  type get9Params = {
+    id: number;
+  };
+
   type getParams = {
     id: number;
   };
@@ -474,6 +514,14 @@ declare namespace API {
   type IPageCbCard = {
     total?: number;
     records?: CbCard[];
+    current?: number;
+    pages?: number;
+    size?: number;
+  };
+
+  type IPageCbCardAdmin = {
+    total?: number;
+    records?: CbCardAdmin[];
     current?: number;
     pages?: number;
     size?: number;
@@ -548,6 +596,12 @@ declare namespace API {
     password: string;
   };
 
+  type page10Params = {
+    entity: AdminUserVo;
+    searchVo: SearchVO;
+    page: PageVO;
+  };
+
   type page1Params = {
     entity: CbUser;
     searchVo: SearchVO;
@@ -591,13 +645,13 @@ declare namespace API {
   };
 
   type page8Params = {
-    entity: CbCard;
+    entity: CbCardAdmin;
     searchVo: SearchVO;
     page: PageVO;
   };
 
   type page9Params = {
-    entity: AdminUserVo;
+    entity: CbCard;
     searchVo: SearchVO;
     page: PageVO;
   };
@@ -655,6 +709,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: CbCard;
+  };
+
+  type ResultMessageCbCardAdmin = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CbCardAdmin;
   };
 
   type ResultMessageCbCoupon = {
@@ -775,6 +841,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: IPageCbCard;
+  };
+
+  type ResultMessageIPageCbCardAdmin = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageCbCardAdmin;
   };
 
   type ResultMessageIPageCbCoupon = {

@@ -10,7 +10,7 @@ import Edit from './components/Edit.vue';
 // const onOrderStateChange = async (val, ctx) => {
 //   console.log('订单状态过滤', val, ctx);
 //   const res = await store.renewData(
-//     { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+//     { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
 //     null,
 //     { orderState: val },
 //   );
@@ -19,7 +19,7 @@ import Edit from './components/Edit.vue';
 // const onOrderTypeChange = async (val, ctx) => {
 //   console.log('订单状态过滤', val, ctx);
 //   const res = await store.renewData(
-//     { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+//     { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
 //     null,
 //     { orderType: val },
 //   );
@@ -272,7 +272,26 @@ export const columns: PrimaryTableCol[] = [
     //   );
     // },
   },
-  { colKey: 'phoneNumber', title: '手机号码', width: '200px' },
+  {
+    colKey: 'phoneNumber',
+    title: '手机号码',
+    width: '200px', // 输入框过滤配置
+    filter: {
+      type: 'input',
+
+      // 文本域搜索
+      // component: Textarea,
+
+      resetValue: '',
+      // 按下 Enter 键时也触发确认搜索
+      confirmEvents: ['onEnter'],
+      props: {
+        placeholder: '请精确输入手机号',
+      },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
+  },
   { colKey: 'orderDate', title: '预约日期', width: '200px' },
   { colKey: 'orderSt', title: '预约开始时间', width: '200px' },
   { colKey: 'orderEd', title: '预约结束时间', width: '200px' },
@@ -329,7 +348,7 @@ const handleDelete = async (id) => {
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
     store.renewData(
-      { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+      { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
       null,
       store.querySave,
     ); // 使用pinia里面的分页请求
@@ -345,5 +364,5 @@ const store = useRenewDataStore();
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }, null, store.querySave); // 使用pinia里面的分页请求
+  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize }, null, store.querySave); // 使用pinia里面的分页请求
 };

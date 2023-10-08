@@ -77,7 +77,7 @@
           />
         </t-form-item>
         <t-form-item
-          label="起订时间"
+          label="起订时间/分"
           name="leadTime"
         >
           <t-input
@@ -86,12 +86,12 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-        <t-form-item
+        <!-- <t-form-item
           label="门店图片"
           name="storeImages"
-        >
-          <!-- action="/test/user/common/upload" -->
-          <!-- 
+        > -->
+        <!-- action="/test/user/common/upload" -->
+        <!-- 
           <t-upload
             ref="uploadRef"
             v-model="file"
@@ -117,14 +117,14 @@
           >
             点击上传
           </t-button> -->
-          <t-upload
+        <!-- <t-upload
             ref="uploadRef"
             v-model="file"
             :request-method="requestMethod"
             placeholder="自定义上传方法需要返回成功或失败信息"
             :on-fail="handleFail"
           ></t-upload>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="提前预订天数"
           name="advanceDays"

@@ -90,6 +90,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
     //   }
     // }
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
   } catch (err) {
     console.log(err);
   }
@@ -127,6 +128,8 @@ const pagination = reactive({
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
+    store.pagination.current = pagination.current; // 分页数据也一起给
+    store.pagination.pageSize = pagination.pageSize;
     queryData({
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,

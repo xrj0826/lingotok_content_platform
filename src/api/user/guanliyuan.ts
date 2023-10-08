@@ -3,9 +3,9 @@
 import request from '/@/utils/request/index';
 
 /** 批量删除 DELETE /backend/passport/user */
-export async function delete19(
+export async function delete21(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete19Params,
+  params: API.delete21Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessage>('/backend/passport/user', {
@@ -18,7 +18,7 @@ export async function delete19(
 }
 
 /** 添加管理员 POST /backend/passport/user/add/adminuser */
-export async function save9(body: API.AdminUserAddDTO, options?: { [key: string]: any }) {
+export async function save10(body: API.AdminUserAddDTO, options?: { [key: string]: any }) {
   return request<API.ResultMessageAdminUser>('/backend/passport/user/add/adminuser', {
     method: 'POST',
     headers: {
@@ -76,9 +76,9 @@ export async function logout(options?: { [key: string]: any }) {
 }
 
 /** 管理员分页查询 GET /backend/passport/user/page */
-export async function page9(
+export async function page10(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.page9Params,
+  params: API.page10Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessageIPageAdminUser>('/backend/passport/user/page', {

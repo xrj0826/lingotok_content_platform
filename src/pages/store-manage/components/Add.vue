@@ -72,7 +72,7 @@
           />
         </t-form-item>
         <t-form-item
-          label="起订时间"
+          label="起订时间/分"
           name="leadTime"
         >
           <t-date-picker

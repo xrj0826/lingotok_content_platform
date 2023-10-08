@@ -79,6 +79,8 @@ export const columns: PrimaryTableCol[] = [
   // { colKey: 'storeId', title: '门店id' },
   { colKey: 'amAllPrice', title: '9:30-11:30与16:00-18:00全场价格', sorter: true },
   { colKey: 'pmAllPrice', title: '18:00-22:00全场价格', sorter: true },
+  { colKey: 'leadTime', title: '场地起订时间/分', sorter: true },
+
   // { colKey: 'amHalfPrice', title: '9:30-11:30与16:00-18:00篮球场半场价格', sorter: true },
   // { colKey: 'pmHalfPrice', title: '18:00-22:00篮球场半场价格', sorter: true },
   // { colKey: 'price', title: '普通场价格', sorter: true },
@@ -162,7 +164,7 @@ const handleDelete = async (id) => {
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
     await store.renewData(
-      { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+      { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
       null,
       store.querySave,
     );
@@ -171,10 +173,12 @@ const handleDelete = async (id) => {
   }
 };
 // 发送编辑行后执行回调
-const editFinish = async (newData) => {
+const editFinish = (newData) => {
   console.log('edit传回', newData);
+  console.log('store分页数据', store.pagination.current, store.pagination.pageSize);
+
   store.renewData(
-    { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
+    { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
     null,
     store.querySave,
   ); // 使用pinia里面的分页请求

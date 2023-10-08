@@ -87,7 +87,7 @@ export const columns: PrimaryTableCol[] = [
   },
   {
     colKey: 'leadTime',
-    title: '起订时间',
+    title: '起订时间/分',
   },
 
   {
@@ -168,7 +168,7 @@ const handleDelete = async (id) => {
     const res = await delete6(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
-    store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });
   } catch (error) {
     console.log(error);
   }
@@ -176,14 +176,14 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
 };
 
 const addFinish = (newData) => {
   console.log(newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
 };
 const showFinish = (newData) => {
   console.log(newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
 };

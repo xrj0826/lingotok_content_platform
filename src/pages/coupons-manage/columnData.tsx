@@ -152,13 +152,12 @@
 //     console.log('删除后', res);
 //     MessagePlugin.success('删除成功');
 
-//     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
-//   } catch (error) {
+//  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });//   } catch (error) {
 //     console.log(error);
 //   }
 // };
 // // 发送编辑行后执行回调
 // const editFinish = async (newData) => {
 //   console.log('edit传回', newData);
-//   store.renewData({ pageNmber: 1, pagaSize: 10 }); // 使用pinia里面的分页请求
+//  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });// 使用pinia里面的分页请求
 // };
