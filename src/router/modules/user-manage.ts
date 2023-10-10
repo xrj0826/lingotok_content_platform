@@ -9,8 +9,11 @@ export default [
     name: 'user-manage',
     component: Layout,
     redirect: '/user-manage/u-manage',
-    meta: { title: '用户管理', icon: shallowRef(UserIcon) },
-    orderNo: 3,
+    meta: {
+      title: '用户管理',
+      icon: shallowRef(UserIcon),
+      orderNo: 4,
+    },
     children: [
       {
         path: 'u-manage',

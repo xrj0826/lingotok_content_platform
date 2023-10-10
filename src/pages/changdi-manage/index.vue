@@ -4,12 +4,12 @@
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
         <add @add="AddFinsh"></add>
-        <t-popconfirm
+        <!-- <t-popconfirm
           content="确认删除吗"
           :on-confirm="handleMoreDelete"
         >
           <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
+        </t-popconfirm> -->
       </t-space>
       <!-- <t-select-input
         placeholder="请输入任意关键词"
@@ -32,10 +32,11 @@
         cell-empty-content="-"
         resizable
         :loading="isLoading"
-        :hover="true"
         :show-sort-column-bg-color="true"
+        :hover="true"
         right-fixed-column="1"
         :selected-row-keys="selectedRowKeys"
+        :disable-data-page="true"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
         @filter-change="onFilterChange"
@@ -62,26 +63,29 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
+import { deleteUsingDELETE, page, watch } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
 import Add from './components/Add.vue';
 
 const querySave = reactive({
-  sort: '',
+  sort: 'createTime',
+  order: false,
   venueType: '',
-  order: null,
 });
 // 挂载时调用请求函数
 onMounted(async () => {
   queryData({
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
+    sort: 'createTime',
+    order: 'asc',
   });
   store.renewData = queryData; // 挂载时，将请求函数给pinia
   store.pagination.current = pagination.current; // 分页数据也一起给
   store.pagination.pageSize = pagination.pageSize;
+  store.querySave = querySave;
 });
 
 const index = ref();
@@ -98,7 +102,23 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
-    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    pagination.total = res.result.total; // 数据加载完成，设置数据总条数 // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
+    store.querySave = querySave;
+    // 如果总页数小于当前页数
+    if (res.result.pages < res.result.current) {
+      pagination.current = res.result.pages;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
+    }
   } catch (err) {
     console.log(err);
   }
@@ -135,12 +155,18 @@ const handleRowClick = (e) => {
 };
 // 过滤等发生变化时会出发 change 事件
 const onFilterChange = (filterValue, context) => {
+  console.log('过滤函数', filterValue, context);
+
   querySave.venueType = filterValue.venueType;
+
   queryData(
     {
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
     },
+    null,
     // @ts-ignore
     querySave,
   );
@@ -150,21 +176,31 @@ const onChange = (info, context) => {
   console.log('change', info.sorter, context.trigger);
   if (context.trigger === 'sorter') {
     if (info.sorter === undefined) {
-      querySave.sort = '';
-      querySave.order = null;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-      });
+      querySave.sort = 'createTime';
+      querySave.order = false;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
     } else {
       querySave.sort = info.sorter.sortBy;
       querySave.order = info.sorter.descending;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      });
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
     }
   }
 };
@@ -188,6 +224,7 @@ const pagination = reactive({
   pageSize: 10,
   total: 10,
   showJumper: true,
+
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
@@ -207,15 +244,17 @@ const pagination = reactive({
 
 const AddFinsh = (newData) => {
   console.log(newData);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
+    },
+    null, // @ts-ignore
+    querySave,
+  );
 };
 </script>
 
-<style lang="less" scoped>
-:deep([class*='t-table-expandable-icon-cell']) .t-icon {
-  background-color: transparent;
-}
-</style>
+<style lang="less" scoped></style>

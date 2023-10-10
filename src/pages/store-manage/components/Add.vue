@@ -72,7 +72,7 @@
           />
         </t-form-item>
         <t-form-item
-          label="起订时间"
+          label="起订时间/分"
           name="leadTime"
         >
           <t-date-picker
@@ -204,7 +204,13 @@ const handleAdd = () => {
 // 确定添加
 const add = async () => {
   visible.value = false;
+  const timer = setTimeout(() => {
+    loading.value = false;
+    visible.value = false;
+    clearTimeout(timer);
+  }, 200);
   MessagePlugin.success('添加成功');
+  emit('add', 'emit传来喜报:组件通信成功', '');
   // try {
   //   if (store.imgNum < 4) {
   //     // // 第三方库随机生成id

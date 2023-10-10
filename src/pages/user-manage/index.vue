@@ -11,7 +11,7 @@
         >
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
-        <t-select-input
+        <!-- <t-select-input
           placeholder="根据姓名搜素"
           allow-input
           clearable
@@ -19,7 +19,7 @@
           @input-change="onInputChange"
         >
           <template #suffixIcon><search-icon /></template>
-        </t-select-input>
+        </t-select-input> -->
       </t-space>
       <t-table
         :row-key="index"
@@ -38,6 +38,7 @@
         :selected-row-keys="selectedRowKeys"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
+        @filter-change="onFilterChange"
         @change="onChange"
       >
         <!-- 自定义表头，title值为插槽名称  -->
@@ -74,6 +75,7 @@ onMounted(async () => {
   store.renewData = queryData; // 挂载时，将请求函数给pinia
   store.pagination.current = pagination.current; // 分页数据也一起给
   store.pagination.pageSize = pagination.pageSize;
+  store.querySave = querySave;
 });
 
 const index = ref();
@@ -81,9 +83,10 @@ const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
 const querySave = reactive({
-  name: '',
   sort: '',
   order: null,
+  nickName: '',
+  phoneNumber: '',
 });
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
@@ -95,6 +98,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
   } catch (err) {
     console.log(err);
   }
@@ -129,8 +133,27 @@ const onSelectChange = (value, params) => {
 const handleRowClick = (e) => {
   console.log(e);
 };
+// 过滤等发生变化时会出发 change 事件
+const onFilterChange = (filterValue, context) => {
+  console.log('过滤', filterValue);
+
+  querySave.nickName = filterValue.nickName;
+  querySave.phoneNumber = filterValue.phoneNumber;
+
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
+    },
+    null,
+    // @ts-ignore
+    querySave,
+  );
+};
 // 排序、分页、过滤等发生变化时会出发 change 事件
-const onChange = (info, context, customInfo) => {
+const onChange = (info, context) => {
   if (context.trigger === 'sorter') {
     if (info.sorter === undefined) {
       querySave.sort = '';
@@ -138,6 +161,8 @@ const onChange = (info, context, customInfo) => {
       queryData({
         pageNumber: pagination.current,
         pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
       });
     } else {
       querySave.sort = info.sorter.sortBy;
@@ -154,17 +179,19 @@ const onChange = (info, context, customInfo) => {
       {
         pageNumber: pagination.current,
         pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
       },
       null,
-      { name: customInfo },
+      querySave,
     );
   }
 };
-// 搜索框
-const onInputChange = (keyword) => {
-  querySave.name = keyword;
-  onChange(null, null, keyword);
-};
+// // 搜索框
+// const onInputChange = (keyword) => {
+//   querySave.name = keyword;
+//   onChange(null, null, keyword);
+// };
 
 const pagination = reactive({
   current: 1,
@@ -174,10 +201,14 @@ const pagination = reactive({
   onChange: (pageInfo) => {
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
+    store.pagination.current = pagination.current; // 分页数据也一起给
+    store.pagination.pageSize = pagination.pageSize;
     queryData(
       {
         pageNumber: pagination.current,
         pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
       },
       null,
       querySave,

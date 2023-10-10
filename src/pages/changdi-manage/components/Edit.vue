@@ -38,7 +38,17 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item>
-
+        <!-- <t-form-item
+          label="创建时间"
+          name="createTime"
+        >
+          <t-date-picker
+            v-model="formData.createTime"
+            enable-time-picker
+            allow-input
+            clearable
+          />
+        </t-form-item> -->
         <!-- <t-form-item
           label="修改者"
           name="updateBy"
@@ -114,6 +124,19 @@
             <template #suffix><span>元</span></template>
           </t-input>
         </t-form-item>
+        <t-form-item
+          label="场地起订时间"
+          name="leadTime"
+        >
+          <t-input
+            v-model="formData.leadTime"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>分钟</span></template>
+          </t-input>
+        </t-form-item>
         <!-- <t-form-item
           label="篮球半场关联篮球全场id"
           name="relevancyId"
@@ -177,6 +200,7 @@ const formData = reactive({
   venueType: '',
   updateBy: '',
   // updateTime: '',
+  // createTime: '',
   amHalfPrice: null,
   pmHalfPrice: null,
   amAllPrice: null,
@@ -184,6 +208,7 @@ const formData = reactive({
   relevancyId: null,
   price: null,
   purchaseInstructions: '',
+  leadTime: null,
 });
 
 const close = () => {
@@ -214,6 +239,10 @@ const handlerEdit = async () => {
     formData.pmHalfPrice = data.pmHalfPrice;
     formData.amAllPrice = data.amAllPrice;
     formData.pmAllPrice = data.pmAllPrice;
+    formData.leadTime = data.leadTime;
+
+    // formData.createTime = data.createTime;
+
     // formData.price = data.price;
     formData.purchaseInstructions = data.purchaseInstructions;
   } catch (error) {

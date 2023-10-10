@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
@@ -9,7 +10,7 @@ import Edit from './components/Edit.vue';
 // const onNameChange = async (val, _) => {
 //   // console.log(val, ctx);
 //   if (val === '' || null) {
-//     store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+//     store.renewData({ pageNmber: store.pagination.current, pageSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
 //   } else {
 //     const res = await store.renewData(null, null, { name: val });
 //     console.log(res);
@@ -28,25 +29,38 @@ export const columns: PrimaryTableCol[] = [
   {
     colKey: 'name',
     title: '姓名',
-    // // 输入框过滤配置
+    // 输入框过滤配置
     // filter: {
     //   type: 'input',
 
     //   // 文本域搜索
     //   // component: Textarea,
-
     //   resetValue: '',
     //   // 按下 Enter 键时也触发确认搜索
-    //   confirmEvents: ['onEnter', 'onReset'],
-    //   props: {
-    //     placeholder: '输入关键词过滤',
-    //     onChange: onNameChange,
-    //   },
+    //   confirmEvents: ['onEnter'],
+    //   // props: {
+    //   //   placeholder: '输入关键词过滤',
+    //   //   onChange: ,
+    //   // },
     //   // 是否显示重置取消按钮，一般情况不需要显示
     //   showConfirmAndReset: true,
     // },
   },
-  { colKey: 'nickName', title: '昵称' },
+  {
+    colKey: 'nickName',
+    title: '昵称',
+    filter: {
+      type: 'input',
+      resetValue: '',
+      // 按下 Enter 键时也触发确认搜索
+      confirmEvents: ['onEnter'],
+      props: {
+        placeholder: '输入昵称,支持模糊查询',
+      },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
+  },
   {
     colKey: 'credit',
     title: '累计消费',
@@ -84,9 +98,36 @@ export const columns: PrimaryTableCol[] = [
   //   // },
   // },
 
-  { colKey: 'phoneNumber', title: '手机号', width: '110px' },
+  {
+    colKey: 'phoneNumber',
+    title: '手机号',
+    width: '110px',
+    filter: {
+      type: 'input',
+      resetValue: '',
+      // 按下 Enter 键时也触发确认搜索
+      confirmEvents: ['onEnter'],
+      props: {
+        placeholder: '请精确输入手机号',
+      },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
+  },
   { colKey: 'email', title: '邮件', width: '150px' },
-  { colKey: 'birthday', title: '生日' },
+  {
+    colKey: 'birthday',
+    title: '生日',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.birthday);
+      const timeString = dateObj.format('YYYY-MM-DD');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
   // {
   //   colKey: 'avatar',
   //   title: '头像',
@@ -173,7 +214,7 @@ const handleDelete = async (id) => {
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
 
-    store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });
   } catch (error) {
     console.log(error);
   }
@@ -181,9 +222,12 @@ const handleDelete = async (id) => {
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+  store.renewData(
+    { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
+    null,
+    store.querySave,
+  ); // 使用pinia里面的分页请求};
 };
-
 // const loadingCount = ref(0);
 // const renderPlaceholder = () => (
 //   <img

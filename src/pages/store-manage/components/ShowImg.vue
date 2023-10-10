@@ -17,18 +17,12 @@
       :on-confirm="close"
       :on-close="null"
     >
-      <addTimePrice @add="AddFinsh"></addTimePrice>
-      <t-button
-        theme="danger"
-        @click="handleMoreDelete"
-      >
-        批量删除
-      </t-button>
+      <add @add="AddFinsh"></add>
       <t-table
         :row-key="index"
         :data="data"
         :columns="columns"
-        table-layout="fixed"
+        table-layout="auto"
         :bordered="true"
         size="large"
         :pagination="pagination"
@@ -55,7 +49,10 @@ import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { onMounted, reactive, ref } from 'vue';
 
 import { page6 } from '@/api/user/mendiantupianjiekou';
+import { delete4 } from '@/api/user/wenjianshangchuanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
+
+import Add from './Add.vue';
 
 const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -84,22 +81,46 @@ onMounted(async () => {
 //   specialValue: null,
 // });
 const columns: PrimaryTableCol[] = [
-  {
-    colKey: 'row-select',
-    type: 'multiple',
-    width: 50,
-  },
+  // {
+  //   colKey: 'row-select',
+  //   type: 'multiple',
+  //   width: 50,
+  // },
 
   {
     colKey: 'storeImage',
     title: '门店轮播图片',
-    width: '80px',
     cell: (h, { row }) => {
       return (
         <t-image
-          src={`https://139.9.38.185:80/${row.storeImage}`}
-          style={"width: '80px', height: '80px' "}
+          src={`http://139.9.38.185:80/${row.storeImage}`}
+          style={{ width: '80px', height: '80px' }}
         />
+      );
+    },
+  },
+  {
+    colKey: 'operation',
+    title: '操作',
+    fixed: 'right',
+    width: '80px',
+
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => handleDelete(row)}
+          >
+            <t-link
+              variant="text"
+              hover="color"
+              theme="danger"
+            >
+              删除
+            </t-link>
+          </t-popconfirm>
+        </t-space>
       );
     },
   },
@@ -173,6 +194,14 @@ const onChange = (info, context) => {
     pageSize: pagination.pageSize,
     sort: info.sorter.sortBy,
     order: info.sorter.descending === false ? 'asc' : 'desc',
+  });
+};
+const handleDelete = async (row) => {
+  const res = await delete4({ name: row.storeImage, id: row.id });
+  console.log(res);
+  queryData({
+    pageNumber: pagination.current,
+    pageSize: pagination.pageSize,
   });
 };
 const AddFinsh = (newData) => {

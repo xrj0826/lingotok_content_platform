@@ -11,11 +11,11 @@ import TimePrice from './components/TimePrice.vue';
 const store = useRenewDataStore();
 
 export const columns: PrimaryTableCol[] = [
-  {
-    colKey: 'row-select',
-    type: 'multiple',
-    width: 40,
-  },
+  // {
+  //   colKey: 'row-select',
+  //   type: 'multiple',
+  //   width: 40,
+  // },
   {
     colKey: 'id',
     title: 'id',
@@ -79,6 +79,8 @@ export const columns: PrimaryTableCol[] = [
   // { colKey: 'storeId', title: '门店id' },
   { colKey: 'amAllPrice', title: '9:30-11:30与16:00-18:00全场价格', sorter: true },
   { colKey: 'pmAllPrice', title: '18:00-22:00全场价格', sorter: true },
+  { colKey: 'leadTime', title: '场地起订时间/分', sorter: true },
+
   // { colKey: 'amHalfPrice', title: '9:30-11:30与16:00-18:00篮球场半场价格', sorter: true },
   // { colKey: 'pmHalfPrice', title: '18:00-22:00篮球场半场价格', sorter: true },
   // { colKey: 'price', title: '普通场价格', sorter: true },
@@ -161,13 +163,23 @@ const handleDelete = async (id) => {
     const res = await delete1(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
-    await store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    await store.renewData(
+      { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
+      null,
+      store.querySave,
+    );
   } catch (error) {
     console.log(error);
   }
 };
 // 发送编辑行后执行回调
-const editFinish = async (newData) => {
+const editFinish = (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+  console.log('store分页数据', store.pagination.current, store.pagination.pageSize);
+
+  store.renewData(
+    { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize, sort: 'createTime', order: 'asc' },
+    null,
+    store.querySave,
+  ); // 使用pinia里面的分页请求
 };

@@ -37,7 +37,8 @@
           name="cardType"
         >
           <t-radio-group v-model="formData.cardType">
-            <t-radio value="STORED_VALUE">储值卡</t-radio>
+            <t-radio value="STORED_VALUE">通用储值卡</t-radio>
+            <t-radio value="PERSON_CARD">散客储值卡</t-radio>
             <t-radio value="MONTHLY">月卡</t-radio>
             <t-radio value="TICKET">次卡</t-radio>
           </t-radio-group>
@@ -71,7 +72,8 @@
             <template #suffix><span>元</span></template>
           </t-input>
         </t-form-item>
-        <!-- <t-form-item
+        <t-form-item
+          v-if="formData.cardType === 'STORED_VALUE'"
           label="赠送金额"
           name="bonusAmount"
         >
@@ -84,18 +86,24 @@
           >
             <template #suffix><span>元</span></template>
           </t-input>
-        </t-form-item> -->
-        <!-- <t-form-item
-          label="当前余额"
-          name="currentBalance"
+        </t-form-item>
+        <t-form-item
+          v-if="formData.cardType === 'TICKET'"
+          label="次卡次数"
+          name="times"
         >
           <t-input
-            v-model="formData.currentBalance"
-            placeholder="请输入内容"
+            v-model="formData.times"
+            theme="normal"
+            align="right"
+            style="width: 88px"
             @enter="onEnter"
-          ></t-input>
-        </t-form-item> -->
+          >
+            <template #suffix><span>次</span></template>
+          </t-input>
+        </t-form-item>
         <t-form-item
+          v-if="formData.cardType === 'PERSON_CARD'"
           label="折扣值"
           name="discountValue"
         >
@@ -109,6 +117,37 @@
             <template #suffix><span>折</span></template>
           </t-input>
         </t-form-item>
+        <t-form-item
+          label="详情简介"
+          name="detailedIntroduction"
+        >
+          <t-textarea
+            v-model="formData.detailedIntroduction"
+            placeholder="填写你要展示的内容吧"
+            clearable
+          />
+        </t-form-item>
+        <t-form-item
+          label="使用说明"
+          name="usageInstructions"
+        >
+          <t-textarea
+            v-model="formData.usageInstructions"
+            placeholder="填写你要展示的内容吧"
+            clearable
+          />
+        </t-form-item>
+        <!-- <t-form-item
+          label="当前余额"
+          name="currentBalance"
+        >
+          <t-input
+            v-model="formData.currentBalance"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          ></t-input>
+        </t-form-item> -->
+
         <!-- <t-form-item
           label="生效时间"
           name="startDate"
@@ -146,7 +185,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save8 } from '@/api/user/chuzhikaguanli';
+import { save9 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 
 const emit = defineEmits(['add']);
 
@@ -157,12 +196,10 @@ const FORM_RULES = {
   cardName: [{ required: true, message: '卡名称必填' }],
   days: [{ required: true, message: '生效时间必填' }],
   discountValue: [
-    { required: true, message: '该项必填' },
     { min: 1.0, message: '折扣应在1~10之间', type: 'error', trigger: 'blur' },
     { max: 10.0, message: '折扣应在1~10之间', type: 'error', trigger: 'blur' },
   ],
   faceValue: [{ required: true, message: '面值必填' }],
-  bonusAmount: [{ required: true, message: '赠送金额必填' }],
 };
 
 // 在此定义表单数据
@@ -172,12 +209,15 @@ const formData = reactive({
   cardType: '',
   cardName: '',
   days: null,
-  startDate: '2023-10-02 10:00:00',
-  endDate: '2023-10-03 10:00:00',
+  // startDate: '2023-10-02 10:00:00',
+  // endDate: '2023-10-03 10:00:00',
   faceValue: null,
   discountValue: null,
-  currentBalance: null,
+  // currentBalance: null,
   bonusAmount: null,
+  times: null,
+  detailedIntroduction: '',
+  usageInstructions: '',
 });
 
 const close = () => {
@@ -192,8 +232,17 @@ const handleAdd = () => {
 // 确定添加
 const add = async ({ validateResult, _ }) => {
   if (validateResult === true) {
+    if (formData.cardType !== 'STORED_VALUE') {
+      formData.bonusAmount = null;
+    }
+    if (formData.cardType !== 'TICKET') {
+      formData.times = null;
+    }
+    if (formData.cardType !== 'PERSON_CARD') {
+      formData.discountValue = null;
+    }
     formData.storeId = '9376';
-    const res = await save8(formData);
+    const res = await save9(formData);
     console.log('編輯返回', res);
     emit('add', 'emit传来喜报:组件通信成功', res);
 

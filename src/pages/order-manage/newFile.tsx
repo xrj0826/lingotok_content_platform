@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
@@ -10,7 +11,7 @@ import Edit from './components/Edit.vue';
 // const onOrderStateChange = async (val, ctx) => {
 //   console.log('订单状态过滤', val, ctx);
 //   const res = await store.renewData(
-//     { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+//     { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
 //     null,
 //     { orderState: val },
 //   );
@@ -19,7 +20,7 @@ import Edit from './components/Edit.vue';
 // const onOrderTypeChange = async (val, ctx) => {
 //   console.log('订单状态过滤', val, ctx);
 //   const res = await store.renewData(
-//     { pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize },
+//     { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
 //     null,
 //     { orderType: val },
 //   );
@@ -131,10 +132,10 @@ export const columns: PrimaryTableCol[] = [
           cellValue = <span>已使用</span>;
           break;
         case 'EXPIRED':
-          cellValue = <span>已失效</span>;
+          cellValue = <span style={{ color: 'rgb(900, 1, 10)' }}>已失效</span>;
           break;
         case 'PAYMENT_SUCCESSFUL':
-          cellValue = <span>支付成功</span>;
+          cellValue = <span style={{ color: 'rgb(1, 179, 1)' }}>支付成功</span>;
           break;
         case 'REFUNDED':
           cellValue = <span>退款</span>;
@@ -256,7 +257,7 @@ export const columns: PrimaryTableCol[] = [
   { colKey: 'share', title: '分享次数' },
   {
     colKey: 'venueId',
-    title: '场地',
+    title: '场地id',
     // render(h, { row }) {
     //   // 调用 fetchStoreName 方法获取 storeName
     //   const storeNamePromise = getStoreName(row.venueId);
@@ -272,12 +273,71 @@ export const columns: PrimaryTableCol[] = [
     //   );
     // },
   },
-  { colKey: 'phoneNumber', title: '手机号码', width: '200px' },
-  { colKey: 'orderDate', title: '预约日期', width: '200px' },
-  { colKey: 'orderSt', title: '预约开始时间', width: '200px' },
-  { colKey: 'orderEd', title: '预约结束时间', width: '200px' },
+  {
+    colKey: 'phoneNumber',
+    title: '手机号码',
+    width: '200px', // 输入框过滤配置
+    filter: {
+      type: 'input',
+
+      // 文本域搜索
+      // component: Textarea,
+
+      resetValue: '',
+      // 按下 Enter 键时也触发确认搜索
+      confirmEvents: ['onEnter'],
+      props: {
+        placeholder: '请精确输入手机号',
+      },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
+  },
+  {
+    colKey: 'orderDate',
+    title: '预约日期',
+    width: '150px',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.orderDate);
+      const timeString = dateObj.format('YYYY-MM-DD');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
+  {
+    colKey: 'orderSt',
+    title: '预约开始时间',
+    width: '200px',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.orderSt);
+      const timeString = dateObj.format('HH:mm:ss');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
+  {
+    colKey: 'orderEd',
+    title: '预约结束时间',
+    width: '200px',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.orderEd);
+      const timeString = dateObj.format('HH:mm:ss');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
   { colKey: 'startTime', title: '用户进场时间', width: '200px' },
   { colKey: 'endTime', title: '用户离开时间', width: '200px' },
+  { colKey: 'createTime', title: '创建时间', width: '200px' },
   {
     colKey: 'operation',
     title: '操作',
@@ -307,7 +367,6 @@ export const columns: PrimaryTableCol[] = [
   },
   // { colKey: 'qrCode', title: '二维码' },
   // { colKey: 'createBy', title: '创建者' },
-  // { colKey: 'createTime', title: '创建时间', width: '200px' },
   // { colKey: 'updateBy', title: '修改者', width: '200px' },
   // { colKey: 'updateTime', title: '修改时间', width: '200px' },
   // { colKey: 'userId', title: '门店id', width: '200px' },
@@ -328,7 +387,11 @@ const handleDelete = async (id) => {
     const res = await delete10(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
-    await store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize });
+    store.renewData(
+      { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
+      null,
+      store.querySave,
+    ); // 使用pinia里面的分页请求
   } catch (error) {
     console.log(error);
   }
@@ -341,5 +404,5 @@ const store = useRenewDataStore();
 // 发送编辑行后执行回调
 const editFinish = async (newData) => {
   console.log('edit传回', newData);
-  store.renewData({ pageNmber: store.pagination.current, pagaSize: store.pagination.pageSize }); // 使用pinia里面的分页请求
+  store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize }, null, store.querySave); // 使用pinia里面的分页请求
 };

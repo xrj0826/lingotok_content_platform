@@ -10,7 +10,7 @@
     <t-dialog
       v-model:visible="visible"
       attach="body"
-      header="修改场地信息"
+      header="修改用户信息"
       body="保存中，请稍后"
       :confirm-btn="{
         content: '提交',
@@ -38,7 +38,7 @@
           ></t-input>
         </t-form-item>
 
-        <t-form-item
+        <!-- <t-form-item
           label="状态"
           name="status"
         >
@@ -46,7 +46,7 @@
             <t-radio :value="false">禁用</t-radio>
             <t-radio :value="true">正常</t-radio>
           </t-radio-group>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           label="昵称"
           name="nickName"
@@ -81,13 +81,13 @@
           label="性别"
           name="sex"
         >
-          <t-input
-            v-model="formData.sex"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
-        </t-form-item> </t-form
-    ></t-dialog>
+          <t-radio-group v-model="formData.sex">
+            <t-radio :value="0">男</t-radio>
+            <t-radio :value="1">女</t-radio>
+          </t-radio-group>
+        </t-form-item>
+      </t-form></t-dialog
+    >
   </div>
 </template>
 <script lang="ts" setup>
@@ -109,7 +109,7 @@ const formData = reactive({
   id: null,
   name: '',
   credit: '',
-  status: true,
+  // status: true,
   nickName: '',
   phoneNumber: '',
   email: '',
@@ -140,7 +140,7 @@ const handlerEdit = async () => {
     formData.id = data.id;
     formData.name = data.name;
     formData.credit = data.credit;
-    formData.status = data.status;
+    // formData.status = data.status;
     formData.nickName = data.nickName;
     formData.phoneNumber = data.phoneNumber;
     formData.email = data.email;

@@ -37,6 +37,7 @@
         :selected-row-keys="selectedRowKeys"
         @row-click="handleRowClick"
         @select-change="onSelectChange"
+        @filter-change="onFilterChange"
         @change="onChange"
       >
         <!-- 自定义表头，title值为插槽名称  -->
@@ -58,7 +59,7 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete17, page8 } from '@/api/user/chuzhikaguanli';
+import { delete18, page8 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
@@ -70,10 +71,13 @@ onMounted(async () => {
   queryData({
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
+    sort: 'createTime',
+    order: 'asc',
   });
   store.renewData = queryData; // 挂载时，将请求函数给pinia
   store.pagination.current = pagination.current; // 分页数据也一起给
   store.pagination.pageSize = pagination.pageSize;
+  store.querySave = querySave;
 });
 
 const index = ref();
@@ -81,26 +85,44 @@ const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
 const querySave = reactive({
-  sort: '',
-  order: null,
+  sort: 'createTime',
+  order: false,
+  cardType: '',
 });
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page8({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page8({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
     // 这段代码会安全地检查data.value数组中的每个对象是否具有storeId属性，如果存在，则替换为storeName。
     for (let i = 0; i < data.value.length; i++) {
       if (Object.prototype.hasOwnProperty.call(data.value[i], 'storeId')) {
-        data.value[i].storeId = (await get2({ id: data.value[i].storeId })).result.storeName;
+        // data.value[i].storeId = (await get2({ id: data.value[i].storeId })).result.storeName;
+        data.value[i].storeId = '恒跃体育广钢公园体育中心';
+
         // console.log(data.value[i].storeId);
       }
     }
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    store.renewData = queryData;
+    // 如果总页数小于当前页数
+    if (res.result.pages < res.result.current) {
+      pagination.current = res.result.pages;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
+    }
   } catch (err) {
     console.log(err);
   }
@@ -114,11 +136,13 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete17({ ids });
+      const res = await delete18({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,
         pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
       });
       MessagePlugin.success('删除成功');
     }
@@ -135,27 +159,56 @@ const onSelectChange = (value, params) => {
 const handleRowClick = (e) => {
   console.log(e);
 };
+// 过滤等发生变化时会出发 change 事件
+const onFilterChange = (filterValue, context) => {
+  console.log('filterValue', filterValue.cardType.toString());
+
+  querySave.cardType = filterValue.cardType.toString();
+  console.log('querySave.cardType', querySave.cardType);
+
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
+    },
+    null,
+    // @ts-ignore
+    querySave,
+  );
+};
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
   console.log('change', info.sorter, context.trigger);
 
   if (context.trigger === 'sorter') {
     if (info.sorter === undefined) {
-      querySave.sort = '';
-      querySave.order = null;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-      });
+      querySave.sort = 'createTime';
+      querySave.order = false;
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
     } else {
       querySave.sort = info.sorter.sortBy;
       querySave.order = info.sorter.descending;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      });
+      queryData(
+        {
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+          sort: querySave.sort,
+          order: querySave.order === false ? 'asc' : 'desc',
+        },
+        null, // @ts-ignore
+        querySave,
+      );
     }
   }
 };
@@ -170,24 +223,37 @@ const pagination = reactive({
   total: 10,
   showJumper: true,
   onChange: (pageInfo) => {
+    console.log('当前分页数据', pageInfo);
     pagination.current = pageInfo.current;
     pagination.pageSize = pageInfo.pageSize;
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-      sort: querySave.sort,
-      order: querySave.order === false ? 'asc' : 'desc',
-    }); // 分页数据改变时调用请求函数
+    store.pagination.current = pagination.current; // 分页数据也一起给
+    store.pagination.pageSize = pagination.pageSize;
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      },
+      null, // @ts-ignore
+      querySave,
+    ); // 分页数据改变时调用请求函数
     console.log('pagination.onChange', pageInfo);
   },
 });
 
 const AddFinsh = (newData) => {
   console.log(newData);
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
+  queryData(
+    {
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: querySave.sort,
+      order: querySave.order === false ? 'asc' : 'desc',
+    },
+    null, // @ts-ignore
+    querySave,
+  );
 };
 </script>
 

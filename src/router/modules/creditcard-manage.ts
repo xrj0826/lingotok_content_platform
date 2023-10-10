@@ -9,8 +9,8 @@ export default [
     name: 'creditcard-manage',
     component: Layout,
     redirect: '/creditcard-manage/creditcard-manage',
-    meta: { title: '储值卡管理', icon: shallowRef(CalendarIcon) },
-    orderNo: 5,
+    meta: { title: '储值卡管理', icon: shallowRef(CalendarIcon), orderNo: 5 },
+
     children: [
       {
         path: 'creditcard-manage',
@@ -18,6 +18,12 @@ export default [
         component: () => import('@/pages/creditcard-manage/index.vue'),
         meta: { title: '储值卡管理', hidden: true },
       },
+      // {
+      //   path: 'userCard-manage',
+      //   name: 'UserCardManage',
+      //   component: () => import('@/pages/user-card-manage/index.vue'),
+      //   meta: { title: '用户卡管理', hidden: true },
+      // },
     ],
   },
 ];

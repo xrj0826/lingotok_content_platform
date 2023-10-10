@@ -10,10 +10,10 @@ export default [
     component: Layout,
     redirect: '/announcement/announcement-change',
     meta: {
-      title: '公告管理',
+      title: '小程序公告管理',
       icon: shallowRef(RootListIcon),
+      orderNo: 10,
     },
-    orderNo: 1,
     children: [
       {
         path: 'announcement-change',

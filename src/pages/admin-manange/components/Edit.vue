@@ -66,7 +66,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page9 } from '@/api/user/guanliyuan';
+import { page10 } from '@/api/user/guanliyuan';
 
 const props = defineProps({ editId: String || Number }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -78,7 +78,7 @@ const FORM_RULES = {};
 
 // 在此定义表单数据
 const formData = reactive({
-  id: null,
+  // id: null,
   username: '',
   nickName: '',
   mobile: '',
@@ -95,15 +95,10 @@ const handlerEdit = async () => {
     visible.value = true;
     console.log(props.editId);
     // @ts-ignore
-    const res = await page9({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
+    const res = await page10({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
     const [data] = res.result.records; // 解构赋值records
-    // for (const key in formData) {
-    //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
-    //     formData[key] = data[formData[key]];
-    //   }
-    // }
     // 以下操作用于更新数据
-    formData.id = data.id;
+    // formData.id = data.id;
     formData.username = data.username;
     formData.nickName = data.nickName;
     formData.mobile = data.mobile;

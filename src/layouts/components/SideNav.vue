@@ -19,6 +19,7 @@
       >
         <component
           :is="getLogo()"
+          style="transform: translateX(-30px)"
           :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`"
         />
         <div
