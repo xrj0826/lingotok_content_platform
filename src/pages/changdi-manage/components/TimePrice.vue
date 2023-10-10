@@ -10,7 +10,7 @@
     <t-dialog
       v-model:visible="visible"
       attach="body"
-      width="900px"
+      width="1000px"
       header="修改区间价格"
       body="订单保存中，请稍后"
       :confirm-btn="null"
@@ -26,6 +26,8 @@
           批量删除
         </t-button>
       </t-space>
+      <h4>提示: 该时间段价格中, 设置为0代表免费场，-1代表内部锁定场，其余为普通价格</h4>
+
       <t-table
         :row-key="index"
         :data="data"
@@ -104,6 +106,7 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'orderst',
     title: '订单开始时间',
+    width: '250px',
     edit: {
       component: DatePicker,
       // props, 透传全部属性到 DatePicker 组件
@@ -134,6 +137,8 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'ordered',
     title: '订单结束时间',
+    width: '250px',
+
     edit: {
       component: DatePicker,
       // props, 透传全部属性到 DatePicker 组件
@@ -163,6 +168,7 @@ const columns: PrimaryTableCol[] = [
   {
     colKey: 'specialValue',
     title: '该时间段价格',
+
     // 编辑状态相关配置，全部集中在 edit
     edit: {
       // 1. 支持任意组件。需保证组件包含 `value` 和 `onChange` 两个属性，且 onChange 的第一个参数值为 new value。
@@ -215,12 +221,34 @@ const columns: PrimaryTableCol[] = [
       defaultEditable: true,
     },
   },
+  {
+    colKey: 'specialValue',
+    title: '特殊规则',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-select
+            style={{ width: '150px' }}
+            v-model={row.specialValue}
+            options={options}
+            placeholder="请选择特殊规则"
+            borderless="true"
+            clearable
+          ></t-select>
+        </t-space>
+      );
+    },
+  },
   // {
   //   colKey: 'venueId',
   //   title: '场地id',
   // },
 ];
-
+const options = [
+  { label: '无', value: null },
+  { label: '免费场', value: '0' },
+  { label: '内部锁定场', value: '-1' },
+];
 const close = () => {
   console.error('突然的关闭');
   visible.value = false;

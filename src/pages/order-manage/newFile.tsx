@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
@@ -292,9 +293,48 @@ export const columns: PrimaryTableCol[] = [
       showConfirmAndReset: true,
     },
   },
-  { colKey: 'orderDate', title: '预约日期', width: '200px' },
-  { colKey: 'orderSt', title: '预约开始时间', width: '200px' },
-  { colKey: 'orderEd', title: '预约结束时间', width: '200px' },
+  {
+    colKey: 'orderDate',
+    title: '预约日期',
+    width: '150px',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.orderDate);
+      const timeString = dateObj.format('YYYY-MM-DD');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
+  {
+    colKey: 'orderSt',
+    title: '预约开始时间',
+    width: '200px',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.orderSt);
+      const timeString = dateObj.format('HH:mm:ss');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
+  {
+    colKey: 'orderEd',
+    title: '预约结束时间',
+    width: '200px',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.orderEd);
+      const timeString = dateObj.format('HH:mm:ss');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
   { colKey: 'startTime', title: '用户进场时间', width: '200px' },
   { colKey: 'endTime', title: '用户离开时间', width: '200px' },
   { colKey: 'createTime', title: '创建时间', width: '200px' },

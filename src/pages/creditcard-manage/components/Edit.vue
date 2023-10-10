@@ -39,7 +39,8 @@
           name="cardType"
         >
           <t-radio-group v-model="formData.cardType">
-            <t-radio value="STORED_VALUE">储值卡</t-radio>
+            <t-radio value="STORED_VALUE">通用储值卡</t-radio>
+            <t-radio value="PERSON_CARD">散客储值卡</t-radio>
             <t-radio value="MONTHLY">月卡</t-radio>
             <t-radio value="TICKET">次卡</t-radio>
           </t-radio-group>
@@ -116,6 +117,21 @@
             @enter="onEnter"
           >
             <template #suffix><span>次</span></template>
+          </t-input>
+        </t-form-item>
+        <t-form-item
+          v-if="formData.cardType === 'PERSON_CARD'"
+          label="折扣值"
+          name="discountValue"
+        >
+          <t-input
+            v-model="formData.discountValue"
+            theme="normal"
+            align="right"
+            style="width: 70px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>折</span></template>
           </t-input>
         </t-form-item>
         <t-form-item
@@ -236,9 +252,12 @@ const handlerEdit = async () => {
     if (formData.cardType === 'STORED_VALUE') {
       formData.bonusAmount = data.bonusAmount;
     }
-    formData.discountValue = data.discountValue;
-
-    formData.times = data.times;
+    if (formData.cardType !== 'PERSON_CARD') {
+      formData.discountValue = data.discountValue;
+    }
+    if (formData.cardType !== 'TICKET') {
+      formData.times = data.times;
+    }
     formData.detailedIntroduction = data.detailedIntroduction;
     formData.usageInstructions = data.usageInstructions;
     // formData.openId = data.openId;

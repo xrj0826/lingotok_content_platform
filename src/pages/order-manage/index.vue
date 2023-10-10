@@ -61,8 +61,8 @@ const querySave = reactive({
   orderType: '',
   orderState: '',
   paymentMethods: '',
-  sort: '',
-  order: null,
+  sort: 'createTime',
+  order: true,
   phoneNumber: '',
 });
 // 挂载时调用请求函数
@@ -70,6 +70,8 @@ onMounted(async () => {
   queryData({
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
+    sort: 'createTime',
+    order: 'desc',
   });
   store.renewData = queryData; // 挂载时，将请求函数给pinia
   store.pagination.current = pagination.current; // 分页数据也一起给

@@ -20,6 +20,16 @@
         @submit="add"
       >
         <t-form-item
+          label="特殊规则"
+          name="specialValue"
+        >
+          <t-radio-group v-model="formData.specialValue">
+            <t-radio :value="null">无</t-radio>
+            <t-radio value="0">免费场</t-radio>
+            <t-radio value="1">内部锁定场</t-radio>
+          </t-radio-group>
+        </t-form-item>
+        <t-form-item
           label="该时间段价格"
           name="specialValue"
         >
@@ -32,6 +42,7 @@
             <template #suffix><span>元</span></template></t-input
           >
         </t-form-item>
+
         <t-form-item
           label="订单开始时间"
           name="orderst"
@@ -88,7 +99,7 @@ const FORM_RULES = {
   venueId: [{ required: true, message: '该项必填' }],
   orderst: [{ required: true, message: '该项必填' }],
   ordered: [{ required: true, message: '该项必填' }],
-  specialValue: [{ required: true, message: '该项必填' }],
+  specialValue: [{ message: '该项必填' }],
 };
 // nanoid配置 纯数字，五位
 const nanoid = customAlphabet('1234567890', 5);

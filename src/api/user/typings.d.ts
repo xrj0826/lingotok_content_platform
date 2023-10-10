@@ -73,6 +73,8 @@ declare namespace API {
     storeId?: string;
     /** 折扣值 */
     discountValue?: number;
+    /** 次卡次数 */
+    times?: number;
   };
 
   type CbCardAdmin = {
@@ -98,6 +100,10 @@ declare namespace API {
     detailedIntroduction?: string;
     /** 使用说明 */
     usageInstructions?: string;
+    /** 生效日期 */
+    startDate?: string;
+    /** 结束日期 */
+    endDate?: string;
   };
 
   type CbCoupon = {
@@ -505,88 +511,88 @@ declare namespace API {
 
   type IPageAdminUser = {
     total?: number;
-    records?: AdminUser[];
     current?: number;
+    records?: AdminUser[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbCard = {
     total?: number;
-    records?: CbCard[];
     current?: number;
+    records?: CbCard[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbCardAdmin = {
     total?: number;
-    records?: CbCardAdmin[];
     current?: number;
+    records?: CbCardAdmin[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbCoupon = {
     total?: number;
-    records?: CbCoupon[];
     current?: number;
+    records?: CbCoupon[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbImage = {
     total?: number;
-    records?: CbImage[];
     current?: number;
+    records?: CbImage[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbNotice = {
     total?: number;
-    records?: CbNotice[];
     current?: number;
+    records?: CbNotice[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbOrderInfo = {
     total?: number;
-    records?: CbOrderInfo[];
     current?: number;
+    records?: CbOrderInfo[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbSpecialValue = {
     total?: number;
-    records?: CbSpecialValue[];
     current?: number;
+    records?: CbSpecialValue[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbStore = {
     total?: number;
-    records?: CbStore[];
     current?: number;
+    records?: CbStore[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbUser = {
     total?: number;
-    records?: CbUser[];
     current?: number;
+    records?: CbUser[];
     pages?: number;
     size?: number;
   };
 
   type IPageCbVenue = {
     total?: number;
-    records?: CbVenue[];
     current?: number;
+    records?: CbVenue[];
     pages?: number;
     size?: number;
   };

@@ -104,6 +104,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
     data.value = res.result.records; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数 // 数据加载完成，设置数据总条数
     store.renewData = queryData;
+    store.querySave = querySave;
     // 如果总页数小于当前页数
     if (res.result.pages < res.result.current) {
       pagination.current = res.result.pages;

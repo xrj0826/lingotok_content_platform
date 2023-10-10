@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
@@ -114,7 +115,19 @@ export const columns: PrimaryTableCol[] = [
     },
   },
   { colKey: 'email', title: '邮件', width: '150px' },
-  { colKey: 'birthday', title: '生日' },
+  {
+    colKey: 'birthday',
+    title: '生日',
+    cell: (h, { row }) => {
+      let cellValue;
+      const dateObj = dayjs(row.birthday);
+      const timeString = dateObj.format('YYYY-MM-DD');
+      if (timeString === 'Invalid Date') {
+        cellValue = <span></span>;
+      } else cellValue = <span>{timeString}</span>;
+      return cellValue;
+    },
+  },
   // {
   //   colKey: 'avatar',
   //   title: '头像',

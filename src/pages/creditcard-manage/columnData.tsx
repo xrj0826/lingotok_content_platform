@@ -32,7 +32,10 @@ export const columns: PrimaryTableCol[] = [
       // 使用 switch 语句检查 row 的值
       switch (row.cardType) {
         case 'STORED_VALUE':
-          cellValue = <span>储值卡</span>;
+          cellValue = <span>通用储值卡</span>;
+          break;
+        case 'PERSON_CARD':
+          cellValue = <span>散客储值卡</span>;
           break;
         case 'MONTHLY':
           cellValue = <span>月卡</span>;
@@ -52,7 +55,8 @@ export const columns: PrimaryTableCol[] = [
       // label: '申请状态 A',
       type: 'single',
       list: [
-        { label: '储值卡', value: 'STORED_VALUE' },
+        { label: '通用储值卡', value: 'STORED_VALUE' },
+        { label: '散客储值卡', value: 'PERSON_CARD' },
         { label: '月卡', value: 'MONTHLY' },
         { label: '次卡', value: 'TICKET' },
       ],

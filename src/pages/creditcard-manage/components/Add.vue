@@ -37,7 +37,8 @@
           name="cardType"
         >
           <t-radio-group v-model="formData.cardType">
-            <t-radio value="STORED_VALUE">储值卡</t-radio>
+            <t-radio value="STORED_VALUE">通用储值卡</t-radio>
+            <t-radio value="PERSON_CARD">散客储值卡</t-radio>
             <t-radio value="MONTHLY">月卡</t-radio>
             <t-radio value="TICKET">次卡</t-radio>
           </t-radio-group>
@@ -102,7 +103,7 @@
           </t-input>
         </t-form-item>
         <t-form-item
-          v-if="formData.cardType === 'STORED_VALUE'"
+          v-if="formData.cardType === 'PERSON_CARD'"
           label="折扣值"
           name="discountValue"
         >
@@ -236,6 +237,9 @@ const add = async ({ validateResult, _ }) => {
     }
     if (formData.cardType !== 'TICKET') {
       formData.times = null;
+    }
+    if (formData.cardType !== 'PERSON_CARD') {
+      formData.discountValue = null;
     }
     formData.storeId = '9376';
     const res = await save9(formData);
