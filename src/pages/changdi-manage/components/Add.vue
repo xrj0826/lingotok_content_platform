@@ -156,6 +156,7 @@
         <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
+              :loading="reClick"
               theme="primary"
               type="submit"
               >提交</t-button
@@ -225,10 +226,12 @@ const close = () => {
 const handleAdd = () => {
   visible.value = true;
 };
+const reClick = ref(false);
+
 // 确定添加
 const add = async ({ validateResult, _ }) => {
   try {
-    if (validateResult === true) {
+    if (validateResult === true && !reClick.value) {
       // // 第三方库随机生成id
       // formData.storeId = nanoid();
       formData.storeId = '9376';
@@ -236,14 +239,16 @@ const add = async ({ validateResult, _ }) => {
       const res = await save(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
-
       loading.value = true;
+      reClick.value = true;
+
       // 加载一下
       const timer = setTimeout(() => {
         loading.value = false;
         visible.value = false;
+        reClick.value = false;
         clearTimeout(timer);
-      }, 200);
+      }, 800);
       MessagePlugin.success('添加成功');
     } else {
       console.log('Validate Errors: ');

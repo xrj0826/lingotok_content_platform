@@ -225,15 +225,26 @@ const columns: PrimaryTableCol[] = [
     colKey: 'specialValue',
     title: '特殊规则',
     cell: (h, { row }) => {
+      // 特殊规则选择器变化
+      const handleChange = (value) => {
+        const params = {
+          specialValue: value,
+          orderst: row.orderst,
+          ordered: row.ordered,
+          id: row.id,
+        };
+        update3(params);
+      };
       return (
         <t-space>
           <t-select
             style={{ width: '150px' }}
             v-model={row.specialValue}
-            options={options}
+            options={options.value}
             placeholder="请选择特殊规则"
             borderless="true"
             clearable
+            onChange={handleChange}
           ></t-select>
         </t-space>
       );
@@ -244,11 +255,11 @@ const columns: PrimaryTableCol[] = [
   //   title: '场地id',
   // },
 ];
-const options = [
+const options = ref([
   { label: '无', value: null },
-  { label: '免费场', value: '0' },
-  { label: '内部锁定场', value: '-1' },
-];
+  { label: '免费场', value: 0 },
+  { label: '内部锁定场', value: -1 },
+]);
 const close = () => {
   console.error('突然的关闭');
   visible.value = false;
@@ -322,6 +333,7 @@ const AddFinsh = (newData) => {
     pageSize: pagination.pageSize,
   });
 };
+
 const pagination = reactive({
   current: 1,
   pageSize: 10,
