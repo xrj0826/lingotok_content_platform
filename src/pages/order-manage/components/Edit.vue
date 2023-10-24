@@ -11,7 +11,7 @@
     <t-dialog
       v-model:visible="visible"
       attach="body"
-      header="修改场地信息"
+      header="修改订单信息"
       body="保存中，请稍后"
       :confirm-btn="{
         content: '提交',
@@ -182,7 +182,7 @@ import { reactive, ref } from 'vue';
 
 import { page4, update4 } from '@/api/user/dingdanguanlijiekou';
 
-const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
+const props = defineProps({ editId: String }); // 为什么这里类型只能用大写，不然会警告?
 
 const emit = defineEmits(['edit']);
 

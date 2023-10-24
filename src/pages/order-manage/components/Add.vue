@@ -6,7 +6,7 @@
     <t-dialog
       v-model:visible="visible"
       attach="body"
-      header="添加场地"
+      header="添加订单"
       body="订单保存中，请稍后"
       :confirm-btn="{
         content: '提交',

@@ -4,7 +4,7 @@ import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { delete6 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
-import AddAnno from './components/AddAnno.vue';
+// import AddAnno from './components/AddAnno.vue';
 import Edit from './components/Edit.vue';
 // import EditAnno from './components/EditAnno.vue';
 import Introduction from './components/Introduction.vue';
@@ -79,7 +79,7 @@ export const columns: PrimaryTableCol[] = [
   },
   {
     colKey: 'realTime',
-    title: '实时人数',
+    title: '可分享次数',
   },
   {
     colKey: 'advanceDays',

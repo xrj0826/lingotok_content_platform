@@ -118,7 +118,7 @@ const columns: PrimaryTableCol[] = [
         console.log('Edit Date:', context);
         const params = {
           orderst: context.newRowData.orderst,
-          id: context.newRowData.orderst.id,
+          id: context.newRowData.id,
         };
 
         update3(params);
@@ -149,8 +149,8 @@ const columns: PrimaryTableCol[] = [
         data.value.splice(context.rowIndex, 1, context.newRowData);
         console.log('Edit Date:', context);
         const params = {
-          orderst: context.newRowData.orderst,
-          id: context.newRowData.orderst.id,
+          ordered: context.newRowData.ordered,
+          id: context.newRowData.id,
         };
 
         update3(params);

@@ -138,7 +138,7 @@ export const columns: PrimaryTableCol[] = [
           cellValue = <span style={{ color: 'rgb(1, 179, 1)' }}>支付成功</span>;
           break;
         case 'REFUNDED':
-          cellValue = <span>退款</span>;
+          cellValue = <span style={{ color: 'rgb(200, 100, 100)' }}>退款</span>;
           break;
         default:
           cellValue = <span>null</span>;

@@ -80,6 +80,7 @@ export const columns: PrimaryTableCol[] = [
   { colKey: 'amAllPrice', title: '9:30-11:30与16:00-18:00全场价格', sorter: true },
   { colKey: 'pmAllPrice', title: '18:00-22:00全场价格', sorter: true },
   { colKey: 'leadTime', title: '场地起订时间/分', sorter: true },
+  { colKey: 'shareFrequency', title: '场地分享次数/次', sorter: true },
 
   // { colKey: 'amHalfPrice', title: '9:30-11:30与16:00-18:00篮球场半场价格', sorter: true },
   // { colKey: 'pmHalfPrice', title: '18:00-22:00篮球场半场价格', sorter: true },
@@ -103,6 +104,7 @@ export const columns: PrimaryTableCol[] = [
       );
     },
   },
+
   {
     colKey: 'purchaseInstructions',
     title: '购买须知',
