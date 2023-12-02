@@ -34,5 +34,6 @@
     "stylelint",
     "tdesign",
     "tvision"
-  ]
+  ],
+  "editor.inlineSuggest.showToolbar": "onHover"
 }
