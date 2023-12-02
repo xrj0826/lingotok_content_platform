@@ -1,14 +1,31 @@
 <template>
-  <t-row :gutter="16" class="row-container">
-    <t-col :xs="12" :xl="6">
-      <t-card title="销售订单排名" class="dashboard-rank-card" :bordered="false">
+  <t-row
+    :gutter="16"
+    class="row-container"
+  >
+    <t-col
+      :xs="12"
+      :xl="6"
+    >
+      <t-card
+        title="销售订单排名"
+        class="dashboard-rank-card"
+        :bordered="false"
+      >
         <template #actions>
-          <t-radio-group default-value="dateVal" variant="default-filled">
+          <t-radio-group
+            default-value="dateVal"
+            variant="default-filled"
+          >
             <t-radio-button value="dateVal">本周</t-radio-button>
             <t-radio-button value="monthVal">近三个月</t-radio-button>
           </t-radio-group>
         </template>
-        <t-table :data="SALE_TEND_LIST" :columns="SALE_COLUMNS" row-key="productName">
+        <t-table
+          :data="SALE_TEND_LIST"
+          :columns="SALE_COLUMNS"
+          row-key="productName"
+        >
           <template #index="{ rowIndex }">
             <span :class="getRankClass(rowIndex)">
               {{ rowIndex + 1 }}
@@ -16,34 +33,62 @@
           </template>
           <template #growUp="{ row }">
             <span>
-              <trend :type="row.growUp > 0 ? 'up' : 'down'" :describe="Math.abs(row.growUp)" />
+              <trend
+                :type="row.growUp > 0 ? 'up' : 'down'"
+                :describe="Math.abs(row.growUp)"
+              />
             </span>
           </template>
           <template #operation="slotProps">
-            <a class="t-button-link" @click="rehandleClickOp(slotProps)">详情</a>
+            <a
+              class="t-button-link"
+              @click="rehandleClickOp(slotProps)"
+              >详情</a
+            >
           </template>
         </t-table>
       </t-card>
     </t-col>
-    <t-col :xs="12" :xl="6">
-      <t-card title="销售订单排名" class="dashboard-rank-card" :bordered="false">
+    <t-col
+      :xs="12"
+      :xl="6"
+    >
+      <t-card
+        title="销售订单排名"
+        class="dashboard-rank-card"
+        :bordered="false"
+      >
         <template #actions>
-          <t-radio-group default-value="dateVal" variant="default-filled">
+          <t-radio-group
+            default-value="dateVal"
+            variant="default-filled"
+          >
             <t-radio-button value="dateVal">本周</t-radio-button>
             <t-radio-button value="monthVal">近三个月</t-radio-button>
           </t-radio-group>
         </template>
-        <t-table :data="BUY_TEND_LIST" :columns="BUY_COLUMNS" row-key="productName">
+        <t-table
+          :data="BUY_TEND_LIST"
+          :columns="BUY_COLUMNS"
+          row-key="productName"
+        >
           <template #index="{ rowIndex }">
             <span :class="getRankClass(rowIndex)">
               {{ rowIndex + 1 }}
             </span>
           </template>
           <template #growUp="{ row }">
-            <trend :type="row.growUp > 0 ? 'up' : 'down'" :describe="Math.abs(row.growUp)" />
+            <trend
+              :type="row.growUp > 0 ? 'up' : 'down'"
+              :describe="Math.abs(row.growUp)"
+            />
           </template>
           <template #operation="slotProps">
-            <a class="t-button-link" @click="rehandleClickOp(slotProps)">详情</a>
+            <a
+              class="t-button-link"
+              @click="rehandleClickOp(slotProps)"
+              >详情</a
+            >
           </template>
         </t-table>
       </t-card>
@@ -79,22 +124,22 @@ const getRankClass = (index: number) => {
   }
 
   :deep(.t-card__body) {
-    padding: 0;
     margin-top: var(--td-comp-margin-xxl);
+    padding: 0;
   }
 }
 
 .dashboard-rank__cell {
   display: inline-flex;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  color: white;
-  font-size: 14px;
-  background-color: var(--td-gray-color-5);
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: white;
   font-weight: 700;
+  font-size: 14px;
+  background-color: var(--td-gray-color-5);
+  border-radius: 50%;
 
   &--top {
     background: var(--td-brand-color);

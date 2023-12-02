@@ -93,7 +93,7 @@
             v-model="formData.orderPrice"
             theme="normal"
             align="right"
-            style="width: 110px"
+            style="width: 80px"
             @enter="onEnter"
           >
             <template #suffix><span>元</span></template>
@@ -234,6 +234,7 @@ const handlerEdit = async () => {
     formData.orderSt = data.orderSt;
     formData.orderEd = data.orderEd;
     formData.orderState = data.orderState;
+    formData.orderType = data.orderType;
     formData.paymentMethods = data.paymentMethods;
     formData.share = data.share;
     formData.startTime = data.startTime;

@@ -165,6 +165,8 @@
           <t-textarea
             v-model="formData.scheduledNotice"
             placeholder="请输入内容"
+            rows="10"
+            cols="33"
             @enter="onEnter"
           ></t-textarea>
         </t-form-item>

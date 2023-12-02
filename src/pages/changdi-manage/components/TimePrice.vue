@@ -272,7 +272,7 @@ const handleAdd = () => {
 };
 
 // 请求数据
-const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
+const queryData = async (paginationInfo?, searchVo?) => {
   try {
     isLoading.value = true;
     // console.log('请求', entityInfo, paginationInfo);

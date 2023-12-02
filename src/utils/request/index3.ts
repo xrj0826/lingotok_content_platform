@@ -108,7 +108,7 @@ const transform: AxiosTransform = {
       } else {
         // 非GET请求如果没有提供data，则将params视为data
         config.data = params;
-        config.params = undefined;
+        config.params = params;
       }
       if (joinParamsToUrl) {
         config.url = setObjToUrlParams(config.url as string, { ...config.params, ...config.data });
@@ -116,7 +116,7 @@ const transform: AxiosTransform = {
     } else {
       // 兼容restful风格
       config.url += params;
-      config.params = undefined;
+      config.params = params;
     }
     return config;
   },

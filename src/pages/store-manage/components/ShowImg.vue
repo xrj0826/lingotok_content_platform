@@ -93,7 +93,7 @@ const columns: PrimaryTableCol[] = [
     cell: (h, { row }) => {
       return (
         <t-image
-          src={`http://139.9.38.185:80/${row.storeImage}`}
+          src={`http://hengyuesports.com/${row.storeImage}`}
           style={{ width: '80px', height: '80px' }}
         />
       );

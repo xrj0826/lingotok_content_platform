@@ -59,6 +59,20 @@
           </t-input>
         </t-form-item>
         <t-form-item
+          label="当前余额"
+          name="times"
+        >
+          <t-input
+            v-model="formData.currentBalance"
+            theme="normal"
+            align="right"
+            style="width: 88px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>元</span></template>
+          </t-input>
+        </t-form-item>
+        <!-- <t-form-item
           label="面值"
           name="faceValue"
         >
@@ -86,7 +100,7 @@
           >
             <template #suffix><span>元</span></template>
           </t-input>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item
           v-if="formData.cardType === 'TICKET'"
           label="次卡次数"
@@ -117,26 +131,7 @@
             <template #suffix><span>折</span></template>
           </t-input>
         </t-form-item>
-        <t-form-item
-          label="详情简介"
-          name="detailedIntroduction"
-        >
-          <t-textarea
-            v-model="formData.detailedIntroduction"
-            placeholder="填写你要展示的内容吧"
-            clearable
-          />
-        </t-form-item>
-        <t-form-item
-          label="使用说明"
-          name="usageInstructions"
-        >
-          <t-textarea
-            v-model="formData.usageInstructions"
-            placeholder="填写你要展示的内容吧"
-            clearable
-          />
-        </t-form-item>
+
         <!-- <t-form-item
           label="当前余额"
           name="currentBalance"
@@ -186,7 +181,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save9 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
+import { save8 } from '@/api/user/chuzhikaguanli';
 
 const emit = defineEmits(['add']);
 
@@ -214,11 +209,9 @@ const formData = reactive({
   // endDate: '2023-10-03 10:00:00',
   faceValue: null,
   discountValue: null,
-  // currentBalance: null,
+  currentBalance: null,
   bonusAmount: null,
   times: null,
-  detailedIntroduction: '',
-  usageInstructions: '',
 });
 
 const close = () => {
@@ -245,7 +238,7 @@ const add = async ({ validateResult, _ }) => {
       formData.discountValue = null;
     }
     formData.storeId = '9376';
-    const res = await save9(formData);
+    const res = await save8(formData);
     console.log('編輯返回', res);
     emit('add', 'emit传来喜报:组件通信成功', res);
     reClick.value = true;

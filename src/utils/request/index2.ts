@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { rejects } from 'assert';
 const config = {
   // api: 'http://47.99.90.88:8889',
-  api: '/test2',
+  api: '/refund',
 };
 
 /**
@@ -48,7 +48,7 @@ require.interceptors.request.use(
     console.log('accessToken', localStorage.getItem('accessToken'));
     const headers = localStorage.getItem('accessToken')
       ? {
-        accessToken: `${localStorage.getItem('accessToken')}`,
+        // accessToken: `${localStorage.getItem('accessToken')}`,
         uuid: `${uuid}`,
       }
       : {

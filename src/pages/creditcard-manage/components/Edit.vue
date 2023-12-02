@@ -83,7 +83,7 @@
             v-model="formData.faceValue"
             theme="normal"
             align="right"
-            style="width: 120px"
+            style="width: 90px"
             @enter="onEnter"
           >
             <template #suffix><span>元</span></template>

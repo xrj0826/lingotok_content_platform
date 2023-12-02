@@ -1,9 +1,10 @@
+<!-- eslint-disable no-await-in-loop -->
 <!-- 储值卡管理 -->
 <template>
   <div>
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
-        <add @add="AddFinsh"></add>
+        <!-- <add @add="AddFinsh"></add> -->
         <t-popconfirm
           content="确认删除吗"
           :on-confirm="handleMoreDelete"
@@ -31,6 +32,7 @@
         cell-empty-content="-"
         resizable
         :loading="isLoading"
+        :loading-props="{ delay: 0, size: 'small' }"
         :hover="true"
         :show-sort-column-bg-color="true"
         right-fixed-column="1"
@@ -40,18 +42,14 @@
         @filter-change="onFilterChange"
         @change="onChange"
       >
-        <!-- 自定义表头，title值为插槽名称  -->
-        <template #title-slot-name>
-          <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
-        </template>
-      </t-table></t-card
-    >
+      </t-table
+    ></t-card>
   </div>
 </template>
 
 <script lang="tsx">
 export default {
-  name: 'UserCardManage',
+  name: 'CreditCardManage',
 };
 </script>
 <script setup lang="tsx">
@@ -59,12 +57,13 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete18, page8 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
+import { delete17, page9 } from '@/api/user/chuzhikaguanli';
+import { get1 } from '@/api/user/yonghuguanlixiangguanjiekou';
 // import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
-import Add from './components/Add.vue';
+// import Add from './components/Add.vue';
 
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -88,25 +87,47 @@ const querySave = reactive({
   sort: 'createTime',
   order: false,
   cardType: '',
+  userId: '',
+  nickName: '',
 });
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page8({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page9({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
-
-    data.value = res.result.records; // 获得表格数据
-    // 这段代码会安全地检查data.value数组中的每个对象是否具有storeId属性，如果存在，则替换为storeName。
-    for (let i = 0; i < data.value.length; i++) {
-      if (Object.prototype.hasOwnProperty.call(data.value[i], 'storeId')) {
-        // data.value[i].storeId = (await get2({ id: data.value[i].storeId })).result.storeName;
-        data.value[i].storeId = '恒跃体育广钢公园体育中心';
-
-        // console.log(data.value[i].storeId);
+    // 缓存表格数据，以便数据同时更新
+    const cache = ref([]);
+    cache.value = res.result.records;
+    // 使用Promise.all()来并行发送所有的请求
+    const promises = cache.value.map((item) => {
+      // 只处理有userId属性的数据
+      if (Object.prototype.hasOwnProperty.call(item, 'userId')) {
+        // 返回一个Promise对象
+        return get1({ id: item.userId });
       }
-    }
+      // 没有userId属性的数据返回null
+      return null;
+    });
+    // 等待所有的请求都完成
+    await Promise.all(promises)
+      .then((results) => {
+        // 遍历结果数组
+        results.forEach((res, i) => {
+          // 如果结果不为空
+          if (res && res !== undefined) {
+            // 更新对应的数据
+            cache.value[i].phoneNumber = res.result.phoneNumber || '';
+            cache.value[i].user = res.result.nickName || '';
+          }
+        });
+      })
+      .catch((error) => {
+        // 处理错误情况
+        console.log(error);
+      });
+    data.value = cache.value; // 获得表格数据
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
     store.renewData = queryData;
     // 如果总页数小于当前页数
@@ -128,15 +149,16 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   }
   isLoading.value = false;
 };
-const selectedRowKeys = ref([]);
 
+// 多选删除
+const selectedRowKeys = ref([]);
 const handleMoreDelete = async () => {
   try {
     const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete18({ ids });
+      const res = await delete17({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,
@@ -148,6 +170,7 @@ const handleMoreDelete = async () => {
     }
   } catch (error) {
     console.log(error);
+    MessagePlugin.error('出错了，请刷新');
   }
 };
 // 行选中变化时
@@ -160,23 +183,80 @@ const handleRowClick = (e) => {
   console.log(e);
 };
 // 过滤等发生变化时会出发 change 事件
+const filterItem = ref([]);
+// const filterItem2 = ref([]);
+
 const onFilterChange = (filterValue, context) => {
-  console.log('filterValue', filterValue.cardType.toString());
+  try {
+    if (filterValue.cardType) {
+      console.log('filterValue', filterValue.cardType.toString());
+      querySave.cardType = filterValue.cardType.toString();
+    }
 
-  querySave.cardType = filterValue.cardType.toString();
-  console.log('querySave.cardType', querySave.cardType);
+    // filterItem.value = data.value.filter((item) => item.phoneNumber === filterValue.phoneNumber);
 
-  queryData(
-    {
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-      sort: querySave.sort,
-      order: querySave.order === false ? 'asc' : 'desc',
-    },
-    null,
-    // @ts-ignore
-    querySave,
-  );
+    if (filterValue.user || filterValue.phoneNumber) {
+      if (filterValue.user) {
+        filterItem.value = [];
+        filterItem.value = data.value.filter((item) => item.user === filterValue.user);
+      } else if (filterValue.phoneNumber) {
+        filterItem.value = [];
+        filterItem.value = data.value.filter((item) => item.phoneNumber === filterValue.phoneNumber);
+      }
+      // 通过手机号获取userId,再存储到请求参数中
+      const { userId } = JSON.parse(JSON.stringify(filterItem.value[0]));
+      querySave.userId = userId;
+      console.log('filterValueuser', filterValue.user, filterValue.phoneNumber);
+    } else {
+      querySave.userId = null;
+    }
+    // if (filterValue.phoneNumber) {
+    //   if (filterItem.value) {
+    //     filterItem.value = data.value.filter((item) => item.phoneNumber === filterValue.phoneNumber);
+    //   } else filterItem.value.push(data.value.filter((item) => item.phoneNumber === filterValue.phoneNumber));
+    // }
+
+    // filterItem.value = Array.from(new Set(filterItem.value));
+
+    // filterItem2.value = data.value.filter(
+    //   (item) => item.user === filterValue.user && item.phoneNumber === filterValue.phoneNumber,
+    // );
+    // const { userId2 } = JSON.parse(JSON.stringify(filterItem2.value[0]));
+    // querySave.userId = userId2;
+
+    // console.log(
+    //   'filterItem0000000000000000000000000000000000000000',
+    //   JSON.parse(JSON.stringify(filterItem.value[0])).userId,
+    //   querySave.userId,
+    // );
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      },
+      null,
+      // @ts-ignore
+      querySave,
+    );
+  } catch (error) {
+    console.log(error);
+    // filterItem为undefined的情况
+    querySave.userId = null;
+    console.log(querySave.userId);
+    queryData(
+      {
+        pageNumber: pagination.current,
+        pageSize: pagination.pageSize,
+        sort: querySave.sort,
+        order: querySave.order === false ? 'asc' : 'desc',
+      },
+      null,
+      // @ts-ignore
+      querySave,
+    );
+  }
 };
 // 排序、分页、过滤等发生变化时会出发 change 事件
 const onChange = (info, context) => {
@@ -213,8 +293,20 @@ const onChange = (info, context) => {
   }
 };
 // 搜索框
+// const searchValue = ref();
 // const onInputChange = (keyword) => {
-//   console.log(keyword);
+//   searchValue.value = keyword;
+//   querySave.phoneNumber = keyword;
+//   queryData(
+//     {
+//       pageNumber: pagination.current,
+//       pageSize: pagination.pageSize,
+//       sort: querySave.sort,
+//       order: querySave.order === false ? 'asc' : 'desc',
+//     },
+//     null, // @ts-ignore
+//     querySave,
+//   );
 // };
 
 const pagination = reactive({
@@ -242,19 +334,19 @@ const pagination = reactive({
   },
 });
 
-const AddFinsh = (newData) => {
-  console.log(newData);
-  queryData(
-    {
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-      sort: querySave.sort,
-      order: querySave.order === false ? 'asc' : 'desc',
-    },
-    null, // @ts-ignore
-    querySave,
-  );
-};
+// const AddFinsh = (newData) => {
+//   console.log(newData);
+//   queryData(
+//     {
+//       pageNumber: pagination.current,
+//       pageSize: pagination.pageSize,
+//       sort: querySave.sort,
+//       order: querySave.order === false ? 'asc' : 'desc',
+//     },
+//     null, // @ts-ignore
+//     querySave,
+//   );
+// };
 </script>
 
 <style lang="less" scoped></style>

@@ -16,14 +16,14 @@ export default [
         path: 'creditcard-manage',
         name: 'CreditCardManage',
         component: () => import('@/pages/creditcard-manage/index.vue'),
-        meta: { title: '储值卡管理', hidden: true },
+        meta: { title: '管理员储值卡管理' },
       },
-      // {
-      //   path: 'userCard-manage',
-      //   name: 'UserCardManage',
-      //   component: () => import('@/pages/user-card-manage/index.vue'),
-      //   meta: { title: '用户卡管理', hidden: true },
-      // },
+      {
+        path: 'userCard-manage',
+        name: 'UserCardManage',
+        component: () => import('@/pages/user-card-manage/index.vue'),
+        meta: { title: '用户卡管理' },
+      },
     ],
   },
 ];
