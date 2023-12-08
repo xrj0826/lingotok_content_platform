@@ -137,6 +137,19 @@
             <template #suffix><span>分钟</span></template>
           </t-input>
         </t-form-item>
+        <t-form-item
+          label="场地分享次数"
+          name="shareFrequency"
+        >
+          <t-input
+            v-model="formData.shareFrequency"
+            placeholder="请输入"
+            style="width: 100px"
+            @enter="onEnter"
+          >
+            <template #suffix><span>次</span></template>
+          </t-input>
+        </t-form-item>
         <!-- <t-form-item
           label="篮球半场关联篮球全场id"
           name="relevancyId"
@@ -209,6 +222,7 @@ const formData = reactive({
   price: null,
   purchaseInstructions: '',
   leadTime: null,
+  shareFrequency: null,
 });
 
 const close = () => {
@@ -240,7 +254,7 @@ const handlerEdit = async () => {
     formData.amAllPrice = data.amAllPrice;
     formData.pmAllPrice = data.pmAllPrice;
     formData.leadTime = data.leadTime;
-
+    formData.shareFrequency = data.shareFrequency;
     // formData.createTime = data.createTime;
 
     // formData.price = data.price;

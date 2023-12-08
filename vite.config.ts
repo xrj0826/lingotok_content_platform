@@ -79,12 +79,12 @@ export default ({ mode }: ConfigEnv): UserConfig => {
             return path.replace(/^\/test/, '');
           },
         },
-        '/test2': {
+        '/refund': {
           target: 'http://139.9.38.185:8889/',
           ws: true,
           changeOrigin: false,
           rewrite: (path) => {
-            return path.replace(/^\/test2/, '');
+            return path.replace(/^\/refund/, '');
           },
         },
         // '/images/.*\\.(gif|jpg|jpeg|png|bmp|swf)$': {

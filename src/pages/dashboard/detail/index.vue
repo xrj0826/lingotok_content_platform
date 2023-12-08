@@ -1,14 +1,30 @@
 <template>
   <div class="dashboard-panel-detail">
-    <t-card title="本月采购申请情况" class="dashboard-detail-card" :bordered="false">
+    <t-card
+      title="本月采购申请情况"
+      class="dashboard-detail-card"
+      :bordered="false"
+    >
       <t-row :gutter="[16, 16]">
-        <t-col v-for="(item, index) in PANE_LIST_DATA" :key="index" :xs="6" :xl="3">
-          <t-card class="dashboard-list-card" :description="item.title">
+        <t-col
+          v-for="(item, index) in PANE_LIST_DATA"
+          :key="index"
+          :xs="6"
+          :xl="3"
+        >
+          <t-card
+            class="dashboard-list-card"
+            :description="item.title"
+          >
             <div class="dashboard-list-card__number">{{ item.number }}</div>
             <div class="dashboard-list-card__text">
               <div class="dashboard-list-card__text-left">
                 环比
-                <trend class="icon" :type="item.upTrend ? 'up' : 'down'" :describe="item.upTrend || item.downTrend" />
+                <trend
+                  class="icon"
+                  :type="item.upTrend ? 'up' : 'down'"
+                  :describe="item.upTrend || item.downTrend"
+                />
               </div>
               <t-icon name="chevron-right" />
             </div>
@@ -16,28 +32,68 @@
         </t-col>
       </t-row>
     </t-card>
-    <t-row :gutter="[16, 16]" class="row-margin">
-      <t-col :xs="12" :xl="9">
-        <t-card class="dashboard-detail-card" title="采购商品申请趋势" subtitle="(件)" :bordered="false">
+    <t-row
+      :gutter="[16, 16]"
+      class="row-margin"
+    >
+      <t-col
+        :xs="12"
+        :xl="9"
+      >
+        <t-card
+          class="dashboard-detail-card"
+          title="采购商品申请趋势"
+          subtitle="(件)"
+          :bordered="false"
+        >
           <template #actions>
-            <t-date-range-picker class="card-date-picker-container" :default-value="LAST_7_DAYS" theme="primary"
-              mode="date" style="width: 248px" @change="onMaterialChange" />
+            <t-date-range-picker
+              class="card-date-picker-container"
+              :default-value="LAST_7_DAYS"
+              theme="primary"
+              mode="date"
+              style="width: 248px"
+              @change="onMaterialChange"
+            />
           </template>
-          <div id="lineContainer" style="width: 100%; height: 416px" />
+          <div
+            id="lineContainer"
+            style="width: 100%; height: 416px"
+          />
         </t-card>
       </t-col>
-      <t-col :xs="12" :xl="3">
-        <product-card v-for="(item, index) in PRODUCT_LIST" :key="index" :product="item"
-          :class="{ 'row-margin': index !== 0, 'product-card': true }" />
+      <t-col
+        :xs="12"
+        :xl="3"
+      >
+        <product-card
+          v-for="(item, index) in PRODUCT_LIST"
+          :key="index"
+          :product="item"
+          :class="{ 'row-margin': index !== 0, 'product-card': true }"
+        />
       </t-col>
     </t-row>
-    <t-card :class="['dashboard-detail-card', 'row-margin']" title="采购商品满意度分布" :bordered="false">
+    <t-card
+      :class="['dashboard-detail-card', 'row-margin']"
+      title="采购商品满意度分布"
+      :bordered="false"
+    >
       <template #actions>
-        <t-date-range-picker class="card-date-picker-container" :default-value="LAST_7_DAYS" theme="primary" mode="date"
-          style="display: inline-block; margin-right: var(--td-comp-margin-s); width: 248px" @change="onSatisfyChange" />
+        <t-date-range-picker
+          class="card-date-picker-container"
+          :default-value="LAST_7_DAYS"
+          theme="primary"
+          mode="date"
+          style="display: inline-block; margin-right: var(--td-comp-margin-s); width: 248px"
+          @change="onSatisfyChange"
+        />
         <t-button class="card-date-button"> 导出数据 </t-button>
       </template>
-      <div id="scatterContainer" style="width: 100%; height: 434px" />
+      <div
+        id="scatterContainer"
+        style="width: 100%; height: 434px"
+      />
     </t-card>
   </div>
 </template>
@@ -158,9 +214,9 @@ const onMaterialChange = (value: string[]) => {
   }
 
   :deep(.t-card__body) {
-    padding: 0;
     margin-top: var(--td-comp-margin-xxl);
     margin-bottom: var(--td-comp-margin-xxl);
+    padding: 0;
   }
 
   :deep(.t-card__footer) {
@@ -182,8 +238,8 @@ const onMaterialChange = (value: string[]) => {
   }
 
   :deep(.t-card__body) {
-    padding: 0;
     margin-top: var(--td-comp-margin-xxl);
+    padding: 0;
   }
 
   :deep(.t-card__actions) {
@@ -194,8 +250,8 @@ const onMaterialChange = (value: string[]) => {
 
 .dashboard-list-card {
   display: flex;
-  flex-direction: column;
   flex: 1;
+  flex-direction: column;
   padding: var(--td-comp-paddingTB-xl) var(--td-comp-paddingLR-xl);
 
   :deep(.t-card__description) {
@@ -203,8 +259,8 @@ const onMaterialChange = (value: string[]) => {
   }
 
   :deep(.t-card__body) {
-    flex: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
     justify-content: space-between;
     margin-top: var(--td-comp-margin-s);
@@ -225,10 +281,10 @@ const onMaterialChange = (value: string[]) => {
   }
 
   &__number {
+    margin-bottom: var(--td-comp-margin-xxl);
+    color: var(--td-text-color-primary);
     font-size: var(--td-font-size-headline-medium);
     line-height: var(--td-font-size-headline-medium);
-    color: var(--td-text-color-primary);
-    margin-bottom: var(--td-comp-margin-xxl);
   }
 
   &__text {
@@ -236,8 +292,8 @@ const onMaterialChange = (value: string[]) => {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    font: var(--td-font-body-medium);
     color: var(--td-text-color-placeholder);
+    font: var(--td-font-body-medium);
     text-align: left;
 
     .t-icon {

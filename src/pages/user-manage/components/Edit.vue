@@ -25,7 +25,6 @@
         :rules="FORM_RULES"
         :data="formData"
         :colon="true"
-        @reset="onReset"
       >
         <t-form-item
           label="姓名"

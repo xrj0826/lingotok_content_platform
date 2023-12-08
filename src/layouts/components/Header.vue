@@ -62,41 +62,47 @@
               <t-icon name="help-circle" />
             </t-button>
           </t-tooltip> -->
-          <t-dropdown
-            :min-column-width="120"
-            trigger="click"
+          <t-tooltip
+            placement="left"
+            content="退出登录"
           >
-            <template #dropdown>
-              <t-dropdown-menu>
-                <t-dropdown-item
+            <t-dropdown
+              :min-column-width="120"
+              trigger="click"
+            >
+              <template #dropdown>
+                <t-dropdown-menu>
+                  <!-- <t-dropdown-item
                   class="operations-dropdown-container-item"
                   @click="handleNav('/user/index')"
                 >
                   <t-icon name="user-circle"></t-icon>个人中心
-                </t-dropdown-item>
-                <t-dropdown-item
-                  class="operations-dropdown-container-item"
-                  @click="handleLogout"
-                >
-                  <t-icon name="poweroff"></t-icon>退出登录
-                </t-dropdown-item>
-              </t-dropdown-menu>
-            </template>
-            <t-button
-              class="header-user-btn"
-              theme="default"
-              variant="text"
-            >
-              <template #icon>
-                <t-icon
-                  class="header-user-avatar"
-                  name="user-circle"
-                />
+                </t-dropdown-item> -->
+                  <t-dropdown-item
+                    class="operations-dropdown-container-item"
+                    @click="handleLogout"
+                  >
+                    <t-icon name="poweroff"></t-icon>退出登录
+                  </t-dropdown-item>
+                </t-dropdown-menu>
               </template>
-              <div class="header-user-account">{{ user.userInfo.name }}</div>
-              <template #suffix><t-icon name="chevron-down" /></template>
-            </t-button>
-          </t-dropdown>
+              <t-button
+                class="header-user-btn"
+                theme="default"
+                variant="text"
+              >
+                <template #icon>
+                  <t-icon
+                    class="header-user-avatar"
+                    name="user-circle"
+                  />
+                </template>
+                <div class="header-user-account">{{ user.userInfo.name }}</div>
+                <template #suffix><t-icon name="chevron-down" /></template>
+              </t-button>
+            </t-dropdown>
+          </t-tooltip>
+
           <t-tooltip
             placement="bottom"
             content="系统设置"

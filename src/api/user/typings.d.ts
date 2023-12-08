@@ -75,6 +75,8 @@ declare namespace API {
     discountValue?: number;
     /** 次卡次数 */
     times?: number;
+    /** 订单id */
+    orderId?: string;
   };
 
   type CbCardAdmin = {
@@ -353,6 +355,8 @@ declare namespace API {
     venueType?: string;
     /** 场地起订时间 */
     leadTime?: number;
+    /** 场地分享次数 */
+    shareFrequency?: number;
   };
 
   type delete10Params = {
@@ -999,3 +1003,4 @@ declare namespace API {
     entity: CbStore;
   };
 }
+

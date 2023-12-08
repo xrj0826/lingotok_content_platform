@@ -56,6 +56,11 @@ const store = useRenewDataStore();
 const index = ref();
 const data = ref([]);
 const selectedRowKeys = ref([]);
+
+// enum paymentMethod {
+//   'WECHAT',
+//   'CARD',
+// }
 // 暂存查询条件
 const querySave = reactive({
   orderType: '',
@@ -165,6 +170,7 @@ const handleMoreDelete = async () => {
         // @ts-ignore
         querySave,
       );
+
       MessagePlugin.success('删除成功');
     }
   } catch (error) {
@@ -208,6 +214,17 @@ const queryData = async (paginationInfo?, searchVo?: undefined, entityInfo?: und
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
     store.renewData = queryData;
     store.querySave = querySave;
+    const deleteArr: string[] = [];
+    // 这段代码会安全地检查data.value数组中的每个对象是否具有paymentMethods属性，然后删除支付类型为null的数据
+    for (let i = 0; i < data.value.length; i++) {
+      if (Object.prototype.hasOwnProperty.call(data.value[i], 'paymentMethods')) {
+        if (data.value[i].paymentMethods === null) {
+          deleteArr.push(data.value[i].id);
+        }
+      }
+    }
+    const ids = deleteArr.join(); // 提取数组里面的字符串
+    delete9({ ids });
     // 如果总页数小于当前页数
     if (res.result.pages < res.result.current) {
       pagination.current = res.result.pages;
@@ -225,13 +242,6 @@ const queryData = async (paginationInfo?, searchVo?: undefined, entityInfo?: und
   } catch (err) {
     console.log(err);
   }
-  // 这段代码会安全地检查data.value数组中的每个对象是否具有venueId属性，如果存在，则替换为data2.venueName。
-  // for (let i = 0; i < data.value.length; i++) {
-  //   if (Object.prototype.hasOwnProperty.call(data.value[i], 'venueId')) {
-  //     // data.value[i].venueId = get({ id: data.value[i].venueId });//将id替换成name
-  //     // console.log(data.value[i].venueId);
-  //   }
-  // }
 };
 const handleRowClick = (e) => {
   console.log(e);

@@ -66,7 +66,7 @@
             v-model="formData.faceValue"
             theme="normal"
             align="right"
-            style="width: 88px"
+            style="width: 90px"
             @enter="onEnter"
           >
             <template #suffix><span>元</span></template>
@@ -171,6 +171,7 @@
         <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
+              :loading="reClick"
               theme="primary"
               type="submit"
               >提交</t-button
@@ -229,9 +230,11 @@ const close = () => {
 const handleAdd = () => {
   visible.value = true;
 };
+const reClick = ref(false);
+
 // 确定添加
 const add = async ({ validateResult, _ }) => {
-  if (validateResult === true) {
+  if (validateResult === true && !reClick.value) {
     if (formData.cardType !== 'STORED_VALUE') {
       formData.bonusAmount = null;
     }
@@ -245,14 +248,16 @@ const add = async ({ validateResult, _ }) => {
     const res = await save9(formData);
     console.log('編輯返回', res);
     emit('add', 'emit传来喜报:组件通信成功', res);
-
+    reClick.value = true;
     loading.value = true;
     // 加载一下
     const timer = setTimeout(() => {
       loading.value = false;
       visible.value = false;
+      reClick.value = false;
+
       clearTimeout(timer);
-    }, 200);
+    }, 800);
     MessagePlugin.success('添加成功');
   } else {
     console.log('Validate Errors: ');

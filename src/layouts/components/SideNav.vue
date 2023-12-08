@@ -24,8 +24,9 @@
         />
         <div
           v-if="!collapsed"
-          style="font-size: 22px; font-weight: 700; line-height: 50px; margin-left: -50px; margin-right: 20px"
+          style="font-size: 24px; font-weight: 700; line-height: 50px; margin-left: -40px; margin-right: 16px"
         >
+          <!-- 高校体育管理系统 -->
           智能球馆
         </div>
       </span>
@@ -34,7 +35,7 @@
       <!--      </div>-->
       <menu-content :nav-data="menu" />
       <template #operations>
-        <span class="version-container"> {{ !collapsed ? '智能球馆' : '' }} </span>
+        <span class="version-container"> {{ !collapsed ? '高校体育管理系统' : '' }} </span>
       </template>
     </t-menu>
     <div :class="`${prefix}-side-nav-placeholder${collapsed ? '-hidden' : ''}`"></div>

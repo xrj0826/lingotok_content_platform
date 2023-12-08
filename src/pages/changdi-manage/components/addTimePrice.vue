@@ -25,11 +25,12 @@
         >
           <t-radio-group v-model="formData.specialValue">
             <t-radio :value="null">无</t-radio>
-            <t-radio value="0">免费场</t-radio>
-            <t-radio value="1">内部锁定场</t-radio>
+            <t-radio :value="0">免费场</t-radio>
+            <t-radio :value="-1">内部锁定场</t-radio>
           </t-radio-group>
         </t-form-item>
         <t-form-item
+          v-if="formData.specialValue !== -1"
           label="该时间段价格"
           name="specialValue"
         >

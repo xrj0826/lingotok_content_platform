@@ -59,6 +59,19 @@
           ></t-input>
         </t-form-item>
         <t-form-item
+          label="可分享次数"
+          name="realTime"
+        >
+          <t-input
+            v-model="formData.realTime"
+            style="width: 100px"
+            placeholder="请输入内容"
+            @enter="onEnter"
+          >
+            <template #suffix><span>次</span></template>
+          </t-input>
+        </t-form-item>
+        <t-form-item
           label="开店时间"
           name="openingTime"
           ><t-time-picker
@@ -152,6 +165,8 @@
           <t-textarea
             v-model="formData.scheduledNotice"
             placeholder="请输入内容"
+            rows="10"
+            cols="33"
             @enter="onEnter"
           ></t-textarea>
         </t-form-item>
@@ -181,8 +196,8 @@ const emit = defineEmits(['edit']);
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = { name: [{ required: true, message: '姓名必填' }] };
-const file = ref([]);
-const uploadRef = ref();
+// const file = ref([]);
+// const uploadRef = ref();
 
 // 在此定义表单数据
 const formData = reactive({
@@ -199,6 +214,7 @@ const formData = reactive({
   leadTime: null,
   announcement: '',
   scheduledNotice: '',
+  realTime: '',
 });
 
 const close = () => {
@@ -228,10 +244,10 @@ const handlerEdit = async () => {
     formData.storeImages = data.storeImages;
     formData.serviceHotline = data.serviceHotline;
     formData.announcement = data.announcement;
-
     formData.advanceDays = data.advanceDays;
     formData.leadTime = data.leadTime;
     formData.scheduledNotice = data.scheduledNotice;
+    formData.realTime = data.realTime;
   } catch (error) {
     console.log(error);
   }
@@ -264,32 +280,32 @@ const edit = async () => {
 //   }
 // };
 
-const handleFail = ({ file }) => {
-  MessagePlugin.error(`文件 ${file.name} 上传失败`);
-};
+// const handleFail = ({ file }) => {
+//   MessagePlugin.error(`文件 ${file.name} 上传失败`);
+// };
 
-// file 为等待上传的文件信息，用于提供给上传接口。file.raw 表示原始文件
-const requestMethod = async (file) => {
-  const reader = new FileReader();
-  // 当文件加载完成时触发事件
-  reader.onload = (event) => {
-    // event.target.result包含了Base64编码的图片数据
-    const base64String = event.target.result;
-    tempSrc.value = base64String; // 暂存src，用于储存原始图片
-    // console.log(base64String);
-    const storeImages = { images: [base64String] };
-    const toJsonString = JSON.stringify({ storeImages });
-    const formattedJsonString = `"storeImages": ${JSON.stringify(toJsonString)}`;
-    formData.storeImages = formattedJsonString;
-  };
-  // 以DataURL格式读取文件（即Base64格式）
-  reader.readAsDataURL(file.raw);
-  // save2(formData);
-  return new Promise((resolve) => {
-    // resolve 参数为关键代码
-    resolve({ status: 'success' });
-  });
-};
+// // file 为等待上传的文件信息，用于提供给上传接口。file.raw 表示原始文件
+// const requestMethod = async (file) => {
+//   const reader = new FileReader();
+//   // 当文件加载完成时触发事件
+//   reader.onload = (event) => {
+//     // event.target.result包含了Base64编码的图片数据
+//     const base64String = event.target.result;
+//     tempSrc.value = base64String; // 暂存src，用于储存原始图片
+//     // console.log(base64String);
+//     const storeImages = { images: [base64String] };
+//     const toJsonString = JSON.stringify({ storeImages });
+//     const formattedJsonString = `"storeImages": ${JSON.stringify(toJsonString)}`;
+//     formData.storeImages = formattedJsonString;
+//   };
+//   // 以DataURL格式读取文件（即Base64格式）
+//   reader.readAsDataURL(file.raw);
+//   // save2(formData);
+//   return new Promise((resolve) => {
+//     // resolve 参数为关键代码
+//     resolve({ status: 'success' });
+//   });
+// };
 // 禁用 Input 组件，按下 Enter 键时，触发 submit 事件
 const onEnter = (_, { e }) => {
   e.preventDefault();

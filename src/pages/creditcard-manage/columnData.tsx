@@ -20,7 +20,7 @@ export const columns: PrimaryTableCol[] = [
 
   // { colKey: 'userId', title: '用户id' },
 
-  { colKey: 'cardName', title: '卡名称' },
+  { colKey: 'cardName', title: '卡名称', width: '140px' },
   {
     colKey: 'cardType',
     title: '卡类型（储值卡、月卡、次卡）',

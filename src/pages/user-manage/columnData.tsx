@@ -4,9 +4,9 @@ import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
 import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
+import { decrypt } from '@/utils/crypto';
 
 import Edit from './components/Edit.vue';
-
 // const onNameChange = async (val, _) => {
 //   // console.log(val, ctx);
 //   if (val === '' || null) {
@@ -102,6 +102,16 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'phoneNumber',
     title: '手机号',
     width: '110px',
+    cell: (h, { row }) => {
+      let cellValue;
+      if (row.phoneNumber) {
+        const phone = decrypt(row.phoneNumber);
+        cellValue = <span>{phone}</span>;
+        console.log(phone);
+      }
+
+      return cellValue;
+    },
     filter: {
       type: 'input',
       resetValue: '',
@@ -228,6 +238,7 @@ const editFinish = async (newData) => {
     store.querySave,
   ); // 使用pinia里面的分页请求};
 };
+
 // const loadingCount = ref(0);
 // const renderPlaceholder = () => (
 //   <img

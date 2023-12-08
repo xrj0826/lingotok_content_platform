@@ -4,7 +4,9 @@ import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
 // import { ref } from 'vue';
 import { delete10 } from '@/api/user/dingdanguanlijiekou';
+import { adminCardRefund, adminRefund } from '@/api/user2/tuikuanxiangguanjiekouguanli';
 import { useRenewDataStore } from '@/store/renewData';
+import { decrypt } from '@/utils/crypto';
 
 import Edit from './components/Edit.vue';
 
@@ -27,12 +29,12 @@ import Edit from './components/Edit.vue';
 //   console.log(res);
 // };
 export const columns: PrimaryTableCol[] = [
-  // {
-  //   colKey: 'row-select',
-  //   type: 'multiple',
-  // fixed: 'left',
-  //   width: 50,
-  // },
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    fixed: 'left',
+    width: 50,
+  },
 
   // {
   //   colKey: 'deleteFlag',
@@ -138,7 +140,7 @@ export const columns: PrimaryTableCol[] = [
           cellValue = <span style={{ color: 'rgb(1, 179, 1)' }}>支付成功</span>;
           break;
         case 'REFUNDED':
-          cellValue = <span>退款</span>;
+          cellValue = <span style={{ color: 'rgb(200, 100, 100)' }}>退款</span>;
           break;
         default:
           cellValue = <span>null</span>;
@@ -169,13 +171,14 @@ export const columns: PrimaryTableCol[] = [
       showConfirmAndReset: true,
     },
   },
+  { colKey: 'createTime', title: '创建时间', width: '200px' },
+
   { colKey: 'orderPrice', title: '订单价格', sorter: true },
   {
     colKey: 'orderType',
     title: '订单类型', // 单选过滤配置
     cell: (h, { row }) => {
       let cellValue;
-
       // 使用 switch 语句检查 row 的值
       switch (row.orderType) {
         case 'RENTAL':
@@ -185,16 +188,21 @@ export const columns: PrimaryTableCol[] = [
           cellValue = <span>门票</span>;
           break;
         case 'TIMER':
-          cellValue = <span>赛事</span>;
+          cellValue = <span>计时</span>;
           break;
-        case 'EVENT':
-          cellValue = <span>已失效</span>;
+        case 'MONTHLY':
+          cellValue = <span>月卡订单</span>;
+          break;
+        case 'PERSON_CARD':
+          cellValue = <span>散客储值卡订单</span>;
+          break;
+        case 'STORED_VALUE':
+          cellValue = <span>储值卡订单</span>;
           break;
         default:
           cellValue = <span>null</span>;
           break;
       }
-
       return cellValue;
     },
     filter: {
@@ -204,8 +212,10 @@ export const columns: PrimaryTableCol[] = [
       list: [
         { label: '租场', value: 'RENTAL' },
         { label: '门票', value: 'TICKET' },
-        { label: '赛事', value: 'TIMER' },
-        { label: '已失效', value: 'EVENT' },
+        { label: '计时', value: 'TIMER' },
+        { label: '月卡订单', value: 'MONTHLY' },
+        { label: '散客储值卡订单', value: 'PERSON_CARD' },
+        { label: '储值卡订单', value: 'STORED_VALUE' },
       ],
       resetValue: '',
       // props: {
@@ -277,6 +287,16 @@ export const columns: PrimaryTableCol[] = [
     colKey: 'phoneNumber',
     title: '手机号码',
     width: '200px', // 输入框过滤配置
+    cell: (h, { row }) => {
+      let cellValue;
+      if (row.phoneNumber) {
+        const phone = decrypt(row.phoneNumber);
+        cellValue = <span>{phone}</span>;
+        console.log(phone);
+      }
+
+      return cellValue;
+    },
     filter: {
       type: 'input',
 
@@ -337,12 +357,41 @@ export const columns: PrimaryTableCol[] = [
   },
   { colKey: 'startTime', title: '用户进场时间', width: '200px' },
   { colKey: 'endTime', title: '用户离开时间', width: '200px' },
-  { colKey: 'createTime', title: '创建时间', width: '200px' },
   {
     colKey: 'operation',
     title: '操作',
     fixed: 'right',
+    width: '140px',
     cell: (h, { row }) => {
+      let ceil;
+      if (row.orderType !== 'MONTHLY' && row.orderType !== 'PERSON_CARD' && row.orderType !== 'STORED_VALUE') {
+        ceil = (
+          <t-link
+            variant="text"
+            hover="color"
+            theme="danger"
+          >
+            退款
+          </t-link>
+        );
+      } else {
+        ceil = (
+          <div
+            style={{
+              width: '28px',
+            }}
+          ></div>
+        );
+      }
+      if (row.orderState === 'REFUNDED') {
+        ceil = (
+          <div
+            style={{
+              width: '28px',
+            }}
+          ></div>
+        );
+      }
       return (
         <t-space>
           <t-popconfirm
@@ -361,6 +410,27 @@ export const columns: PrimaryTableCol[] = [
             onEdit={editFinish}
             editId={row.id}
           ></Edit>
+          <t-popconfirm
+            content="确认完成退款吗"
+            onConfirm={() => handleRefund(row)}
+          >
+            {ceil}
+            {/* {row.orderType === 'RENTAL' || row.paymentMethods === 'WECHAT' || row.orderState !== 'REFUNDED' ? (
+              <t-link
+                variant="text"
+                hover="color"
+                theme="danger"
+              >
+                退款
+              </t-link>
+            ) : (
+              <div
+                style={{
+                  width: '28px',
+                }}
+              ></div>
+            )} */}
+          </t-popconfirm>
         </t-space>
       );
     },
@@ -396,6 +466,31 @@ const handleDelete = async (id) => {
     console.log(error);
   }
 };
+
+const handleRefund = async (row) => {
+  try {
+    console.log('退款的id', row.id);
+    // 参数要求是个对象
+    if (row.orderType === 'RENTAL' && row.paymentMethods !== 'WECHAT') {
+      const res = await adminCardRefund(row.id);
+      console.log('adminCardRefund', res, row.id);
+      MessagePlugin.success('退款成功');
+    }
+    if (row.paymentMethods === 'WECHAT') {
+      await adminRefund({ paymentMethod: 'WECHAT', sn: row.id });
+      MessagePlugin.success('退款成功');
+    }
+    store.renewData(
+      { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
+      null,
+      store.querySave,
+    ); // 使用pinia里面的分页请求
+  } catch (error) {
+    console.log(error);
+    MessagePlugin.error('发生错误');
+  }
+};
+
 for (let i = 0; i < columns.length; i++) {
   columns[i].align = 'center';
 }

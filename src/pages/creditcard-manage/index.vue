@@ -51,7 +51,7 @@
 
 <script lang="tsx">
 export default {
-  name: 'CreditCardManage',
+  name: 'UserCardManage',
 };
 </script>
 <script setup lang="tsx">
@@ -60,7 +60,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
 import { delete18, page8 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
-import { get2 } from '@/api/user/mendianguanlijiekou';
+// import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';

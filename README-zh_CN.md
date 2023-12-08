@@ -1,4 +1,3 @@
-
 <p style="display:flex; justify-content: center">
 
 </p>
@@ -15,7 +14,7 @@
   </a>
 </p>
 
-简体中文 | [English](./README.md) 
+简体中文 | [English](./README.md)
 
 ### 项目简介
 
@@ -54,7 +53,7 @@ td-starter init
 
 ### 开发
 
-``` bash
+```bash
 ## 安装依赖
 npm install
 
@@ -104,14 +103,13 @@ npm run stylelint:fix
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br> IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Edge >=84                                                                                                                                                                                                        | Firefox >=83                                                                                                                                                                                                      | Chrome >=84                                                                                                                                                                                                   | Safari >=14.1                                                                                                                                                                                                  |
+| Edge >=84                                                                                                                                                                                                        | Firefox >=83                                                                                                                                                                                                      | Chrome >=84                                                                                                                                                                                                   | Safari >=14.1                                                                                                                                                                                                 |
 
 ### 社区版本
 
-基于 TDesign Vue Next 的 starter-kit 有多种社区版本，访问 [社区链接](https://tdesign.tencent.com/starter/docs/vue-next/community-link) 可以访问更多版本。 
-如果您也开发了 TDesign Starter 的社区版本，可以提交 Issue 或者直接给我们提Pull Request 😊。
+基于 TDesign Vue Next 的 starter-kit 有多种社区版本，访问 [社区链接](https://tdesign.tencent.com/starter/docs/vue-next/community-link) 可以访问更多版本。
+如果您也开发了 TDesign Starter 的社区版本，可以提交 Issue 或者直接给我们提 Pull Request 😊。
 
 ### 开源协议
 
 TDesign 遵循 [MIT 协议](https://github.com/Tencent/tdesign-vue-next-starter/LICENSE)。
-
