@@ -3,7 +3,7 @@
     <t-space>
       <t-link
         theme="primary"
-        @click="handlerEdit"
+        @click=""
         >编辑</t-link
       >
     </t-space>
@@ -180,7 +180,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page4, update4 } from '@/api/user/dingdanguanlijiekou';
+// import { page4, update4 } from '@/api/user/dingdanguanlijiekou';
 
 const props = defineProps({ editId: String }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -214,41 +214,41 @@ const close = () => {
 };
 
 // 外部的编辑按钮
-const handlerEdit = async () => {
-  try {
-    visible.value = true;
-    console.log(props.editId);
-    const res = await page4({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
-    const [data] = res.result.records; // 解构赋值records
-    // for (const key in formData) {
-    //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
-    //     formData[key] = data[formData[key]];
-    //   }
-    // }
-    // 以下操作用于更新数据
-    formData.id = data.id;
-    // formData.deleteFlag = data.deleteFlag;
-    formData.storeId = data.storeId;
-    formData.orderPrice = data.orderPrice;
-    formData.orderDate = data.orderDate;
-    formData.orderSt = data.orderSt;
-    formData.orderEd = data.orderEd;
-    formData.orderState = data.orderState;
-    formData.orderType = data.orderType;
-    formData.paymentMethods = data.paymentMethods;
-    formData.share = data.share;
-    formData.startTime = data.startTime;
-    formData.endTime = data.endTime;
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const handlerEdit = async () => {
+//   try {
+//     visible.value = true;
+//     console.log(props.editId);
+//     // const res = await page4({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
+//     const [data] = res.result.records; // 解构赋值records
+//     // for (const key in formData) {
+//     //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
+//     //     formData[key] = data[formData[key]];
+//     //   }
+//     // }
+//     // 以下操作用于更新数据
+//     formData.id = data.id;
+//     // formData.deleteFlag = data.deleteFlag;
+//     formData.storeId = data.storeId;
+//     formData.orderPrice = data.orderPrice;
+//     formData.orderDate = data.orderDate;
+//     formData.orderSt = data.orderSt;
+//     formData.orderEd = data.orderEd;
+//     formData.orderState = data.orderState;
+//     formData.orderType = data.orderType;
+//     formData.paymentMethods = data.paymentMethods;
+//     formData.share = data.share;
+//     formData.startTime = data.startTime;
+//     formData.endTime = data.endTime;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 // 确定编辑
 const edit = async () => {
   try {
-    const res = await update4(formData);
-    console.log('編輯返回', res);
-    emit('edit', 'emit传来喜报:组件通信成功', res);
+    // const res = await update4(formData);
+    console.log('編輯返回',);
+    emit('edit', 'emit传来喜报:组件通信成功',);
 
     loading.value = true;
     // 加载一下

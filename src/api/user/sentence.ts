@@ -2,9 +2,9 @@
 /* eslint-disable */
 import request from '/@/utils/request/index';
 
-/** 用户修改 PUT /staff/cbuser */
-export async function update1(body: API.CbUser, options?: { [key: string]: any }) {
-  return request<API.ResultMessage>('/staff/cbuser', {
+/** 修改 PUT /manager/sentence */
+export async function update1(body: API.Sentence, options?: { [key: string]: any }) {
+  return request<API.ResultMessage>('/manager/sentence', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -14,9 +14,9 @@ export async function update1(body: API.CbUser, options?: { [key: string]: any }
   });
 }
 
-/** 新增用户 POST /staff/cbuser */
-export async function save1(body: API.CbUser, options?: { [key: string]: any }) {
-  return request<API.ResultMessage>('/staff/cbuser', {
+/** 保存 POST /manager/sentence */
+export async function save3(body: API.Sentence, options?: { [key: string]: any }) {
+  return request<API.ResultMessage>('/manager/sentence', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,13 +26,13 @@ export async function save1(body: API.CbUser, options?: { [key: string]: any }) 
   });
 }
 
-/** 根据id批量删除用户 DELETE /staff/cbuser */
+/** 批量删除 DELETE /manager/sentence */
 export async function delete2(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.delete2Params,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResultMessage>('/staff/cbuser', {
+  return request<API.ResultMessage>('/manager/sentence', {
     method: 'DELETE',
     params: {
       ...params,
@@ -41,51 +41,42 @@ export async function delete2(
   });
 }
 
-/** 用户id查询 GET /staff/cbuser/${param0} */
+/** 句子详情 GET /manager/sentence/${param0} */
 export async function get1(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.get1Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResultMessageCbUser>(`/staff/cbuser/${param0}`, {
+  return request<API.ResultMessageSentence>(`/manager/sentence/${param0}`, {
     method: 'GET',
     params: { ...queryParams },
     ...(options || {}),
   });
 }
 
-/** 根据id删除用户 DELETE /staff/cbuser/${param0} */
+/** 删除 DELETE /manager/sentence/${param0} */
 export async function delete3(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.delete3Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResultMessage>(`/staff/cbuser/${param0}`, {
+  return request<API.ResultMessage>(`/manager/sentence/${param0}`, {
     method: 'DELETE',
     params: { ...queryParams },
     ...(options || {}),
   });
 }
 
-/** 用户分页查询分页 GET /staff/cbuser/page */
-export async function page1(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.page1Params,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResultMessageIPageCbUser>('/staff/cbuser/page', {
-    method: 'GET',
-    params: {
-      ...params,
-      entity: undefined,
-      ...params['entity'],
-      searchVo: undefined,
-      ...params['searchVo'],
-      page: undefined,
-      ...params['page'],
+/** 收藏句子 POST /manager/sentence/collect */
+export async function collect(body: API.CollectDTO, options?: { [key: string]: any }) {
+  return request<API.ResultMessage>('/manager/sentence/collect', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
+    data: body,
     ...(options || {}),
   });
 }

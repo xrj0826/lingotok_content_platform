@@ -1,362 +1,31 @@
 import dayjs from 'dayjs';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-
-// import { ref } from 'vue';
-import { delete10 } from '@/api/user/dingdanguanlijiekou';
-import { adminCardRefund, adminRefund } from '@/api/user2/tuikuanxiangguanjiekouguanli';
 import { useRenewDataStore } from '@/store/renewData';
 import { decrypt } from '@/utils/crypto';
 
 import Edit from './components/Edit.vue';
+import { addWord, delete10, group, groupDetail } from '@/api/user/bookApi';
+import { ref } from 'vue';
+import { deleteWord, getByGroupId, getById } from '@/api/user/wordsApi';
 
-// const onOrderStateChange = async (val, ctx) => {
-//   console.log('订单状态过滤', val, ctx);
-//   const res = await store.renewData(
-//     { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
-//     null,
-//     { orderState: val },
-//   );
-//   console.log(res);
-// };
-// const onOrderTypeChange = async (val, ctx) => {
-//   console.log('订单状态过滤', val, ctx);
-//   const res = await store.renewData(
-//     { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
-//     null,
-//     { orderType: val },
-//   );
-//   console.log(res);
-// };
 export const columns: PrimaryTableCol[] = [
+
+  { colKey: 'bookId', title: '词汇书名称', width: "200px" },
+  { colKey: 'url', title: '词汇书封面', width: "200px" },
+  { colKey: 'bookDescription', title: '词汇书描述', width: "200px" },
+  { colKey: 'label', title: '词汇书标签', width: '200px' },
   {
-    colKey: 'row-select',
-    type: 'multiple',
-    fixed: 'left',
-    width: 50,
-  },
-
-  // {
-  //   colKey: 'deleteFlag',
-  //   title: '删除标志', // 单选过滤配置
-  //   filter: {
-  //     // 过滤行中的列标题别名
-  //     // label: '申请状态 A',
-  //     type: 'single',
-  //     list: [
-  //       { label: '正常', value: 0 },
-  //       { label: '已删除', value: 1 },
-  //     ],
-  //     resetValue: '',
-  //     // props: {
-  //     //   placeholder: '输入关键词过滤',
-  //     //   onChange: onOrderStateChange,
-  //     // },
-  //     // 是否显示重置取消按钮，一般情况不需要显示
-  //     showConfirmAndReset: true,
-  //   },
-  //   cell: (h, { row }) => {
-  //     let cellValue;
-
-  //     // 使用 switch 语句检查 row 的值
-  //     switch (row.deleteFlag) {
-  //       case false:
-  //         cellValue = <span>正常</span>;
-  //         break;
-  //       case true:
-  //         cellValue = <span>已删除</span>;
-  //         break;
-  //       default:
-  //         cellValue = <span>正常</span>;
-  //         break;
-  //     }
-
-  //     return cellValue;
-  //   },
-  // eslint-disable-next-line consistent-return
-  // attrs: ({ row }) => {
-  //   if (row.deleteFlag === false) {
-  //     return {
-  //       style: {
-  //         color: 'rgb(117, 211, 175)',
-  //       },
-  //     };
-  //   }
-  //   if (row.deleteFlag === true) {
-  //     return {
-  //       style: {
-  //         color: 'rgb(249, 62, 62)',
-  //       },
-  //     };
-  //   }
-  // },
-  // },
-  // {
-  //   colKey: 'orderState',
-  //   title: '订单状态',
-  //   cell: (h, { row }) => {
-  //     return <b>{row.deleteFlag === true ? '待使用' : '使用中'}</b>;
-  //   },
-  //   // eslint-disable-next-line consistent-return
-  //   attrs: ({ row }) => {
-  //     if (row.deleteFlag === false) {
-  //       return {
-  //         style: {
-  //           color: 'rgb(117, 211, 175)',
-  //         },
-  //       };
-  //     }
-  //     if (row.deleteFlag === true) {
-  //       return {
-  //         style: {
-  //           color: 'rgb(249, 62, 62)',
-  //         },
-  //       };
-  //     }
-  //   },
-  // },
-  {
-    colKey: 'orderState',
-    title: '订单状态',
-    width: '200px', // 输入框过滤配置
-    cell: (h, { row }) => {
-      let cellValue;
-
-      // 使用 switch 语句检查 row 的值
-      switch (row.orderState) {
-        case 'IN_USE':
-          cellValue = <span>使用中</span>;
-          break;
-        case 'WAITING_TO_USE':
-          cellValue = <span>待使用</span>;
-          break;
-        case 'USED':
-          cellValue = <span>已使用</span>;
-          break;
-        case 'EXPIRED':
-          cellValue = <span style={{ color: 'rgb(900, 1, 10)' }}>已失效</span>;
-          break;
-        case 'PAYMENT_SUCCESSFUL':
-          cellValue = <span style={{ color: 'rgb(1, 179, 1)' }}>支付成功</span>;
-          break;
-        case 'REFUNDED':
-          cellValue = <span style={{ color: 'rgb(200, 100, 100)' }}>退款</span>;
-          break;
-        default:
-          cellValue = <span>null</span>;
-          break;
-      }
-
-      return cellValue;
-    },
-    // 单选过滤配置
-    filter: {
-      // 过滤行中的列标题别名
-      // label: '申请状态 A',
-      type: 'single',
-      list: [
-        { label: '使用中', value: 'IN_USE' },
-        { label: '待使用', value: 'WAITING_TO_USE' },
-        { label: '已使用', value: 'USED' },
-        { label: '已失效', value: 'EXPIRED' },
-        { label: '退款', value: 'REFUNDED' },
-        { label: '支付成功', value: 'PAYMENT_SUCCESSFUL' },
-      ],
-      resetValue: '',
-      // props: {
-      //   placeholder: '输入关键词过滤',
-      //   onChange: onOrderStateChange,
-      // },
-      // 是否显示重置取消按钮，一般情况不需要显示
-      showConfirmAndReset: true,
-    },
-  },
-  { colKey: 'createTime', title: '创建时间', width: '200px' },
-
-  { colKey: 'orderPrice', title: '订单价格', sorter: true },
-  {
-    colKey: 'orderType',
-    title: '订单类型', // 单选过滤配置
-    cell: (h, { row }) => {
-      let cellValue;
-      // 使用 switch 语句检查 row 的值
-      switch (row.orderType) {
-        case 'RENTAL':
-          cellValue = <span>租场</span>;
-          break;
-        case 'TICKET':
-          cellValue = <span>门票</span>;
-          break;
-        case 'TIMER':
-          cellValue = <span>计时</span>;
-          break;
-        case 'MONTHLY':
-          cellValue = <span>月卡订单</span>;
-          break;
-        case 'PERSON_CARD':
-          cellValue = <span>散客储值卡订单</span>;
-          break;
-        case 'STORED_VALUE':
-          cellValue = <span>储值卡订单</span>;
-          break;
-        default:
-          cellValue = <span>null</span>;
-          break;
-      }
-      return cellValue;
-    },
-    filter: {
-      // 过滤行中的列标题别名
-      // label: '申请状态 A',
-      type: 'single',
-      list: [
-        { label: '租场', value: 'RENTAL' },
-        { label: '门票', value: 'TICKET' },
-        { label: '计时', value: 'TIMER' },
-        { label: '月卡订单', value: 'MONTHLY' },
-        { label: '散客储值卡订单', value: 'PERSON_CARD' },
-        { label: '储值卡订单', value: 'STORED_VALUE' },
-      ],
-      resetValue: '',
-      // props: {
-      //   placeholder: '输入关键词过滤',
-      //   onChange: onOrderTypeChange,
-      // },
-      // 是否显示重置取消按钮，一般情况不需要显示
-      showConfirmAndReset: true,
-    },
-  },
-  {
-    colKey: 'paymentMethods',
-    title: '支付方式',
-    filter: {
-      // 过滤行中的列标题别名
-      // label: '申请状态 A',
-      type: 'single',
-      list: [
-        { label: '微信支付', value: 'WECHAT' },
-        { label: '储值卡支付', value: 'CARD' },
-      ],
-      resetValue: '',
-      // props: {
-      //   placeholder: '输入关键词过滤',
-      //   onChange: onOrderTypeChange,
-      // },
-      // 是否显示重置取消按钮，一般情况不需要显示
-      showConfirmAndReset: true,
-    },
-    cell: (h, { row }) => {
-      let cellValue;
-
-      // 使用 switch 语句检查 row 的值
-      switch (row.paymentMethods) {
-        case 'WECHAT':
-          cellValue = <span>微信支付</span>;
-          break;
-        case 'CARD':
-          cellValue = <span>储值卡支付</span>;
-          break;
-        default:
-          cellValue = <span>null</span>;
-          break;
-      }
-
-      return cellValue;
-    },
-  },
-  { colKey: 'share', title: '分享次数' },
-  {
-    colKey: 'venueId',
-    title: '场地id',
-    // render(h, { row }) {
-    //   // 调用 fetchStoreName 方法获取 storeName
-    //   const storeNamePromise = getStoreName(row.venueId);
-    //   // 使用 storeNamePromise 来渲染单元格
-    //   return (
-    //     <b>
-    //       {h('span', {}, [
-    //         storeNamePromise.then((storeName) => {
-    //           return storeName;
-    //         }),
-    //       ])}
-    //     </b>
-    //   );
-    // },
-  },
-  {
-    colKey: 'phoneNumber',
-    title: '手机号码',
-    width: '200px', // 输入框过滤配置
-    cell: (h, { row }) => {
-      let cellValue;
-      if (row.phoneNumber) {
-        const phone = decrypt(row.phoneNumber);
-        cellValue = <span>{phone}</span>;
-        console.log(phone);
-      }
-
-      return cellValue;
-    },
-    filter: {
-      type: 'input',
-
-      // 文本域搜索
-      // component: Textarea,
-
-      resetValue: '',
-      // 按下 Enter 键时也触发确认搜索
-      confirmEvents: ['onEnter'],
-      props: {
-        placeholder: '请精确输入手机号',
-      },
-      // 是否显示重置取消按钮，一般情况不需要显示
-      showConfirmAndReset: true,
-    },
-  },
-  {
-    colKey: 'orderDate',
-    title: '预约日期',
+    colKey: 'edit',
+    title: '查看词组列表',
     width: '150px',
     cell: (h, { row }) => {
-      let cellValue;
-      const dateObj = dayjs(row.orderDate);
-      const timeString = dateObj.format('YYYY-MM-DD');
-      if (timeString === 'Invalid Date') {
-        cellValue = <span></span>;
-      } else cellValue = <span>{timeString}</span>;
-      return cellValue;
+      return (
+        <t-button onClick={() => edit(row)}>查看详情</t-button>
+      );
     },
   },
-  {
-    colKey: 'orderSt',
-    title: '预约开始时间',
-    width: '200px',
-    cell: (h, { row }) => {
-      let cellValue;
-      const dateObj = dayjs(row.orderSt);
-      const timeString = dateObj.format('HH:mm:ss');
-      if (timeString === 'Invalid Date') {
-        cellValue = <span></span>;
-      } else cellValue = <span>{timeString}</span>;
-      return cellValue;
-    },
-  },
-  {
-    colKey: 'orderEd',
-    title: '预约结束时间',
-    width: '200px',
-    cell: (h, { row }) => {
-      let cellValue;
-      const dateObj = dayjs(row.orderEd);
-      const timeString = dateObj.format('HH:mm:ss');
-      if (timeString === 'Invalid Date') {
-        cellValue = <span></span>;
-      } else cellValue = <span>{timeString}</span>;
-      return cellValue;
-    },
-  },
-  { colKey: 'startTime', title: '用户进场时间', width: '200px' },
-  { colKey: 'endTime', title: '用户离开时间', width: '200px' },
+  // { colKey: 'endTime', title: '用户离开时间', width: '200px' },
   {
     colKey: 'operation',
     title: '操作',
@@ -364,17 +33,7 @@ export const columns: PrimaryTableCol[] = [
     width: '140px',
     cell: (h, { row }) => {
       let ceil;
-      if (row.orderType !== 'MONTHLY' && row.orderType !== 'PERSON_CARD' && row.orderType !== 'STORED_VALUE') {
-        ceil = (
-          <t-link
-            variant="text"
-            hover="color"
-            theme="danger"
-          >
-            退款
-          </t-link>
-        );
-      } else {
+      {
         ceil = (
           <div
             style={{
@@ -383,7 +42,7 @@ export const columns: PrimaryTableCol[] = [
           ></div>
         );
       }
-      if (row.orderState === 'REFUNDED') {
+      {
         ceil = (
           <div
             style={{
@@ -396,7 +55,7 @@ export const columns: PrimaryTableCol[] = [
         <t-space>
           <t-popconfirm
             content="确认删除吗"
-            onConfirm={() => handleDelete(row.id)}
+            onConfirm={() => handleDelete(row.bookId)}
           >
             <t-link
               variant="text"
@@ -406,52 +65,241 @@ export const columns: PrimaryTableCol[] = [
               删除
             </t-link>
           </t-popconfirm>
-          <Edit // @ts-ignore
-            onEdit={editFinish}
-            editId={row.id}
-          ></Edit>
-          <t-popconfirm
-            content="确认完成退款吗"
-            onConfirm={() => handleRefund(row)}
+          <t-link
+            variant="text"
+            hover="color"
+            theme="primary"
+            onClick={() => wordBookEdit(row)}
           >
-            {ceil}
-            {/* {row.orderType === 'RENTAL' || row.paymentMethods === 'WECHAT' || row.orderState !== 'REFUNDED' ? (
-              <t-link
-                variant="text"
-                hover="color"
-                theme="danger"
-              >
-                退款
-              </t-link>
-            ) : (
-              <div
-                style={{
-                  width: '28px',
-                }}
-              ></div>
-            )} */}
+            编辑
+          </t-link>
+        </t-space>
+      );
+    },
+  },
+];
+
+export const visible2 = ref(false)
+
+export const columns2: PrimaryTableCol[] = [
+
+  { colKey: 'index', title: '词组索引', width: "50px" },
+  {
+    colKey: 'edit',
+    title: '查看词组详情',
+    width: '100px',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => edit2(row)}>查看详情</t-button>
+      );
+    },
+  },
+];
+
+export const columns3: PrimaryTableCol[] = [
+  { colKey: 'index', title: '组别', width: "50px" },
+  { colKey: 'groupId', title: '组别Id', width: "50px" },
+  { colKey: 'finish', title: '标记情况', width: "50px" },
+  { colKey: 'total', title: '单词数量', width: "50px" },
+  {
+    colKey: 'edit',
+    title: '查看单词详情',
+    width: '100px',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => edit3(row)}>查看详情</t-button>
+        </t-space>
+
+      );
+    },
+  },
+
+];
+
+export const columns4: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+  { colKey: 'word', title: '单词拼写', width: "400px" },
+  {
+    colKey: 'edit',
+    title: '单词详情',
+    width: '200px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-link theme="primary" onClick={() => edit6(row)}>查看详情</t-link>
+          <t-link theme="primary" onClick={() => resourceModify(row)}>资源修改</t-link>
+        </t-space>
+
+
+      );
+    },
+  },
+];
+
+export const columnsrels: PrimaryTableCol[] = [
+  { colKey: 'pos', title: '词性', width: "50px" },
+  { colKey: 'words', title: '单词', width: "200px" },
+  {
+    colKey: 'edit',
+    title: '修改同根词',
+    width: '200px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => edit7(row, rowIndex, 1)}>操作</t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              delete1(row, rowIndex, 1)
+            }}
+          >
+            <t-button>删除</t-button>
+          </t-popconfirm>
+        </t-space>
+
+      );
+    },
+  },
+];
+
+export const columnsSen: PrimaryTableCol[] = [
+  { colKey: 'scontent', title: '例句', width: "200px" },
+  { colKey: 'scn', title: '翻译', width: "200px" },
+  {
+    colKey: 'edit',
+    title: '修改例句',
+    width: '100px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => edit7(row, rowIndex, 2)}>操作</t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              delete1(row, rowIndex, 2)
+            }}
+          >
+            <t-button>删除</t-button>
           </t-popconfirm>
         </t-space>
       );
     },
   },
-  // { colKey: 'qrCode', title: '二维码' },
-  // { colKey: 'createBy', title: '创建者' },
-  // { colKey: 'updateBy', title: '修改者', width: '200px' },
-  // { colKey: 'updateTime', title: '修改时间', width: '200px' },
-  // { colKey: 'userId', title: '门店id', width: '200px' },
 ];
-// async function getStoreName(storeId) {
-//   const res = await get2(storeId);
-//   return res.result.storeName;
-// }
+
+export const columnsTran: PrimaryTableCol[] = [
+  { colKey: 'tranCn', title: '翻译', width: "200px" },
+  {
+    colKey: 'edit',
+    title: '修改翻译',
+    width: '45px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => edit7(row, rowIndex, 3)}>操作</t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              delete1(row, rowIndex, 3)
+            }}
+          >
+            <t-button>删除</t-button>
+          </t-popconfirm>
+        </t-space>
+      );
+    },
+  },
+];
+
+export const columnsPrase: PrimaryTableCol[] = [
+  { colKey: 'pcontent', title: '短语', width: "200px" },
+  { colKey: 'pcn', title: '翻译', width: "200px" },
+  {
+    colKey: 'edit',
+    title: '修改短语',
+    width: '45px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => edit7(row, rowIndex, 4)}>操作</t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              delete1(row, rowIndex, 4)
+            }}
+          >
+            <t-button>删除</t-button>
+          </t-popconfirm>
+        </t-space>
+      );
+    },
+  },
+];
+
+export const columnsSyno: PrimaryTableCol[] = [
+  { colKey: 'pos', title: '词性', width: "200px" },
+  { colKey: 'tran', title: '对应词义', width: "200px" },
+  { colKey: 'hwds', title: '词组', width: "200px" },
+  {
+    colKey: 'edit',
+    title: '修改单词',
+    width: '200px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => edit7(row, rowIndex, 5)}>操作</t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              delete1(row, rowIndex, 5)
+            }}
+          >
+            <t-button>删除</t-button>
+          </t-popconfirm>
+        </t-space>
+      );
+    },
+  },
+];
+
+export const columnsWordSearch: PrimaryTableCol[] = [
+  { colKey: 'word', title: '单词', width: "200px" },
+  { colKey: 'translation', title: '翻译', width: "100px" },
+  {
+    colKey: 'edit',
+    title: '修改例句',
+    width: '200px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-popconfirm
+            content="确认上传吗"
+            onConfirm={() => {
+              uploadWord(row)
+            }}
+          >
+            <t-button>上传单词</t-button>
+          </t-popconfirm>
+          <t-button onClick={() => edit9(row)}>查看详情</t-button>
+        </t-space>
+      );
+    },
+  },
+];
+
+export const visibleBook = ref(false)
 
 const handleDelete = async (id) => {
   try {
     console.log('删除的id', id);
     // 参数要求是个对象
     const params = {
-      id,
+      bookId: id,
     };
     //
     const res = await delete10(params);
@@ -467,32 +315,36 @@ const handleDelete = async (id) => {
   }
 };
 
-const handleRefund = async (row) => {
-  try {
-    console.log('退款的id', row.id);
-    // 参数要求是个对象
-    if (row.orderType === 'RENTAL' && row.paymentMethods !== 'WECHAT') {
-      const res = await adminCardRefund(row.id);
-      console.log('adminCardRefund', res, row.id);
-      MessagePlugin.success('退款成功');
-    }
-    if (row.paymentMethods === 'WECHAT') {
-      await adminRefund({ paymentMethod: 'WECHAT', sn: row.id });
-      MessagePlugin.success('退款成功');
-    }
-    store.renewData(
-      { pageNumber: store.pagination.current, pageSize: store.pagination.pageSize },
-      null,
-      store.querySave,
-    ); // 使用pinia里面的分页请求
-  } catch (error) {
-    console.log(error);
-    MessagePlugin.error('发生错误');
+export const bookID = ref("")
+const wordIndex1 = ref("")
+
+const uploadWord = async (row) => {
+  wordIndex1.value = row.word.charAt(0)
+  wordIndex.value = wordIndex1.value.toUpperCase()
+  console.log('row', row)
+  const params = {
+    id: row.dbId,
+    headWord: row.word,
+    bookId: bookID.value,
+    wordIndex: wordIndex.value
   }
-};
+  addWord(params).then((res) => {
+    console.log(res)
+    if (res.code == 200) {
+      MessagePlugin.success("单词添加成功")
+    }
+    if (res.code == 90006)
+      MessagePlugin.error("单词已存在")
+  })
+}
 
 for (let i = 0; i < columns.length; i++) {
   columns[i].align = 'center';
+}
+
+
+for (let i = 0; i < columns2.length; i++) {
+  columns2[i].align = 'center';
 }
 const store = useRenewDataStore();
 
@@ -501,3 +353,267 @@ const editFinish = async (newData) => {
   console.log('edit传回', newData);
   store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize }, null, store.querySave); // 使用pinia里面的分页请求
 };
+
+export const visible = ref(false)
+export const bookId = ref("")
+export const data2 = ref([])
+export const data3 = ref([])
+export const data4 = ref([])
+export const data5 = ref([])
+export const data6 = ref(
+  {
+    sentence: { desc: "", sentences: [{ scn: "", scontent: "" }] },
+    relWord: { desc: "", rels: [{ pos: "", words: [{ hwd: "", tran: "" }] }] },
+    trans: [{ tranCn: "" }],
+    phrase: { phrases: [{ pcontent: "", pcn: "" }], desc: "" },
+    syno: { synos: [{ pos: "", tran: "", hwds: [{ w: "" }] }], desc: "" }
+  }
+)
+export const word = ref("")
+export const visible3 = ref(false)
+export const visible4 = ref(false)
+export const isLoading2 = ref(false)
+export const isLoading3 = ref(false)
+export const wordIndex = ref("")
+const index = ref([])
+const data1 = ref([])
+
+const edit = (row) => {
+  bookID.value = row.bookId
+  isLoading2.value = true
+  console.log('row', row)
+  visible.value = true
+  bookId.value = row.bookId
+  const params = {
+    bookId: row.bookId
+  }
+  group(params).then((res) => {
+    data2.value = []
+    data1.value = res.result.groupVOS
+    index.value = res.result.index
+    console.log('data2', data2.value);
+    for (const i in index.value) {
+      data2.value.push({ index: index.value[i], group: data1.value[i] })
+    }
+    console.log(data2)
+    isLoading2.value = false
+  })
+}
+
+const edit2 = (row) => {
+  // console.log('555', row.group[1])
+  visible2.value = true
+  data3.value = row.group
+  // wordIndex.value = row.index
+}
+
+export const allLoading = ref(false)
+export const row1 = ref()
+
+export const edit3 = async (row) => {
+  allLoading.value = true
+  row1.value = row
+  // visible3.value = true
+  // isLoading3.value = true
+  console.log('groupId', row.total)
+  const params = {
+    groupId: row.groupId
+  }
+  await getByGroupId(params).then((res) => {
+    data5.value = []
+    // data5.value = []
+    for (const i in res.result) {
+      data5.value.push({ id: res.result[i].id, word: res.result[i].headWord })
+    }
+    console.log('data5', data5.value)
+    visible3.value = true
+    allLoading.value = false
+    // dg(0, row.total)
+    // console.log('data5', data5.value.length)
+    // console.log('total', row.total)
+  })
+}
+
+export const data7 = ref()
+const edit6 = (row) => {
+  allLoading.value = true
+  console.log('edit6', row)
+  const params = {
+    id: row.id
+  }
+  getById(params).then((res) => {
+    word.value = res.result.content.word.wordHead
+    data6.value = res.result.content.word.content
+    console.log('data6', data6.value)
+    data7.value = res.result
+    console.log('data6', data6.value)
+    allLoading.value = false
+    visible4.value = true
+  })
+}
+
+const edit9 = (row) => {
+  allLoading.value = true
+  console.log('edit6', row)
+  const params = {
+    id: row.dbId
+  }
+  getById(params).then((res) => {
+    word.value = res.result.content.word.wordHead
+    data6.value = res.result.content.word.content
+    console.log('data6', data6.value)
+    data7.value = res.result
+    console.log('data6', data6.value)
+    allLoading.value = false
+    visible4.value = true
+  })
+}
+
+export const visible5 = ref(false)
+export const keyWord = ref(0)
+export const arrIndex = ref()
+export const visibleNewWord = ref(false)
+
+const edit7 = (row, index, num) => {
+  console.log('row', row)
+  if (num == 1) {
+    //同根
+    keyWord.value = num
+    arrIndex.value = index
+    visible5.value = true
+  }
+  if (num == 2) {
+    //例句
+    keyWord.value = num
+    arrIndex.value = index
+    visible5.value = true
+  }
+  if (num == 3) {
+    //翻译
+    keyWord.value = num
+    arrIndex.value = index
+    visible5.value = true
+  }
+  if (num == 4) {
+    //短语
+    keyWord.value = num
+    arrIndex.value = index
+    visible5.value = true
+  }
+  if (num == 5) {
+    //近义
+    keyWord.value = num
+    arrIndex.value = index
+    visible5.value = true
+  }
+}
+
+const delete1 = (row, index, num) => {
+  if (num == 1) {
+    //同根
+    keyWord.value = num
+    arrIndex.value = index
+    data6.value.relWord.rels.splice(index, 1)
+  }
+  if (num == 2) {
+    //例句
+    keyWord.value = num
+    arrIndex.value = index
+    data6.value.sentence.sentences.splice(index, 1)
+  }
+  if (num == 3) {
+    //翻译
+    keyWord.value = num
+    arrIndex.value = index
+    data6.value.trans.splice(index, 1)
+  }
+  if (num == 4) {
+    //短语
+    keyWord.value = num
+    arrIndex.value = index
+    data6.value.phrase.phrases.splice(index, 1)
+  }
+  if (num == 5) {
+    //近义
+    keyWord.value = num
+    arrIndex.value = index
+    data6.value.syno.synos.splice(index, 1)
+  }
+}
+
+export const rowWordBook = ref()
+export const row2 = ref()
+export const label = ref([])
+const search = ref(0)
+const search1 = ref("")
+const label1 = ref("")
+export const labelArr = ref([])
+export const bookDescription = ref("")
+export const imageUrl = ref("")
+export const bookDescription1 = ref("")
+export const bookId1 = ref("")
+export const bookid = ref("")
+// export const imageUrl1 = ref("")
+
+const wordBookEdit = (row) => {
+  visibleBook.value = true
+  bookid.value = row.id
+  imageUrl.value = row.url
+  bookId1.value = row.bookId
+  // if (row.bookDescription) {
+  bookDescription.value = row.bookDescription
+  bookDescription1.value = row.bookDescription
+  // }
+  row2.value = row
+  console.log('row', row)
+  label1.value = row.label
+  console.log(label1.value)
+  search.value = label1.value.indexOf("]")
+  console.log(search)
+  search1.value = label1.value.substring(1, search.value)
+  console.log(search1.value)
+  labelArr.value = search1.value.split("、")
+  console.log('111', labelArr.value[0])
+}
+
+export const resource = ref({})
+export const visibleResource = ref(false)
+export const resourceAudio1 = ref([])
+export const resourceAudio = ref([])
+export const headWord1 = ref("")
+export const resourceImage = ref([])
+// export const resourceImage1 = ref([])
+export const resourceVideo = ref([])
+// export const resourceVideo1 = ref([])
+
+const resourceModify = (row) => {
+  allLoading.value = true
+  console.log(row)
+  headWord1.value = row.word
+  const params = {
+    id: row.id
+  }
+  getById(params).then((res) => {
+    allLoading.value = false
+    visibleResource.value = true
+    if (res.result.resource) {
+      // resource.value = res.result.resource
+      resourceImage.value = res.result.resource.images
+      // resourceImage1.value = JSON.parse(JSON.stringify(res.result.resource.images))
+      resourceVideo.value = res.result.resource.videos
+      // resourceVideo1.value = res.result.resource.videos
+      console.log('resourceImage', resourceImage.value)
+      if (resource.value.voices) {
+        for (const i in resource.value.voices) {
+          if (resource.value.voices[i].name == "action&type=1") {
+            resourceAudio1.value = resource.value.voices[i]
+          }
+          else {
+            resourceAudio.value = resource.value.voices[i]
+          }
+        }
+      }
+
+    }
+  })
+} 

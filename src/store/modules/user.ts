@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia';
 import { MessagePlugin } from 'tdesign-vue-next';
 
-import { getUserInfo } from '@/api/user/guanliyuan';
+// import { getUserInfo } from '@/api/user/guanliyuan';
 import router from '@/router';
 import { usePermissionStore } from '@/store';
 import type { UserInfo } from '@/types/interface';
 
-import { login } from '../../api/user/guanliyuan';
+// import { login } from '../../api/user/guanliyuan';
 import md5 from '../../utils/md5';
+import { getUserInfo, login } from '@/api/user/passport';
 
 const InitUserInfo: UserInfo = {
   name: '', // 用户名，用于展示在页面右上角头像处

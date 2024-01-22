@@ -191,7 +191,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page8, update9 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
+// import { page8, update9 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 
 const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 

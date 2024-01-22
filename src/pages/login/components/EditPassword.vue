@@ -50,7 +50,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { editPassword } from '@/api/user/guanliyuan';
+// import { editPassword } from '@/api/user/guanliyuan';
 
 // import { page4, update4 } from '@/api/user/xiaochengxugonggao';
 

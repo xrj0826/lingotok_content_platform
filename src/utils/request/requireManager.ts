@@ -6,7 +6,7 @@ import { extend } from 'umi-request';
 import { v4 as uuidv4 } from 'uuid';
 import { rejects } from 'assert';
 const config = {
-  api: '/Manager',
+  api: '/manager',
 };
 
 /**
@@ -47,12 +47,12 @@ require.interceptors.request.use(
     console.log('accessToken', localStorage.getItem('accessToken'));
     const headers = localStorage.getItem('accessToken')
       ? {
-          accessToken: `${localStorage.getItem('accessToken')}`,
-          uuid: `${uuid}`,
-        }
+        accessToken: `${localStorage.getItem('accessToken')}`,
+        uuid: `${uuid}`,
+      }
       : {
-          uuid: `${uuid}`,
-        };
+        uuid: `${uuid}`,
+      };
 
     return {
       url,
@@ -75,7 +75,7 @@ require.interceptors.response.use(async (response) => {
       // window.__POWERED_BY_QIANKUN__ ? (window.location.href = '/#/') : router.replace('/user/login')
       return;
     }
-  } catch (error) {}
+  } catch (error) { }
   return response;
 });
 

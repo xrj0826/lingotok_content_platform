@@ -1,10 +1,12 @@
 // import { MessagePlugin } from 'tdesign-vue-next';
-import { MessagePlugin } from 'tdesign-vue-next';
+import { Dialog, MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
-import {} from 'vue';
+import { ref } from 'vue';
 
-import { delete21 } from '@/api/user/guanliyuan';
+// import { delete21 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
+import { delete5 } from '@/api/user/readingMaterials';
+// import { delete5 } from '@/api/user/readingMaterials';
 
 // import Edit from './components/Edit.vue';
 
@@ -19,12 +21,22 @@ export const columns: PrimaryTableCol[] = [
   //   title: 'id',
   // },
   {
-    colKey: 'username',
-    title: '管理员用户名',
+    colKey: 'name',
+    title: '读物名称',
   },
   // { colKey: 'nickName', title: '昵称' },
 
-  { colKey: 'mobile', title: '管理员手机号' },
+  { colKey: 'articlesList', title: '文章列表' },
+  {
+    colKey: 'edit',
+    fixed: 'right',
+    title: '修改读物名称',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => edit(row)}>编辑</t-button>
+      );
+    },
+  },
   {
     colKey: 'operation',
     fixed: 'right',
@@ -56,11 +68,16 @@ export const columns: PrimaryTableCol[] = [
     },
   },
 ];
+
+export const visible = ref(false)
+export const id = ref("")
+export const name = ref("")
+
 // 循环为列属性配置居中属性
 for (let i = 0; i < columns.length; i++) {
   columns[i].align = 'center';
 }
-const store = useRenewDataStore();
+const store = useRenewDataStore(); 1
 const handleDelete = async (row) => {
   console.log('管理员长度', row.username);
   if (row.username === 'gglq913') {
@@ -69,7 +86,7 @@ const handleDelete = async (row) => {
     try {
       console.log('删除的id', row.id);
 
-      const res = await delete21({ ids: row.id });
+      const res = await delete5({ id: row.id });
       console.log('删除后', res);
       MessagePlugin.success('删除成功');
 
@@ -79,6 +96,31 @@ const handleDelete = async (row) => {
     }
   }
 };
+
+const detailCheck = async (row) => {
+  console.log('管理员长度', row.username);
+  if (row.username === 'gglq913') {
+    MessagePlugin.error('不能删除超级管理员');
+  } else {
+    try {
+      console.log('删除的id', row.id);
+
+      const res = await delete5({ id: row.id });
+      console.log('删除后', res);
+      MessagePlugin.success('删除成功');
+
+      store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
+const edit = (row) => {
+  visible.value = true
+  id.value = row.id
+  name.value = row.name
+}
 // 发送编辑行后执行回调
 // const editFinish = async (newData) => {
 //   console.log('edit传回', newData);

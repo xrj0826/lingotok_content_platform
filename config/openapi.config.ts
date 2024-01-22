@@ -7,14 +7,9 @@ const basicConfig = {
 };
 const importList = [
   {
-    schemaPath: 'http://139.9.38.185:8887/v3/api-docs/user',
+    schemaPath: 'http://101.34.243.115:8866/v3/api-docs',
     projectName: 'user',
     requestLibPath: "import request from '/@/utils/request/index'",
-  },
-  {
-    schemaPath: 'http://139.9.38.185:8889/v3/api-docs/user',
-    projectName: 'user2',
-    requestLibPath: "import request from '/@/utils/request/index2'",
   },
   // {
   //   schemaPath: 'http://47.99.90.88:8890/v3/api-docs',

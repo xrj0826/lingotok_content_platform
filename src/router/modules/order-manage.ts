@@ -10,7 +10,7 @@ export default [
     component: Layout,
     redirect: '/order/orderManage',
     meta: {
-      title: '订单管理页',
+      title: '词汇书管理页',
       icon: shallowRef(OrderDescendingIcon),
       orderNo: 3,
     },
@@ -19,7 +19,7 @@ export default [
         path: 'orderManage',
         name: 'OrderManage',
         component: () => import('@/pages/order-manage/index.vue'),
-        meta: { title: '订单管理', hidden: true },
+        meta: { title: '词汇书管理', hidden: true },
       },
     ],
   },

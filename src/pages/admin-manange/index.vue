@@ -46,6 +46,11 @@
         </template>
       </t-table></t-card
     >
+
+    <t-dialog theme="info" header="更改读物名称" @close="visible = false" @confirm="edit()"
+      :visible.sync="visible" >
+          <t-input v-model="name"></t-input>
+    </t-dialog>
   </div>
 </template>
 
@@ -59,11 +64,12 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete21, page10 } from '@/api/user/guanliyuan';
+// import { delete21, page10 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
 
-import { columns } from './columnData';
+import { columns,visible,id,name } from './columnData';
 import Add from './components/Add.vue';
+import { delete4, page, update6 } from '@/api/user/readingMaterials';
 
 // 挂载时调用请求函数
 onMounted(async () => {
@@ -84,16 +90,23 @@ const data = ref([]);
 const isLoading = ref(false);
 const store = useRenewDataStore();
 
+const cencel = () =>{
+  visible.value = false
+
+}
+
+// const name = ref("")
+
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page10({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
+    const res = await page({ entity: null, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
-    data.value = res.result.records; // 获得表格数据
-    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
+    data.value = res.result; // 获得表格数据
+    pagination.total = res.result.length; // 数据加载完成，设置数据总条数
     store.renewData = queryData;
   } catch (err) {
     console.log(err);
@@ -103,15 +116,15 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
 const selectedRowKeys = ref([]);
 
 const handleMoreDelete = async () => {
-  if (data.value.length === 1) {
-    MessagePlugin.error('至少保留一位管理员');
-  } else {
+  // if (data.value.length === 1) {
+  //   MessagePlugin.error('至少保留一位管理员');
+  // } else {
     try {
       const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
       if (ids === '') {
         MessagePlugin.error('未勾选删除项');
       } else {
-        const res = await delete21({ ids });
+        const res = await delete4({ ids });
         console.log('批量删除后', res);
         queryData({
           pageNumber: pagination.current,
@@ -122,7 +135,7 @@ const handleMoreDelete = async () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  // }
 };
 // 行选中变化时
 const onSelectChange = (value, params) => {
@@ -156,6 +169,34 @@ const onChange = (info, context) => {
       });
     }
   }
+};
+
+const edit = async () => {
+  // if (data.value.length === 1) {
+  //   MessagePlugin.error('至少保留一位管理员');
+  // } else {
+    try {
+
+      if (name.value == '') {
+        MessagePlugin.error('读物名称不能为空');
+      } else {
+        const params = {
+          id:id.value,
+          name:name.value
+        }
+        const res = await update6( params );
+        console.log('批量删除后', res);
+        queryData({
+          pageNumber: pagination.current,
+          pageSize: pagination.pageSize,
+        });
+        MessagePlugin.success('更改成功');
+        visible.value = false
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  // }
 };
 // 搜索框
 // const onInputChange = (keyword) => {

@@ -5,15 +5,12 @@
     <div class="login-container">
       <div class="title-container">
         <h1 class="title margin-no">登录到</h1>
-        <h1 class="title">智能球馆后台管理系统</h1>
+        <h1 class="title">单词小程序后台管理系统</h1>
         <!-- <h1 class="title">高校体育管理系统</h1> -->
       </div>
 
       <login v-if="type === 'login'" />
-      <register
-        v-else
-        @register-success="switchType('login')"
-      />
+      <register v-else @register-success="switchType('login')" />
       <tdesign-setting />
     </div>
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <t-space>
-      <t-button @click="handleAdd">添加管理员</t-button>
+      <t-button @click="handleAdd">添加读物</t-button>
     </t-space>
     <t-dialog
       v-model:visible="visible"
@@ -23,11 +23,11 @@
         @submit="add"
       >
         <t-form-item
-          label="管理员用户名"
+          label="读物类别"
           name="username"
         >
           <t-input
-            v-model="formData.username"
+            v-model="formData.name"
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
@@ -42,7 +42,7 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item> -->
-        <t-form-item
+        <!-- <t-form-item
           label="密码"
           name="password"
         >
@@ -51,8 +51,8 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
-        <t-form-item
+        </t-form-item> -->
+        <!-- <t-form-item
           label="管理员手机号"
           name="mobile"
         >
@@ -61,7 +61,7 @@
             placeholder="请输入内容"
             @enter="onEnter"
           ></t-input>
-        </t-form-item>
+        </t-form-item> -->
         <t-form-item :status-icon="false">
           <t-space size="small">
             <t-button
@@ -78,24 +78,26 @@
   </div>
 </template>
 <script lang="ts" setup>
+// import { save } from '@/api/user/member';
+import { save7 } from '@/api/user/readingMaterials';
 import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save10 } from '@/api/user/guanliyuan';
+// import { save10 } from '@/api/user/guanliyuan';
 
 const emit = defineEmits(['add']);
 const form = ref(null);
 const visible = ref(false); // 是否显示
 const loading = ref(false);
 const FORM_RULES = {
-  username: [{ required: true, message: '该项必填' }],
-  password: [{ required: true, message: '该项必填' }],
-  mobile: [
-    { required: true, message: '该项必填' },
-    { min: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
-    // { max: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
-  ],
+  name: [{ required: true, message: '该项必填' }],
+  // password: [{ required: true, message: '该项必填' }],
+  // mobile: [
+  //   { required: true, message: '该项必填' },
+  //   { min: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
+  //   // { max: 11, message: '应输入11位手机号', type: 'error', trigger: 'blur' },
+  // ],
 };
 
 // nanoid配置
@@ -103,12 +105,9 @@ const FORM_RULES = {
 const nanoid = customAlphabet('1234567890', 2);
 // 在此定义表单数据
 const formData = reactive({
-  id: null,
   // storeId: '', // 添加管理员必须传storeId
-  username: '',
+  name: '',
   // nickName: '',
-  mobile: '',
-  password: '',
 });
 const close = () => {
   console.error('===close');
@@ -126,10 +125,10 @@ const add = async ({ validateResult, _ }) => {
   try {
     if (validateResult === true) {
       // // 第三方库随机生成id
-      formData.id = nanoid();
+      // formData.id = nanoid();
       // formData.storeId = '9376';
 
-      const res = await save10(formData);
+      const res = await save7(formData);
 
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);

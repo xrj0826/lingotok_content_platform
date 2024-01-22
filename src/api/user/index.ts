@@ -2,31 +2,43 @@
 /* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
-import * as changdeguanli from './changdeguanli';
-import * as yonghuguanlixiangguanjiekou from './yonghuguanlixiangguanjiekou';
-import * as mendianguanlijiekou from './mendianguanlijiekou';
-import * as houtaizhidingteshujiagejiekou from './houtaizhidingteshujiagejiekou';
-import * as dingdanguanlijiekou from './dingdanguanlijiekou';
-import * as xiaochengxugonggao from './xiaochengxugonggao';
-import * as mendiantupianjiekou from './mendiantupianjiekou';
-import * as youhuiquanguanlijiekou from './youhuiquanguanlijiekou';
-import * as chuzhikaguanli from './chuzhikaguanli';
-import * as guanliyuanguanlichuzhikajiekou from './guanliyuanguanlichuzhikajiekou';
-import * as guanliyuan from './guanliyuan';
-import * as wenjianshangchuanjiekou from './wenjianshangchuanjiekou';
-import * as yingjianyewuchuli from './yingjianyewuchuli';
+import * as guanliduanduanxinmobanjiekou from './guanliduanduanxinmobanjiekou';
+import * as guanliduanduanxinqianmingjiekou from './guanliduanduanxinqianmingjiekou';
+import * as guanliduanxingzhengdequguanlijiekou from './guanliduanxingzhengdequguanlijiekou';
+import * as guanliduanxitongshezhijiekou from './guanliduanxitongshezhijiekou';
+import * as sentence from './sentence';
+import * as guanliduanguanliyuanjiaosejiekou from './guanliduanguanliyuanjiaosejiekou';
+import * as guanliduanjiaoseguanlijiekou from './guanliduanjiaoseguanlijiekou';
+import * as guanliduancaidanguanlijiekou from './guanliduancaidanguanlijiekou';
+import * as guanliduanbumenjiaosejiekou from './guanliduanbumenjiaosejiekou';
+import * as guanliduanbumenguanlijiekou from './guanliduanbumenguanlijiekou';
+import * as passport from './passport';
+import * as member from './member';
+import * as readingMaterials from './readingMaterials';
+import * as exercises from './exercises';
+import * as articles from './articles';
+import * as wordsApi from './wordsApi';
+import * as file from './file';
+import * as guanliduanjiaosecaidanjiekou from './guanliduanjiaosecaidanjiekou';
+import * as bookApi from './bookApi';
 export default {
-  changdeguanli,
-  yonghuguanlixiangguanjiekou,
-  mendianguanlijiekou,
-  houtaizhidingteshujiagejiekou,
-  dingdanguanlijiekou,
-  xiaochengxugonggao,
-  mendiantupianjiekou,
-  youhuiquanguanlijiekou,
-  chuzhikaguanli,
-  guanliyuanguanlichuzhikajiekou,
-  guanliyuan,
-  wenjianshangchuanjiekou,
-  yingjianyewuchuli,
+  guanliduanduanxinmobanjiekou,
+  guanliduanduanxinqianmingjiekou,
+  guanliduanxingzhengdequguanlijiekou,
+  guanliduanxitongshezhijiekou,
+  sentence,
+  guanliduanguanliyuanjiaosejiekou,
+  guanliduanjiaoseguanlijiekou,
+  guanliduancaidanguanlijiekou,
+  guanliduanbumenjiaosejiekou,
+  guanliduanbumenguanlijiekou,
+  passport,
+  member,
+  readingMaterials,
+  exercises,
+  articles,
+  wordsApi,
+  file,
+  guanliduanjiaosecaidanjiekou,
+  bookApi,
 };

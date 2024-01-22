@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { rejects } from 'assert';
 const config = {
   // api: 'http://47.99.90.88:8889',
-  api: '/test',
+  api: '/manager',
 };
 
 /**
@@ -45,7 +45,7 @@ require.interceptors.request.use(
       uuid = uuidv4();
       // setStore('uuid', uuid);
     }
-    console.log('accessToken', localStorage.getItem('accessToken'));
+    // console.log('accessToken', localStorage.getItem('accessToken'));
     const headers = localStorage.getItem('accessToken')
       ? {
         accessToken: `${localStorage.getItem('accessToken')}`,
@@ -74,8 +74,10 @@ require.interceptors.response.use(async (response) => {
       // ElMessage.error('登录已过期，请重新登录')
       // router.push('/login')
       // window.__POWERED_BY_QIANKUN__ ? (window.location.href = '/#/') : router.replace('/user/login')
-      return;
+      return data;
     }
+    return data
+
   } catch (error) { }
   return response;
 });

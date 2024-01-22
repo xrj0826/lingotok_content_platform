@@ -93,7 +93,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save4 } from '@/api/user/dingdanguanlijiekou';
+// import { save4 } from '@/api/user/dingdanguanlijiekou';
 
 const emit = defineEmits(['add']);
 
@@ -132,9 +132,9 @@ const handleAdd = () => {
 const add = async (validateResult) => {
   try {
     if (validateResult === true) {
-      const res = await save4(formData);
-      console.log('編輯返回', res);
-      emit('add', 'emit传来喜报:组件通信成功', res);
+      // const res = await save4(formData);
+      console.log('編輯返回');
+      emit('add', 'emit传来喜报:组件通信成功');
 
       loading.value = true;
       // 加载一下

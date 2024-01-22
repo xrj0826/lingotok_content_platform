@@ -1,7 +1,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete19 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
+// import { delete19 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import Edit from './components/Edit.vue';

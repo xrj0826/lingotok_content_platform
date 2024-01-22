@@ -59,7 +59,7 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete18, page8 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
+// import { delete18, page8 } from '@/api/user/guanliyuanguanlichuzhikajiekou';
 // import { get2 } from '@/api/user/mendianguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
 

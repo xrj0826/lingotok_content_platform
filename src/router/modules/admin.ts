@@ -1,4 +1,4 @@
-import { UsergroupIcon } from 'tdesign-icons-vue-next';
+import { BooksIcon, UsergroupIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
@@ -10,8 +10,8 @@ export default [
     component: Layout,
     redirect: '/admin/base',
     meta: {
-      title: '管理员管理',
-      icon: shallowRef(UsergroupIcon),
+      title: '读物管理',
+      icon: shallowRef(BooksIcon),
       orderNo: 1,
     },
     children: [
@@ -19,7 +19,7 @@ export default [
         path: 'base',
         name: 'AdminManage',
         component: () => import('@/pages/admin-manange/index.vue'),
-        meta: { title: '管理员管理', hidden: true },
+        meta: { title: '读物管理', hidden: true },
       },
     ],
   },

@@ -44,12 +44,12 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       port: 8888,
       cors: true,
       proxy: {
-        '/Manager': {
-          target: 'http://139.9.38.185:8887/',
+        '/manager': {
+          target: 'http://101.34.243.115:8866/',
           ws: true,
           changeOrigin: true,
           rewrite: (path) => {
-            return path.replace(/^\/Manager/, '');
+            return path.replace(/^\/manager/, '');
           },
           secure: false, // 跳过证书问题
         },
@@ -60,7 +60,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           rewrite: (path) => {
             return path.replace(/^\/Common/, '');
           },
-          secure: false, // 跳过证书问题
+          secure: false, // 跳过证书问题  
         },
         '/Api': {
           target: 'http://47.99.90.88:8889/',
@@ -72,11 +72,11 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           secure: false, // 跳过证书问题
         },
         '/test': {
-          target: 'http://139.9.38.185:8887/',
+          target: 'http://101.34.243.115:8866/',
           ws: true,
           changeOrigin: false,
           rewrite: (path) => {
-            return path.replace(/^\/test/, '');
+            return path.replace(/^\/manager/, '');
           },
         },
         '/refund': {

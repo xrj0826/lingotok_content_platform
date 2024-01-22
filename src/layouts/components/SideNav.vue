@@ -1,33 +1,19 @@
 <template>
   <div :class="sideNavCls">
-    <t-menu
-      :class="menuCls"
-      :theme="theme"
-      :value="active"
-      :collapsed="collapsed"
-      :default-expanded="defaultExpanded"
-    >
+    <t-menu :class="menuCls" :theme="theme" :value="active" :collapsed="collapsed" :default-expanded="defaultExpanded">
       <!--      <template #logo>-->
       <!--        <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">-->
       <!--          <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />-->
       <!--          <div style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: 10px ">智能球馆</div>-->
       <!--        </span>-->
       <!--      </template>-->
-      <span
-        :class="`${prefix}-side-nav-logo-wrapper`"
-        @click="goHome"
-      >
-        <component
-          :is="getLogo()"
-          style="transform: translateX(-30px)"
-          :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`"
-        />
-        <div
-          v-if="!collapsed"
-          style="font-size: 24px; font-weight: 700; line-height: 50px; margin-left: -40px; margin-right: 16px"
-        >
+      <span :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">
+        <component :is="getLogo()" style="transform: translateX(-30px)"
+          :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />
+        <div v-if="!collapsed"
+          style="font-size: 24px; font-weight: 700; line-height: 50px; margin-left: -40px; margin-right: 16px">
           <!-- 高校体育管理系统 -->
-          智能球馆
+          单词管理系统
         </div>
       </span>
       <!--      <div style="display: flex; ">-->
