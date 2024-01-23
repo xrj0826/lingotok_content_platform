@@ -4,7 +4,7 @@ WORKDIR /app
 # 复制npm安装的出来
 COPY package.json /app/package.json
 # 如果package.json没有进行改变,就不安装了,直接跳过
-RUN npm config set registry https://registry.npm.taobao.org
+RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
 RUN npm install -g pnpm
 RUN pnpm install
 # 复制整个项目,进行打包
