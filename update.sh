@@ -1,6 +1,7 @@
 # 为了避免后面重复拉取,所以在项目原文件地址的时候,请使用这个命令存储账号和密码,让页面进行访问
 # git config --global credential.helper wincred
 git config --global credential.helper store
+git_path="https://e.coding.net/wteam-khai/yingyudancixuexi/english-manager.git"
 
 #项目路径
 code_path="/frontend-project/"
