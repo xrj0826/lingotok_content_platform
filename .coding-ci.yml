@@ -37,7 +37,7 @@ master:
               - docker rm ${APP_MANAGER_NAME}
               - docker login -u frontend-1695547599036 -p 12c728f79805a84f382f353850a97e730a4997d5 wteam-khai-docker.pkg.coding.net
               - docker pull wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest
-                - docker run -p ${MANAGER_PORT}:${MANAGER_PORT} --name ${APP_MANAGER_NAME} -e TZ="Asia/Shanghai" -v /etc/localtime:/etc/localtime  -d wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest
+              - docker run -p ${MANAGER_PORT}:80 --name ${APP_MANAGER_NAME} -e TZ="Asia/Shanghai" -v /etc/localtime:/etc/localtime  -d wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest
         # - name: scp files
         #   image: appleboy/drone-scp
         #   volumes: #将主机的shell脚本与容器共享
