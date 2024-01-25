@@ -16,7 +16,7 @@ master:
       stages:
         - name: docker login
           script: ${DOCKER_LOGIN}
-          #docker制品构建
+          #docker制品构建创建对应镜像
         - name: docker build
           script:
             - docker build -t wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest .
@@ -37,7 +37,8 @@ master:
               - docker rm ${APP_MANAGER_NAME}
               - docker login -u frontend-1695547599036 -p 12c728f79805a84f382f353850a97e730a4997d5 wteam-khai-docker.pkg.coding.net
               - docker pull wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest
-              - docker run -p ${MANAGER_PORT}:80 --name ${APP_MANAGER_NAME} -e TZ="Asia/Shanghai" -v /etc/localtime:/etc/localtime  -d wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest
+#       #  -p: 指定端口映射; -e : 设置环境变量； -v: 绑定一个卷;  -d: 后台运行容器，并返回容器ID；
+              - docker run -p ${MANAGER_PORT}:80 --name ${APP_MANAGER_NAME} -e TZ="Asia/Shanghai" -v /etc/localtime:/etc/localtime -d wteam-khai-docker.pkg.coding.net/zaolunzi/frontend/${APP_MANAGER_NAME}:latest
         # - name: scp files
         #   image: appleboy/drone-scp
         #   volumes: #将主机的shell脚本与容器共享
