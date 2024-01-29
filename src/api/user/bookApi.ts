@@ -18,7 +18,7 @@ export async function delete10(
 
 /** 词组新添单词 POST /manager/book/addWord */
 export async function addWord(body: API.NewWord, options?: { [key: string]: any }) {
-  return request<API.ResultMessageObject>('/manager/book/addWord', {
+  return request<API.ResultMessageString>('/manager/book/addWord', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export async function groupDetail(
   });
 }
 
-/** 单词书分组导入 GET /manager/book/groupInsert/${param0} */
+/** 单词书自动分组 GET /manager/book/groupInsert/${param0} */
 export async function groupInsert(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.groupInsertParams,
@@ -105,6 +105,36 @@ export async function updateWord1(body: API.Book, options?: { [key: string]: any
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** 单词批量上传ByExcel 文件格式为.excel,按行读取,每行单独为一个单词 POST /manager/book/uploadWordByExcel */
+export async function uploadWordByExcel(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.uploadWordByExcelParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageObject>('/manager/book/uploadWordByExcel', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** 单词批量上传ByJson 文件格式为.json,按行读取,每行单独为一个单词 POST /manager/book/uploadWordByJson */
+export async function uploadWordByJson(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.uploadWordByJsonParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageObject>('/manager/book/uploadWordByJson', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }

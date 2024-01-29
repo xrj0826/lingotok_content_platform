@@ -3,34 +3,13 @@
     <t-space>
       <t-button @click="handleAdd">添加读物</t-button>
     </t-space>
-    <t-dialog
-      v-model:visible="visible"
-      attach="body"
-      header="添加管理员"
-      body="保存中，请稍后"
-      :confirm-btn="null"
-      :cancel-btn="null"
-      :on-confirm="close"
-    >
+    <t-dialog v-model:visible="visible" attach="body" header="添加读物" body="保存中，请稍后" :confirm-btn="null" :cancel-btn="null"
+      :on-confirm="close">
       <!-- @vue-ignore -->
-      <t-form
-        ref="form"
-        label-width="120px"
-        label-align="left"
-        :rules="FORM_RULES"
-        :data="formData"
-        :colon="true"
-        @submit="add"
-      >
-        <t-form-item
-          label="读物类别"
-          name="username"
-        >
-          <t-input
-            v-model="formData.name"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+      <t-form ref="form" label-width="120px" label-align="left" :rules="FORM_RULES" :data="formData" :colon="true"
+        @submit="add">
+        <t-form-item label="读物类别" name="username">
+          <t-input v-model="formData.name" placeholder="请输入内容" @enter="onEnter"></t-input>
         </t-form-item>
         <!-- <t-form-item
           label="管理员昵称"
@@ -64,17 +43,9 @@
         </t-form-item> -->
         <t-form-item :status-icon="false">
           <t-space size="small">
-            <t-button
-              :loading="reClick"
-              theme="primary"
-              type="submit"
-              style="margin: 20px 100px 0 0"
-              >提交</t-button
-            >
+            <t-button :loading="reClick" theme="primary" type="submit" style="margin: 20px 100px 0 0">提交</t-button>
           </t-space>
-        </t-form-item></t-form
-      ></t-dialog
-    >
+        </t-form-item></t-form></t-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -129,7 +100,7 @@ const add = async ({ validateResult, _ }) => {
       // formData.storeId = '9376';
 
       const res = await save7(formData);
-
+      formData.name = ""
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
       reClick.value = true;

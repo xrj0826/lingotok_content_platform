@@ -8,7 +8,7 @@ export async function upload1(
   params: API.upload1Params,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResultMessageObject>('/manager/upload/file', {
+  return request<API.ResultMessageFile>('/manager/upload/file', {
     method: 'POST',
     params: {
       ...params,

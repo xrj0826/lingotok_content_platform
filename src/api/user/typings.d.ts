@@ -119,6 +119,8 @@ declare namespace API {
     label?: string;
     /** 封面地址 */
     url?: string;
+    /** 单词书名称 */
+    bookName?: string;
   };
 
   type BookGroupVO = {
@@ -281,11 +283,15 @@ declare namespace API {
     definition?: string;
     /** 等级信息 */
     grade?: string[];
+    isCollect?: boolean;
+    familiarity?: 'FAMILIAR' | 'VAGUE' | 'RARE';
   };
 
   type Exercises = {
     /** 所属文章ID */
     articleId?: string;
+    /** 标题 */
+    title?: string;
     /** 难度分类字段 */
     difficultyLevel?: 'EASY' | 'MIDDLE' | 'HARD';
     userNote?: UserNote;
@@ -422,42 +428,42 @@ declare namespace API {
 
   type IPageAdminUserVO = {
     total?: number;
-    size?: number;
-    pages?: number;
-    current?: number;
     records?: AdminUserVO[];
+    current?: number;
+    pages?: number;
+    size?: number;
   };
 
   type IPageBook = {
     total?: number;
-    size?: number;
-    pages?: number;
-    current?: number;
     records?: Book[];
+    current?: number;
+    pages?: number;
+    size?: number;
   };
 
   type IPageMemberVO = {
     total?: number;
-    size?: number;
-    pages?: number;
-    current?: number;
     records?: MemberVO[];
+    current?: number;
+    pages?: number;
+    size?: number;
   };
 
   type IPageSmsSign = {
     total?: number;
-    size?: number;
-    pages?: number;
-    current?: number;
     records?: SmsSign[];
+    current?: number;
+    pages?: number;
+    size?: number;
   };
 
   type IPageSmsTemplate = {
     total?: number;
-    size?: number;
-    pages?: number;
-    current?: number;
     records?: SmsTemplate[];
+    current?: number;
+    pages?: number;
+    size?: number;
   };
 
   type loginParams = {
@@ -690,8 +696,8 @@ declare namespace API {
   };
 
   type Phrases = {
-    pcontent?: string;
     pcn?: string;
+    pcontent?: string;
   };
 
   type querySmsSignPageParams = {
@@ -875,6 +881,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: Exercises;
+  };
+
+  type ResultMessageFile = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: File;
   };
 
   type ResultMessageGroupVO = {
@@ -1225,6 +1243,19 @@ declare namespace API {
     result?: SmsTemplate;
   };
 
+  type ResultMessageString = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    /** 结果对象 */
+    result?: string;
+  };
+
   type ResultMessageToken = {
     /** 成功标志 */
     success?: boolean;
@@ -1289,8 +1320,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertStartDate?: string;
     convertEndDate?: string;
+    convertStartDate?: string;
   };
 
   type Sentence = {
@@ -1423,18 +1454,26 @@ declare namespace API {
 
   type updateWordParams = {
     id: string;
-    fieldName: string;
-    value: Record<string, any>;
   };
 
   type upload1Params = {
     file: string;
     base64: string;
-    accessToken: string;
+    fileLocation: string;
   };
 
   type uploadParams = {
     headword: string;
+  };
+
+  type uploadWordByExcelParams = {
+    file: string;
+    bookId: string;
+  };
+
+  type uploadWordByJsonParams = {
+    file: string;
+    bookId: string;
   };
 
   type UserNote = {

@@ -5,7 +5,10 @@ import { ref } from 'vue';
 
 // import { delete21 } from '@/api/user/guanliyuan';
 import { useRenewDataStore } from '@/store/renewData';
-import { delete5 } from '@/api/user/readingMaterials';
+import { delete5, get7 } from '@/api/user/readingMaterials';
+import { delete9, get9 } from '@/api/user/articles';
+import { delete7, get8 } from '@/api/user/exercises';
+import { delete3 } from '@/api/user/sentence';
 // import { delete5 } from '@/api/user/readingMaterials';
 
 // import Edit from './components/Edit.vue';
@@ -25,8 +28,6 @@ export const columns: PrimaryTableCol[] = [
     title: '读物名称',
   },
   // { colKey: 'nickName', title: '昵称' },
-
-  { colKey: 'articlesList', title: '文章列表' },
   {
     colKey: 'edit',
     fixed: 'right',
@@ -34,6 +35,16 @@ export const columns: PrimaryTableCol[] = [
     cell: (h, { row }) => {
       return (
         <t-button onClick={() => edit(row)}>编辑</t-button>
+      );
+    },
+  },
+  {
+    colKey: 'detail',
+    fixed: 'right',
+    title: '读物详情',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => readingDetail(row)}>读物详情</t-button>
       );
     },
   },
@@ -69,9 +80,220 @@ export const columns: PrimaryTableCol[] = [
   },
 ];
 
+export const columnsReading: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+  // {
+  //   colKey: 'id',
+  //   title: 'id',
+  // },
+  {
+    colKey: 'title',
+    title: '文章名称',
+  },
+  // { colKey: 'nickName', title: '昵称' },
+  { colKey: 'picture', title: '文章封面', width: "120px" },
+  { colKey: 'introduction', title: '文章简介', width: "400px" },
+  {
+    colKey: 'edit',
+    title: '修改文章',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => modifyArticle(row)}>编辑</t-button>
+      );
+    },
+  },
+  { colKey: 'articleCount', title: '文章数量' },
+  {
+    colKey: 'detail',
+    title: '文章详情',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => essayDetail(row)}>文章详情</t-button>
+      );
+    },
+  },
+  {
+    colKey: 'operation',
+    title: '操作',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              deleteReading(row);
+            }}
+          >
+            <t-link
+              variant="text"
+              hover="color"
+              theme="danger"
+            >
+              删除
+            </t-link>
+          </t-popconfirm>
+          {/* <Edit
+            // @ts-ignore
+            onEdit={editFinish}
+            editId={row.id}
+          ></Edit> */}
+        </t-space>
+      );
+    },
+  },
+];
+
+export const columnsEssay: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+  // {
+  //   colKey: 'id',
+  //   title: 'id',
+  // },
+  {
+    colKey: 'articleId',
+    title: '所属文章ID',
+    width: "200px"
+  },
+  {
+    colKey: 'title',
+    title: '练习名称',
+  },
+  // { colKey: 'nickName', title: '昵称' },
+  { colKey: 'difficultyLevel', title: '难度分类', width: "120px" },
+  {
+    colKey: 'edit',
+    title: '修改练习内容',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => modifyExercise(row)}>编辑</t-button>
+      );
+    },
+  },
+  { colKey: 'articleCount', title: '文章数量' },
+  {
+    colKey: 'detail',
+    title: '句子列表',
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => exercisesDetail(row)}>练习详情</t-button>
+      );
+    },
+  },
+  {
+    colKey: 'operation',
+    title: '操作',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              deleteEssay(row);
+            }}
+          >
+            <t-link
+              variant="text"
+              hover="color"
+              theme="danger"
+            >
+              删除
+            </t-link>
+          </t-popconfirm>
+          {/* <Edit
+            // @ts-ignore
+            onEdit={editFinish}
+            editId={row.id}
+          ></Edit> */}
+        </t-space>
+      );
+    },
+  },
+];
+
+export const columnsExercise: PrimaryTableCol[] = [
+  {
+    colKey: 'row-select',
+    type: 'multiple',
+    width: 50,
+  },
+  // {
+  //   colKey: 'id',
+  //   title: 'id',
+  // },
+  {
+    colKey: 'exercisesId',
+    title: '所属练习ID',
+    width: "200px"
+  },
+  // { colKey: 'nickName', title: '昵称' },
+  { colKey: 'content', title: '练习内容', width: "400px" },
+  { colKey: 'translation', title: '练习翻译', width: "400px" },
+  {
+    colKey: 'edit',
+    title: '编辑句子内容',
+    width: "100px",
+    cell: (h, { row }) => {
+      return (
+        <t-button onClick={() => modifySen(row)}>编辑</t-button>
+      );
+    },
+  },
+  {
+    colKey: 'operation',
+    title: '操作',
+    cell: (h, { row }) => {
+      return (
+        <t-space>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              deleteExercise(row);
+            }}
+          >
+            <t-link
+              variant="text"
+              hover="color"
+              theme="danger"
+            >
+              删除
+            </t-link>
+          </t-popconfirm>
+          {/* <Edit
+            // @ts-ignore
+            onEdit={editFinish}
+            editId={row.id}
+          ></Edit> */}
+        </t-space>
+      );
+    },
+  },
+];
+
 export const visible = ref(false)
-export const id = ref("")
+// const essayId = ref("")
+export const rowReading = ref()
+export const rowEssay = ref()
 export const name = ref("")
+export const id = ref("")
+export const visibleDetail = ref(false)
+export const readingId = ref("")
+export const readingDetailContent = ref({ name: "", articlesList: [] })
+export const loading = ref(false)
+export const visibleEassy = ref(false)
+export const articlesContent = ref({ title: "", exercisesList: [] })
+export const exercises = ref({ title: "", sentenceList: [] })
+export const visibleExercise = ref(false)
+export const rowExercise = ref()
+export const redingId = ref("")
+export const visibleModifyArticle = ref(false)
 
 // 循环为列属性配置居中属性
 for (let i = 0; i < columns.length; i++) {
@@ -79,6 +301,7 @@ for (let i = 0; i < columns.length; i++) {
 }
 const store = useRenewDataStore(); 1
 const handleDelete = async (row) => {
+  loading.value = true
   console.log('管理员长度', row.username);
   if (row.username === 'gglq913') {
     MessagePlugin.error('不能删除超级管理员');
@@ -88,6 +311,7 @@ const handleDelete = async (row) => {
 
       const res = await delete5({ id: row.id });
       console.log('删除后', res);
+      loading.value = false
       MessagePlugin.success('删除成功');
 
       store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });
@@ -121,8 +345,117 @@ const edit = (row) => {
   id.value = row.id
   name.value = row.name
 }
-// 发送编辑行后执行回调
-// const editFinish = async (newData) => {
-//   console.log('edit传回', newData);
-//   store.renewData({ pageNmber: 1, pageSize: 10 }); // 使用pinia里面的分页请求
-// };
+
+export const readingDetail = (row) => {
+  loading.value = true
+  rowReading.value = row
+  const params = {
+    id: row.id
+  }
+  get7(params).then((res) => {
+    loading.value = false
+    visibleDetail.value = true
+    readingDetailContent.value = res.result
+  })
+}
+
+const deleteReading = (row) => {
+  loading.value = true
+  const params = {
+    id: row.id
+  }
+  delete9(params).then((res) => {
+    MessagePlugin.success("删除成功")
+    readingDetail(rowReading.value)
+  })
+}
+
+const deleteEssay = (row) => {
+  loading.value = true
+  const params = {
+    id: row.id
+  }
+  delete7(params).then((res) => {
+    MessagePlugin.success("删除成功")
+    essayDetail(rowArticle.value)
+  })
+}
+
+export const articleId = ref()
+export const rowArticle = ref()
+
+export const essayDetail = (row) => {
+  // visibleEassy.value = 
+  rowArticle.value = row
+  loading.value = true
+  articleId.value = row.id
+  const params = {
+    id: row.id
+  }
+  get9(params).then((res) => {
+    loading.value = false
+    articlesContent.value = res.result
+    visibleEassy.value = true
+  })
+}
+
+export const exercisesDetail = (row) => {
+  loading.value = true
+  rowExercise.value = row
+  const params = {
+    id: row.id
+  }
+  get8(params).then((res) => {
+    exercises.value = res.result
+    visibleExercise.value = true
+    loading.value = false
+  })
+}
+
+const deleteExercise = (row) => {
+  loading.value = true
+  const params = {
+    id: row.id
+  }
+  delete3(params).then((res) => {
+    MessagePlugin.success("删除成功")
+    exercisesDetail(rowExercise.value)
+  })
+}
+
+export const rowModifyArticle = ref({ title: "", readingMaterialId: "", introduction: "", picture: "", articleCount: "", id: "" })
+
+const modifyArticle = (row) => {
+  visibleModifyArticle.value = true
+  // rowModifyArticle.value = row
+  rowModifyArticle.value.articleCount = row.articleCount
+  rowModifyArticle.value.title = row.title
+  rowModifyArticle.value.readingMaterialId = row.readingMaterialId
+  rowModifyArticle.value.introduction = row.introduction
+  rowModifyArticle.value.picture = row.picture
+  rowModifyArticle.value.id = row.id
+
+}
+
+export const visivleModifyExercise = ref(false)
+export const modifyEx = ref({ articleId: "", title: "", id: "", })
+export const exerciseModifyLevel = ref("")
+export const exerciseModifyName = ref("")
+export const rowModifySen = ref({ content: "", id: "", exercisesId: "", translation: "" })
+export const visibleModifySen = ref(false)
+
+const modifyExercise = (row) => {
+  visivleModifyExercise.value = true
+  modifyEx.value = row
+  exerciseModifyName.value = row.title
+  exerciseModifyLevel.value = row.difficultyLevel
+  console.log('value', modifyEx.value.difficultyLevel)
+}
+
+const modifySen = (row) => {
+  visibleModifySen.value = true
+  rowModifySen.value.id = row.id
+  rowModifySen.value.content = row.content
+  rowModifySen.value.exercisesId = row.exercisesId
+  rowModifySen.value.translation = row.translation
+}

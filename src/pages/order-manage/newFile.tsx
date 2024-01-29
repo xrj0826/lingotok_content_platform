@@ -11,7 +11,8 @@ import { deleteWord, getByGroupId, getById } from '@/api/user/wordsApi';
 
 export const columns: PrimaryTableCol[] = [
 
-  { colKey: 'bookId', title: '词汇书名称', width: "200px" },
+  { colKey: 'bookId', title: '词汇书编码', width: "200px" },
+  { colKey: 'bookName', title: '词汇书名称', width: "200px" },
   { colKey: 'url', title: '词汇书封面', width: "200px" },
   { colKey: 'bookDescription', title: '词汇书描述', width: "200px" },
   { colKey: 'label', title: '词汇书标签', width: '200px' },
@@ -551,6 +552,7 @@ export const labelArr = ref([])
 export const bookDescription = ref("")
 export const imageUrl = ref("")
 export const bookDescription1 = ref("")
+export const bookName = ref("")
 export const bookId1 = ref("")
 export const bookid = ref("")
 // export const imageUrl1 = ref("")
@@ -561,19 +563,21 @@ const wordBookEdit = (row) => {
   imageUrl.value = row.url
   bookId1.value = row.bookId
   // if (row.bookDescription) {
+  bookName.value = row.bookName
   bookDescription.value = row.bookDescription
   bookDescription1.value = row.bookDescription
   // }
   row2.value = row
   console.log('row', row)
-  label1.value = row.label
-  console.log(label1.value)
-  search.value = label1.value.indexOf("]")
-  console.log(search)
-  search1.value = label1.value.substring(1, search.value)
-  console.log(search1.value)
-  labelArr.value = search1.value.split("、")
-  console.log('111', labelArr.value[0])
+  if (row.label != "") {
+    label1.value = row.label
+    console.log(label1.value)
+    search.value = label1.value.indexOf("]")
+    // console.log(search)
+    search1.value = label1.value.substring(1, search.value)
+    console.log(search1.value)
+    labelArr.value = search1.value.split("、")
+  }
 }
 
 export const resource = ref({})

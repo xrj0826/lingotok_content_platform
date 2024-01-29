@@ -1,6 +1,28 @@
-订单管理
 <template>
   <div>
+    <div style="display: flex;justify-content: center;margin-bottom: 10px;">
+      <t-button @click="visibleExcel = true">
+        excel表格上传
+      </t-button>
+    </div>
+
+    <t-dialog width="500px" theme="info" header="excel表格上传" @close="closeExcel()" :visible.sync="visibleExcel" @confirm=""
+      :footer="false">
+      <div style="font-size: 14px;font-weight: 700;justify-content: center;display: flex;">请先输入bookId</div>
+      <div style="width: 300px;display: flex;justify-content: space-around;margin-top: 10px;">
+        <div style="line-height: 30px;">bookId:</div>
+        <div> <t-input v-model="excelBookId"></t-input></div>
+      </div>
+      <div v-if="excelBookId != ''">
+        <div style="margin-top: 20px;display: flex;justify-content: center;">
+          <t-upload v-model="excel" action="/manager/manager/book/uploadWordByExcel" theme="file" :draggable=draggable
+            :headers="{ accessToken: accessToken }" :max="2" @success="handleuploadExcel" @fail="excelFail"
+            @onRemove="removeExcel()" :autoUpload=false :data="{ bookId: excelBookId }"></t-upload>
+        </div>
+      </div>
+
+    </t-dialog>
+
     <t-card>
       <t-table :row-key="index" :data="data" :columns="columns" resizable table-layout="fixed" :bordered="true"
         size="small" :pagination="pagination" :filter-row="null" cell-empty-content="-" :loading="isLoading"
@@ -133,6 +155,155 @@
         </div>
 
       </div>
+    </t-dialog>
+
+    <div v-if="allLoading">
+      <t-loading size="medium" text="加载中" fullscreen></t-loading>
+    </div>
+
+    <t-dialog width="800px" key="11" theme="info" header="新增单词" @close="newWordClose()" :visible.sync="visibleNewWord"
+      :footer="false">
+      <div style="display: flex;justify-content: center;margin-bottom: 20px;">
+        <t-input v-model="searchWord" placeholder="请输入要添加的单词" :style="{ width: '300px' }" @enter="wordSearch()"></t-input>
+        <div style="margin-left: 5px;">
+          <t-button @click="wordSearch()">搜索</t-button>
+        </div>
+      </div>
+      <div style="display: flex;justify-content: center;margin-bottom: 10px;">
+        <t-link @click="visibleWordAdd = true" theme="primary">没有搜索到想要添加的单词？点击这里添加</t-link>
+      </div>
+
+      <t-table :row-key="index" :data="searchRes" :columns="columnsWordSearch" resizable table-layout="fixed"
+        :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
+        :loading="isloadingBook" @filter-change="onFilterChange">
+      </t-table>
+    </t-dialog>
+
+    <t-dialog width="800px" theme="info" header="自定义添加单词" @close="visibleWordAdd = false" :visible.sync="visibleWordAdd"
+      :footer="false">
+      <div style="display: flex;justify-content: space-around;">
+        <div style="font-size: 14px;line-height: 30px;">请输入需要添加的单词全拼</div>
+        <t-input v-model="addWord1" placeholder="请输入要添加的单词" :style="{ width: '300px' }"></t-input>
+      </div>
+      <div style="display: flex;justify-content: center;">
+        <t-button @click="uploadWord()">添加</t-button>
+      </div>
+    </t-dialog>
+
+    <t-dialog width="1000px" key="12" theme="info" header="单词属性详情" @close="close3()" :visible.sync="visible4"
+      :footer="false">
+      <div style="font-size: 18px;font-weight: 700;">单词拼写：{{ word }}</div>
+      <div style="display:flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">同根词</div>
+      <div style="margin-left: 86%;margin-bottom: 10px;"><t-button @click="modify(1)">添加同根词</t-button></div>
+      <div v-if="data6.relWord">
+        <t-table :row-key="index" :data="data6.relWord.rels" :columns="columnsrels" resizable table-layout="fixed"
+          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
+          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
+          <template #words="{ row }">
+            <div v-for="item in row.words">
+              <div style="display: flex;">
+                <p>{{ item.hwd }}</p>
+                <p style="margin-left: 10px;">翻译：{{ item.tran }}</p>
+              </div>
+            </div>
+          </template>
+        </t-table>
+      </div>
+      <div v-else>
+        <div style="display: flex;justify-content: center;">
+          <img src="https://stickyfinger.oss-cn-guangzhou.aliyuncs.com/null5dc984f6d7d2418abc61ea0890fc81b0.png"
+            style="width: 100px;height: 100px;">
+        </div>
+        <div style="display: flex;justify-content: center;color: #b5b8bdd8;margin-bottom: 40px;">
+          该单词暂无同根词
+        </div>
+      </div>
+
+      <div style="display: flex;justify-content: center;font-size: 20px;font-weight: 700;margin-top: 20px;">例句</div>
+      <div style="margin-left: 88%;margin-bottom: 10px;"><t-button @click="modify(2)">添加例句</t-button></div>
+      <div v-if="data6.sentence">
+        <t-table :row-key="index" :data="data6.sentence.sentences" :columns="columnsSen" resizable table-layout="fixed"
+          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
+          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
+        </t-table>
+      </div>
+      <div v-else>
+        <div style="display: flex;justify-content: center;">
+          <img src="https://stickyfinger.oss-cn-guangzhou.aliyuncs.com/null5dc984f6d7d2418abc61ea0890fc81b0.png"
+            style="width: 100px;height: 100px;">
+        </div>
+        <div style="display: flex;justify-content: center;color: #b5b8bdd8;margin-bottom: 40px;">
+          该单词暂无例句
+        </div>
+      </div>
+
+
+      <div style="display: flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">翻译</div>
+      <div style="margin-left: 88%;margin-bottom: 10px;"><t-button @click="modify(3)">添加翻译</t-button></div>
+      <div v-if="data6.trans">
+        <t-table :row-key="index" :data="data6.trans" :columns="columnsTran" resizable table-layout="fixed"
+          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
+          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
+        </t-table>
+      </div>
+      <div v-else>
+        <div style="display: flex;justify-content: center;">
+          <img src="https://stickyfinger.oss-cn-guangzhou.aliyuncs.com/null5dc984f6d7d2418abc61ea0890fc81b0.png"
+            style="width: 100px;height: 100px;">
+        </div>
+        <div style="display: flex;justify-content: center;color: #b5b8bdd8;margin-bottom: 40px;">
+          该单词暂无翻译
+        </div>
+      </div>
+
+
+      <div style="display: flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">短语</div>
+      <div style="margin-left: 88%;margin-bottom: 10px;"><t-button @click="modify(4)">添加短语</t-button></div>
+      <div v-if="data6.phrase">
+        <t-table :row-key="index" :data="data6.phrase.phrases" :columns="columnsPrase" resizable table-layout="fixed"
+          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
+          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
+        </t-table>
+      </div>
+      <div v-else>
+        <div style="display: flex;justify-content: center;">
+          <img src="https://stickyfinger.oss-cn-guangzhou.aliyuncs.com/null5dc984f6d7d2418abc61ea0890fc81b0.png"
+            style="width: 100px;height: 100px;">
+        </div>
+        <div style="display: flex;justify-content: center;color: #b5b8bdd8;margin-bottom: 40px;">
+          该单词暂无短语
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">近义词</div>
+      <div style="margin-left: 86%;margin-bottom: 10px;"><t-button @click="modify(5)">添加近义词</t-button></div>
+      <div v-if="data6.syno">
+        <t-table :row-key="index" :data="data6.syno.synos" :columns="columnsSyno" resizable table-layout="fixed"
+          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
+          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
+          <template #hwds="{ row }">
+            <div v-for="item in row.hwds">
+              <div style="display: flex;">
+                <p>{{ item.w }}</p>
+              </div>
+            </div>
+          </template>
+        </t-table>
+      </div>
+      <div v-else>
+        <div style="display: flex;justify-content: center;">
+          <img src="https://stickyfinger.oss-cn-guangzhou.aliyuncs.com/null5dc984f6d7d2418abc61ea0890fc81b0.png"
+            style="width: 100px;height: 100px;">
+        </div>
+        <div style="display: flex;justify-content: center;color: #b5b8bdd8;margin-bottom: 40px;">
+          该单词暂无近义词
+        </div>
+      </div>
+
+      <div style="display: flex;justify-content: center;margin-top: 20px;">
+        <t-button size="large" @click="modifyData6()">修改确认</t-button>
+      </div>
+
     </t-dialog>
 
     <t-dialog width="800px" theme="info" header="新增内容" @close="visibleModify = false" :visible.sync="visibleModify"
@@ -294,119 +465,19 @@
 
     </t-dialog>
 
-    <div v-if="allLoading">
-      <t-loading size="medium" text="加载中" fullscreen></t-loading>
-    </div>
-
-    <t-dialog width="800px" key="11" theme="info" header="新增单词" @close="newWordClose()" :visible.sync="visibleNewWord"
-      :footer="false">
-      <div style="display: flex;justify-content: center;margin-bottom: 20px;">
-        <t-input v-model="searchWord" placeholder="请输入要添加的单词" :style="{ width: '300px' }" @enter="wordSearch()"></t-input>
-        <div style="margin-left: 5px;">
-          <t-button @click="wordSearch()">搜索</t-button>
-        </div>
-      </div>
-      <div style="display: flex;justify-content: center;margin-bottom: 10px;">
-        <t-link @click="visibleWordAdd = true" theme="primary">没有搜索到想要添加的单词？点击这里添加</t-link>
-      </div>
-
-      <t-table :row-key="index" :data="searchRes" :columns="columnsWordSearch" resizable table-layout="fixed"
-        :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
-        :loading="isLoading3" @filter-change="onFilterChange">
-      </t-table>
-    </t-dialog>
-
-    <t-dialog width="800px" theme="info" header="自定义添加单词" @close="visibleWordAdd = false" :visible.sync="visibleWordAdd"
-      :footer="false">
-      <div style="display: flex;justify-content: space-around;">
-        <div style="font-size: 14px;line-height: 30px;">请输入需要添加的单词全拼</div>
-        <t-input v-model="addWord1" placeholder="请输入要添加的单词" :style="{ width: '300px' }"></t-input>
-      </div>
-      <div style="display: flex;justify-content: center;">
-        <t-button @click="uploadWord()">添加</t-button>
-      </div>
-    </t-dialog>
-
-    <t-dialog width="1000px" key="12" theme="info" header="单词属性详情" @close="close3()" :visible.sync="visible4"
-      :footer="false">
-      <div style="font-size: 18px;font-weight: 700;">单词拼写：{{ word }}</div>
-      <div style="display:flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">同根词</div>
-      <div style="margin-left: 86%;margin-bottom: 10px;"><t-button @click="modify(1)">添加同根词</t-button></div>
-      <div v-if="data6.relWord">
-        <t-table :row-key="index" :data="data6.relWord.rels" :columns="columnsrels" resizable table-layout="fixed"
-          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
-          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
-          <template #words="{ row }">
-            <div v-for="item in row.words">
-              <div style="display: flex;">
-                <p>{{ item.hwd }}</p>
-                <p style="margin-left: 10px;">翻译：{{ item.tran }}</p>
-              </div>
-            </div>
-          </template>
-        </t-table>
-      </div>
-      <v-else></v-else>
-
-      <div style="display: flex;justify-content: center;font-size: 20px;font-weight: 700;margin-top: 20px;">例句</div>
-      <div style="margin-left: 88%;margin-bottom: 10px;"><t-button @click="modify(2)">添加例句</t-button></div>
-      <div v-if="data6.sentence">
-        <t-table :row-key="index" :data="data6.sentence.sentences" :columns="columnsSen" resizable table-layout="fixed"
-          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
-          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
-        </t-table>
-      </div>
-
-
-      <div style="display: flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">翻译</div>
-      <div style="margin-left: 88%;margin-bottom: 10px;"><t-button @click="modify(3)">添加翻译</t-button></div>
-      <div v-if="data6.trans">
-        <t-table :row-key="index" :data="data6.trans" :columns="columnsTran" resizable table-layout="fixed"
-          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
-          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
-        </t-table>
-      </div>
-
-
-      <div style="display: flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">短语</div>
-      <div style="margin-left: 88%;margin-bottom: 10px;"><t-button @click="modify(4)">添加短语</t-button></div>
-      <div v-if="data6.phrase">
-        <t-table :row-key="index" :data="data6.phrase.phrases" :columns="columnsPrase" resizable table-layout="fixed"
-          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
-          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
-        </t-table>
-      </div>
-
-
-      <div style="display:flex;justify-content: center;margin-top: 20px;font-size: 20px;font-weight: 700;">近义词</div>
-      <div style="margin-left: 86%;margin-bottom: 10px;"><t-button @click="modify(5)">添加近义词</t-button></div>
-      <div v-if="data6.syno">
-        <t-table :row-key="index" :data="data6.syno.synos" :columns="columnsSyno" resizable table-layout="fixed"
-          :bordered="true" size="small" :filter-row="null" cell-empty-content="-" :selected-row-keys="selectedRowKeys"
-          :loading="isLoading3" @filter-change="onFilterChange" @change="onChange">
-          <template #hwds="{ row }">
-            <div v-for="item in row.hwds">
-              <div style="display: flex;">
-                <p>{{ item.w }}</p>
-              </div>
-            </div>
-          </template>
-        </t-table>
-      </div>
-
-      <div style="display: flex;justify-content: center;margin-top: 20px;">
-        <t-button size="large" @click="modifyData6()">修改确认</t-button>
-      </div>
-
-    </t-dialog>
-
     <t-dialog width="800px" theme="info" header="单词书修改" @close="visibleBook = false" :visible.sync="visibleBook"
       :footer="false">
-      <div style="margin-right: 70px;margin: 0  auto;width: 100px;line-height: 40px;">单词书封面修改</div>
+
+      <div style="display: flex;justify-content: center;">单词书名称修改</div>
+      <div style="width: 300px;margin: 0 auto;margin-top: 10px;">
+        <t-input v-model="bookName"></t-input>
+      </div>
+
+      <div style="margin-right: 70px;margin: 0  auto;width: 100px;line-height: 40px;margin-top: 30px;">单词书封面修改</div>
       <div style="display: flex;justify-content: center;">
         <t-upload v-model="image" action="/manager/manager/upload/file" theme="file" :draggable=draggable
           :headers="{ accessToken: accessToken }" :max="2" @onWaitingUploadFilesChange="console.log('发生变化')"
-          @success="handleupload" @onRemove="remove1()"></t-upload>
+          @success="handleupload" @onRemove="remove1()" accept="image/*"></t-upload>
       </div>
 
       <!-- </div> -->
@@ -417,10 +488,15 @@
 
       <div style="width: 80px;margin: 0 auto;margin-top: 40px;">标签修改</div>
       <div style="width: 700px;margin: 0 auto;border: 2px solid #82a0cf;border-radius: 25px;">
-        <t-tag v-for="item, index in labelArr" theme="primary" style="margin: 10px;" closable @close="handleClose(index)">
-          {{ item }}
-        </t-tag>
-
+        <div v-if="labelArr.length != 0">
+          <t-tag v-for="item, index in labelArr" theme="primary" style="margin: 10px;" closable
+            @close="handleClose(index)">
+            {{ item }}
+          </t-tag>
+        </div>
+        <div v-else style="display: flex;justify-content: center;margin-top: 10px;margin-bottom: 10px;color: #8e98a8c5;">
+          暂无标签
+        </div>
       </div>
       <div style="display: flex;justify-content: center;margin-top: 10px;">
         <div>
@@ -432,7 +508,6 @@
       <div style="display: flex;justify-content: center;margin-top: 20px;">
         <t-button @click="editLabel" size="large"> 确认修改 </t-button>
       </div>
-
 
     </t-dialog>
 
@@ -520,7 +595,6 @@
 
 
     </t-dialog>
-
   </div>
 </template>
 
@@ -531,7 +605,7 @@ export default {
 </script>
 <script setup lang="tsx">
 import { MessagePlugin } from 'tdesign-vue-next';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 
 // import { get, page } from '@/api/user/changdeguanli';
 // import { delete9, page4 } from '@/api/user/dingdanguanlijiekou';
@@ -542,7 +616,7 @@ import {
   allLoading, visible4, data6, columnsrels, columnsSen, columnsTran, columnsPrase, columnsSyno, word, visible5,
   arrIndex, keyWord, data7, row1, edit3, visibleNewWord, wordIndex, columnsWordSearch, bookID, visibleBook, row2, labelArr,
   bookDescription, imageUrl, bookDescription1, bookId1, bookid, visibleResource, headWord1, resourceImage,
-  resourceVideo,
+  resourceVideo, bookName
 } from './newFile';
 import { addWord, group, page1, updateWord1 } from '@/api/user/bookApi';
 import { triggerAsyncId } from 'async_hooks';
@@ -552,6 +626,9 @@ import { fail } from 'assert';
 // const visibleBook = ref(false)
 // const imagefiles = ref([])
 // const resourceImage = ref([])
+const excelBookId = ref("")
+const excel = ref([])
+const visibleExcel = ref(false)
 const resourceAudio = ref([])
 // const resourceImage1 = ref([])
 const resourceAudio1 = ref([])
@@ -581,6 +658,7 @@ const store = useRenewDataStore();
 const index = ref();
 const data = ref([]);
 const isLoading = ref(false)
+const isloadingBook = ref(false)
 const accessToken = ref<string | null>();
 // const data2 = ref([]);
 const selectedRowKeys = ref([]);
@@ -610,6 +688,21 @@ const handleupload = (value) => {
   console.log('image2', image2.value)
   // console.log('imagevalue', value, value.response.result)
 };
+
+const handleuploadExcel = (value) => {
+  if (value.response.code == 200) {
+    MessagePlugin.success("上传成功")
+    console.log('valueExcel', value)
+    visibleExcel.value = false
+    excel.value = []
+    queryData({
+      pageNumber: pagination.current,
+      pageSize: pagination.pageSize,
+      sort: 'createTime',
+      order: 'desc',
+    });
+  }
+}
 
 const handleuploadAudioUk = (value) => {
   console.log('内容', value.response[0])
@@ -730,14 +823,16 @@ const searchRes = ref([])
 const searchWord = ref("")
 
 const wordSearch = () => {
-  allLoading.value = true
+  // allLoading.value = true
+  isloadingBook.value = true
   const params = {
     query: searchWord.value,
     pageNumber: paginationSearch.current,
     pageSize: paginationSearch.pageSize
   }
   search(params).then((res) => {
-    allLoading.value = false
+    // allLoading.value = false
+    isloadingBook.value = false
     searchRes.value = res.result
     // paginationSearch.total = searchRes.value.length
   })
@@ -894,7 +989,6 @@ const queryData = async (paginationInfo?, searchVo?: undefined, entityInfo?: und
     console.log(err);
   }
 };
-
 const queryData2 = async () => {
   try {
     const params = {
@@ -1215,8 +1309,15 @@ const labelString = ref("")
 const imageUrl2 = ref("")
 
 const editLabel = () => {
+  allLoading.value = true
   console.log('labelArr', labelArr.value)
   for (const i in labelArr.value) {
+    if (labelArr.value.length == 1) {
+      labelString.value = labelString.value + "["
+      labelString.value = labelString.value + labelArr.value[i]
+      labelString.value = labelString.value + "]"
+      break
+    }
     if (Number(i) == 0) {
       labelString.value = labelString.value + "["
       labelString.value = labelString.value + labelArr.value[i]
@@ -1244,6 +1345,7 @@ const editLabel = () => {
     imageUrl2.value = imageUrl.value
   }
   const params = {
+    bookName: bookName.value,
     bookId: bookId1.value,
     url: imageUrl2.value,
     bookDescription: bookDescription1.value,
@@ -1251,6 +1353,7 @@ const editLabel = () => {
     id: bookid.value
   }
   updateWord1(params).then((res) => {
+    allLoading.value = false
     console.log('res', res)
     labelString.value = ""
     visibleBook.value = false
@@ -1309,6 +1412,22 @@ const closeModifyWord = () => {
   resourceAudio1.value = null
   resourceAudio.value = null
 }
+
+const closeExcel = () => {
+  visibleExcel.value = false
+}
+
+const removeExcel = () => {
+  excel.value = []
+}
+
+const excelFail = () => {
+  MessagePlugin.error("单词书已存在，请更换bookId")
+}
+
+watch(searchWord, (newValue, oldValue) => {
+  wordSearch()
+});
 </script>
 
 <style lang="less" scoped></style>
