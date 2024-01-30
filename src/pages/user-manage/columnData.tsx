@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 
-import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
+// import { delete3 } from '@/api/user/yonghuguanlixiangguanjiekou';
 import { useRenewDataStore } from '@/store/renewData';
 import { decrypt } from '@/utils/crypto';
 
@@ -220,8 +220,8 @@ const handleDelete = async (id) => {
     const params = {
       id,
     };
-    const res = await delete3(params);
-    console.log('删除后', res);
+    // const res = await delete3(params);
+    // console.log('删除后', res);
     MessagePlugin.success('删除成功');
 
     store.renewData({ pageNumber: store.pagination.current, pageSize: store.pagination.pageSize });

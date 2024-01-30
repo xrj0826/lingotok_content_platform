@@ -93,7 +93,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page1, update1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+// import { page1, update1 } from '@/api/user/yonghuguanlixiangguanjiekou';
 
 const props = defineProps({ editId: String }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -128,22 +128,22 @@ const handlerEdit = async () => {
   try {
     visible.value = true;
     console.log(props.editId);
-    const res = await page1({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
-    const [data] = res.result.records; // 解构赋值records
+    // const res = await page1({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
+    // const [data] = res.result.records; // 解构赋值records
     // for (const key in formData) {
     //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
     //     formData[key] = data[formData[key]];
     //   }
     // }
     // 以下操作用于更新数据
-    formData.id = data.id;
-    formData.name = data.name;
-    formData.credit = data.credit;
-    // formData.status = data.status;
-    formData.nickName = data.nickName;
-    formData.phoneNumber = data.phoneNumber;
-    formData.email = data.email;
-    formData.sex = data.sex;
+    // formData.id = data.id;
+    // formData.name = data.name;
+    // formData.credit = data.credit;
+    // // formData.status = data.status;
+    // formData.nickName = data.nickName;
+    // formData.phoneNumber = data.phoneNumber;
+    // formData.email = data.email;
+    // formData.sex = data.sex;
     // formData.birthday = data.birthday;
     // formData.openId = data.openId;
     // formData.avatar = data.avatar;
@@ -154,9 +154,9 @@ const handlerEdit = async () => {
 // 确定编辑
 const edit = async () => {
   try {
-    const res = await update1(formData);
-    console.log('編輯返回', res);
-    emit('edit', 'emit传来喜报:组件通信成功', res);
+    // const res = await update1(formData);
+    // console.log('編輯返回', res);
+    // emit('edit', 'emit传来喜报:组件通信成功', res);
     loading.value = true;
     // 加载一下
     const timer = setTimeout(() => {

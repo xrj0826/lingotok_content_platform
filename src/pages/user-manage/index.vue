@@ -3,15 +3,12 @@
     <!-- 客服管理 -->
     <!-- <add @add="AddFinsh"></add> -->
 
-    <t-card>
+    <!-- <t-card>
       <t-space style="margin: 0 20px 20px 0">
-        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDelete"
-        >
+        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDelete">
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
-        <!-- <t-select-input
+        <t-select-input
           placeholder="根据姓名搜素"
           allow-input
           clearable
@@ -19,211 +16,107 @@
           @input-change="onInputChange"
         >
           <template #suffixIcon><search-icon /></template>
-        </t-select-input> -->
+        </t-select-input>
       </t-space>
-      <t-table
-        :row-key="index"
-        :data="data"
-        :columns="columns"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        :pagination="pagination"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeys"
-        @row-click="handleRowClick"
-        @select-change="onSelectChange"
-        @filter-change="onFilterChange"
-        @change="onChange"
-      >
-        <!-- 自定义表头，title值为插槽名称  -->
+      <t-table :row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="small"
+        :pagination="pagination" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
+        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeys"
+        @row-click="handleRowClick" @select-change="onSelectChange" @filter-change="onFilterChange" @change="onChange">
+        自定义表头，title值为插槽名称 
         <template #title-slot-name>
-          <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
+          <div style="display: flex; justify-content: center">
+            <UserCircleIcon style="margin-right: 8px" />申请人
+          </div>
         </template>
-      </t-table></t-card
-    >
+      </t-table></t-card> -->
+    <div>
+      <t-button @click="visible = true">密码修改</t-button>
+    </div>
+
+    <t-dialog width="500px" theme="info" header="密码修改" @close="closeVisible()" :visible.sync="visible" @confirm=""
+      :footer="false">
+      <div style="display: flex;padding: 20px;padding-bottom: 0px;">
+        <div style="width: 130px;">
+          请输入原密码
+        </div>
+        <t-input v-model="password">
+        </t-input>
+      </div>
+      <div v-if="visiblePassword" style="color: #cc2f2f;margin-top: 10px;margin-left: 120px;">*原密码不能为空</div>
+      <div style="display: flex;padding: 20px;padding-bottom: 0px;">
+        <div style="width: 130px;">
+          请输入新密码
+        </div>
+        <t-input v-model="newPassword">
+        </t-input>
+      </div>
+      <div v-if="visibleNew" style="color: #cc2f2f;margin-top: 10px;margin-left: 120px;">*新密码不能为空</div>
+      <div style="display: flex;justify-content: center;margin-top: 20px;">
+        <t-button @click="edit">修改确认</t-button>
+      </div>
+
+    </t-dialog>
   </div>
 </template>
 
-<script lang="tsx">
-export default {
-  name: 'UserManager',
-};
-</script>
 <script setup lang="tsx">
-// import { SearchIcon } from 'tdesign-icons-vue-next';
+import { editPassword } from '@/api/user/passport';
 import { MessagePlugin } from 'tdesign-vue-next';
-import { onMounted, reactive, ref } from 'vue';
+import { ref, watch } from 'vue';
 
-import { delete2, page1 } from '@/api/user/yonghuguanlixiangguanjiekou';
-import { useRenewDataStore } from '@/store/renewData';
 
-import { columns } from './columnData';
-// import Add from './components/Add.vue';
+const closeVisible = () => {
+  visible.value = false
+}
 
-// 挂载时调用请求函数
-onMounted(async () => {
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
-  store.renewData = queryData; // 挂载时，将请求函数给pinia
-  store.pagination.current = pagination.current; // 分页数据也一起给
-  store.pagination.pageSize = pagination.pageSize;
-  store.querySave = querySave;
-});
+const password = ref("")
+const newPassword = ref("")
+const visible = ref(false)
 
-const index = ref();
-const data = ref([]);
-const isLoading = ref(false);
-const store = useRenewDataStore();
-const querySave = reactive({
-  sort: '',
-  order: null,
-  nickName: '',
-  phoneNumber: '',
-});
-// 请求数据
-const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
-  try {
-    isLoading.value = true;
-    console.log('请求', entityInfo, paginationInfo);
-    const res = await page1({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
-    console.log('数据已送达', res);
-
-    data.value = res.result.records; // 获得表格数据
-    pagination.total = res.result.total; // 数据加载完成，设置数据总条数
-    store.renewData = queryData;
-  } catch (err) {
-    console.log(err);
+const edit = () => {
+  if (password.value == "" && newPassword.value == "") {
+    visiblePassword.value = true
+    visibleNew.value = true
+    return
   }
-  isLoading.value = false;
-};
-const selectedRowKeys = ref([]);
-
-const handleMoreDelete = async () => {
-  try {
-    const ids = selectedRowKeys.value.join(); // 提取数组里面的字符串
-    if (ids === '') {
-      MessagePlugin.error('未勾选删除项');
-    } else {
-      const res = await delete2({ ids });
-      console.log('批量删除后', res);
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-      });
-      MessagePlugin.success('删除成功');
+  if (password.value == "") {
+    visiblePassword.value = true
+    return
+  }
+  if (newPassword.value == "") {
+    visiblePassword.value = true
+    return
+  }
+  const params = {
+    password: password.value,
+    newPassword: newPassword.value
+  }
+  editPassword(params).then((res) => {
+    if (res.code == 20016) {
+      MessagePlugin.error('旧密码错误')
     }
-  } catch (error) {
-    console.log(error);
-  }
-};
-// 行选中变化时
-const onSelectChange = (value, params) => {
-  selectedRowKeys.value = value;
-  console.log(value, params);
-};
-
-const handleRowClick = (e) => {
-  console.log(e);
-};
-// 过滤等发生变化时会出发 change 事件
-const onFilterChange = (filterValue, context) => {
-  console.log('过滤', filterValue);
-
-  querySave.nickName = filterValue.nickName;
-  querySave.phoneNumber = filterValue.phoneNumber;
-
-  queryData(
-    {
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-      sort: querySave.sort,
-      order: querySave.order === false ? 'asc' : 'desc',
-    },
-    null,
-    // @ts-ignore
-    querySave,
-  );
-};
-// 排序、分页、过滤等发生变化时会出发 change 事件
-const onChange = (info, context) => {
-  if (context.trigger === 'sorter') {
-    if (info.sorter === undefined) {
-      querySave.sort = '';
-      querySave.order = null;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      });
-    } else {
-      querySave.sort = info.sorter.sortBy;
-      querySave.order = info.sorter.descending;
-      queryData({
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      });
+    if (res.code == 20001) {
+      MessagePlugin.success('修改成功')
+      visible.value = false
+      password.value = ""
+      newPassword.value = ""
     }
-  } else {
-    queryData(
-      {
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      },
-      null,
-      querySave,
-    );
-  }
-};
-// // 搜索框
-// const onInputChange = (keyword) => {
-//   querySave.name = keyword;
-//   onChange(null, null, keyword);
-// };
+  })
+}
+const visiblePassword = ref(false)
+const visibleNew = ref(false)
 
-const pagination = reactive({
-  current: 1,
-  pageSize: 10,
-  total: 10,
-  showJumper: true,
-  onChange: (pageInfo) => {
-    pagination.current = pageInfo.current;
-    pagination.pageSize = pageInfo.pageSize;
-    store.pagination.current = pagination.current; // 分页数据也一起给
-    store.pagination.pageSize = pagination.pageSize;
-    queryData(
-      {
-        pageNumber: pagination.current,
-        pageSize: pagination.pageSize,
-        sort: querySave.sort,
-        order: querySave.order === false ? 'asc' : 'desc',
-      },
-      null,
-      querySave,
-    ); // 分页数据改变时调用请求函数
-    console.log('pagination.onChange', pageInfo);
-  },
+watch(password, (newValue, oldValue) => {
+  if (password.value != "") {
+    visiblePassword.value = false
+  }
 });
 
-// const AddFinsh = (newData) => {
-//   console.log(newData);
-//   queryData({
-//     pageNumber: pagination.current,
-//     pageSize: pagination.pageSize,
-//   });
-// };
+watch(newPassword, (newValue, oldValue) => {
+  if (newPassword.value != "") {
+    visiblePassword.value = false
+  }
+});
 </script>
 
 <style lang="less" scoped></style>

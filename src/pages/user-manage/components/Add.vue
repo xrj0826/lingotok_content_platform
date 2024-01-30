@@ -3,22 +3,9 @@
     <t-space>
       <t-button @click="handleAdd">添加场地</t-button>
     </t-space>
-    <t-dialog
-      v-model:visible="visible"
-      attach="body"
-      header="添加场地"
-      body="订单保存中，请稍后"
-      :confirm-btn="null"
-      :cancel-btn="null"
-      :on-confirm="close"
-    >
-      <t-form
-        ref="form"
-        :rules="FORM_RULES"
-        :data="formData"
-        :colon="true"
-        @submit="add"
-      >
+    <t-dialog v-model:visible="visible" attach="body" header="添加场地" body="订单保存中，请稍后" :confirm-btn="null"
+      :cancel-btn="null" :on-confirm="close">
+      <t-form ref="form" :rules="FORM_RULES" :data="formData" :colon="true" @submit="add">
         <!-- <t-form-item
           label="场地id"
           name="storeId"
@@ -29,69 +16,28 @@
             @enter="onEnter"
           ></t-input>
         </t-form-item> -->
-        <t-form-item
-          label="场地名称"
-          name="venueName"
-        >
-          <t-input
-            v-model="formData.venueName"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+        <t-form-item label="场地名称" name="venueName">
+          <t-input v-model="formData.venueName" placeholder="请输入内容" @enter="onEnter"></t-input>
         </t-form-item>
 
-        <t-form-item
-          label="修改者"
-          name="createBy"
-        >
-          <t-input
-            v-model="formData.createBy"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+        <t-form-item label="修改者" name="createBy">
+          <t-input v-model="formData.createBy" placeholder="请输入内容" @enter="onEnter"></t-input>
         </t-form-item>
 
-        <t-form-item
-          label="半场价格"
-          name="halfPrice"
-        >
-          <t-input
-            v-model="formData.halfPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+        <t-form-item label="半场价格" name="halfPrice">
+          <t-input v-model="formData.halfPrice" placeholder="请输入内容" @enter="onEnter"></t-input>
         </t-form-item>
-        <t-form-item
-          label="全场价格"
-          name="allPrice"
-        >
-          <t-input
-            v-model="formData.allPrice"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+        <t-form-item label="全场价格" name="allPrice">
+          <t-input v-model="formData.allPrice" placeholder="请输入内容" @enter="onEnter"></t-input>
         </t-form-item>
-        <t-form-item
-          label="价格"
-          name="price"
-        >
-          <t-input
-            v-model="formData.price"
-            placeholder="请输入内容"
-            @enter="onEnter"
-          ></t-input>
+        <t-form-item label="价格" name="price">
+          <t-input v-model="formData.price" placeholder="请输入内容" @enter="onEnter"></t-input>
         </t-form-item>
         <t-form-item :status-icon="false">
           <t-space size="small">
-            <t-button
-              theme="primary"
-              type="submit"
-              >提交</t-button
-            >
+            <t-button theme="primary" type="submit">提交</t-button>
           </t-space>
-        </t-form-item></t-form
-      ></t-dialog
-    >
+        </t-form-item></t-form></t-dialog>
   </div>
 </template>
 <script lang="ts" setup>
@@ -99,7 +45,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save1 } from '@/api/user/yonghuguanlixiangguanjiekou';
+// import { save1 } from '@/api/user/yonghuguanlixiangguanjiekou';
 
 const emit = defineEmits(['add']);
 
@@ -140,9 +86,9 @@ const add = async ({ validateResult, _ }) => {
     if (validateResult === true) {
       // 第三方库随机生成id
       // formData.storeId = nanoid();
-      const res = await save1(formData);
-      console.log('編輯返回', res);
-      emit('add', 'emit传来喜报:组件通信成功', res);
+      // const res = await save1(formData);
+      // console.log('編輯返回', res);
+      // emit('add', 'emit传来喜报:组件通信成功', res);
 
       loading.value = true;
       // 加载一下
