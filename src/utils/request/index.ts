@@ -4,7 +4,9 @@
  */
 import { extend } from 'umi-request';
 import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from "vue-router";
 import { rejects } from 'assert';
+const router = useRouter();
 const config = {
   // api: 'http://47.99.90.88:8889',
   api: '/manager',
@@ -74,6 +76,8 @@ require.interceptors.response.use(async (response) => {
       // ElMessage.error('登录已过期，请重新登录')
       // router.push('/login')
       // window.__POWERED_BY_QIANKUN__ ? (window.location.href = '/#/') : router.replace('/user/login')
+      // router.push({ path: "/login" });
+      console.log('请重新登录')
       return data;
     }
     return data

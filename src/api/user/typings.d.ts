@@ -102,8 +102,23 @@ declare namespace API {
     articleCount?: number;
     /** 播放量 */
     viewCount?: number;
+  };
+
+  type ArticlesVO = {
+    /** 所属读物ID */
+    readingMaterialId?: string;
+    /** 文章标题 */
+    title?: string;
+    /** 文章介绍 */
+    introduction?: string;
+    /** 封面 */
+    picture?: string;
+    /** 文章数量 */
+    articleCount?: number;
+    /** 播放量 */
+    viewCount?: number;
     /** 练习列表 */
-    exercisesList?: Exercises[];
+    exercisesList?: ExercisesVO[];
     /** 是否收藏 */
     isCollect?: boolean;
   };
@@ -121,6 +136,10 @@ declare namespace API {
     url?: string;
     /** 单词书名称 */
     bookName?: string;
+    /** 一级目录 */
+    menus?: string;
+    /** 排名 */
+    rank?: string;
   };
 
   type BookGroupVO = {
@@ -128,14 +147,20 @@ declare namespace API {
     groupVOS?: GroupVO[][];
   };
 
-  type CollectDTO = {
-    bindId?: string;
-    type?: 'WORD' | 'ARTICLES' | 'SENTENCE' | 'WRONG';
-    content?: string;
+  type BookMenu = {
+    /** 目录名称 */
+    name?: string;
+    /** 描述 */
+    description?: string;
   };
 
   type Content = {
     word?: Word;
+  };
+
+  type DefinitionsDTO = {
+    definitions?: string[];
+    word_names?: string[];
   };
 
   type delAllByIds1Params = {
@@ -201,6 +226,10 @@ declare namespace API {
 
   type delete9Params = {
     id: string;
+  };
+
+  type deleteBookMenuParams = {
+    menuId: string;
   };
 
   type deleteUsingDELETEParams = {
@@ -279,10 +308,11 @@ declare namespace API {
     /** 单词书ID */
     bookId?: string;
     resource?: Resource;
-    /** 英语释义 */
-    definition?: string;
+    definition?: DefinitionsDTO;
     /** 等级信息 */
     grade?: string[];
+    /** 形式信息 */
+    modality?: Record<string, any>;
     isCollect?: boolean;
     familiarity?: 'FAMILIAR' | 'VAGUE' | 'RARE';
   };
@@ -294,9 +324,18 @@ declare namespace API {
     title?: string;
     /** 难度分类字段 */
     difficultyLevel?: 'EASY' | 'MIDDLE' | 'HARD';
+  };
+
+  type ExercisesVO = {
+    /** 所属文章ID */
+    articleId?: string;
+    /** 标题 */
+    title?: string;
+    /** 难度分类字段 */
+    difficultyLevel?: 'EASY' | 'MIDDLE' | 'HARD';
     userNote?: UserNote;
     /** 句子列表 */
-    sentenceList?: Sentence[];
+    sentenceList?: SentenceVO[];
     /** 是否收藏 */
     isCollect?: boolean;
   };
@@ -696,8 +735,8 @@ declare namespace API {
   };
 
   type Phrases = {
-    pcn?: string;
     pcontent?: string;
+    pcn?: string;
   };
 
   type querySmsSignPageParams = {
@@ -713,8 +752,13 @@ declare namespace API {
   type ReadingMaterials = {
     /** 读物名称 */
     name?: string;
+  };
+
+  type ReadingMaterialsVO = {
+    /** 读物名称 */
+    name?: string;
     /** 文章列表 */
-    articlesList?: Articles[];
+    articlesList?: ArticlesVO[];
   };
 
   type RealExamSentence = {
@@ -811,7 +855,7 @@ declare namespace API {
     result?: AdminUser;
   };
 
-  type ResultMessageArticles = {
+  type ResultMessageArticlesVO = {
     /** 成功标志 */
     success?: boolean;
     /** 消息 */
@@ -820,7 +864,7 @@ declare namespace API {
     code?: number;
     /** 时间戳 */
     timestamp?: number;
-    result?: Articles;
+    result?: ArticlesVO;
   };
 
   type ResultMessageBookGroupVO = {
@@ -833,6 +877,19 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: BookGroupVO;
+  };
+
+  type ResultMessageBoolean = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    /** 结果对象 */
+    result?: boolean;
   };
 
   type ResultMessageDepartment = {
@@ -871,7 +928,7 @@ declare namespace API {
     result?: EnglishWord;
   };
 
-  type ResultMessageExercises = {
+  type ResultMessageExercisesVO = {
     /** 成功标志 */
     success?: boolean;
     /** 消息 */
@@ -880,7 +937,7 @@ declare namespace API {
     code?: number;
     /** 时间戳 */
     timestamp?: number;
-    result?: Exercises;
+    result?: ExercisesVO;
   };
 
   type ResultMessageFile = {
@@ -965,6 +1022,19 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: IPageSmsTemplate;
+  };
+
+  type ResultMessageListBookMenu = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    /** 结果对象 */
+    result?: BookMenu[];
   };
 
   type ResultMessageListDepartmentRole = {
@@ -1171,7 +1241,7 @@ declare namespace API {
     result?: PageObject;
   };
 
-  type ResultMessageReadingMaterials = {
+  type ResultMessageReadingMaterialsVO = {
     /** 成功标志 */
     success?: boolean;
     /** 消息 */
@@ -1180,7 +1250,7 @@ declare namespace API {
     code?: number;
     /** 时间戳 */
     timestamp?: number;
-    result?: ReadingMaterials;
+    result?: ReadingMaterialsVO;
   };
 
   type ResultMessageRegion = {
@@ -1310,6 +1380,7 @@ declare namespace API {
     query: string;
     pageNumber: number;
     pageSize: number;
+    bookId: string;
   };
 
   type searchPermissionListParams = {
@@ -1320,8 +1391,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertEndDate?: string;
     convertStartDate?: string;
+    convertEndDate?: string;
   };
 
   type Sentence = {
@@ -1331,11 +1402,26 @@ declare namespace API {
     content?: string;
     /** 翻译 */
     translation?: string;
+    /** url */
+    url?: string;
   };
 
   type Sentences = {
     sourceInfo?: SourceInfo;
     scontent?: string;
+  };
+
+  type SentenceVO = {
+    /** 所属练习ID */
+    exercisesId?: string;
+    /** 内容 */
+    content?: string;
+    /** 翻译 */
+    translation?: string;
+    /** url */
+    url?: string;
+    /** 是否收藏 */
+    isCollect?: boolean;
   };
 
   type settingGetParams = {
@@ -1422,10 +1508,6 @@ declare namespace API {
     /** 词性 */
     pos?: string;
     tranOther?: string;
-  };
-
-  type ttsParams = {
-    msg: string;
   };
 
   type update2Params = {
@@ -1525,5 +1607,6 @@ declare namespace API {
     word?: string;
     translation?: string;
     dbId?: string;
+    bookId?: string;
   };
 }

@@ -16,3 +16,19 @@ export async function upload1(
     ...(options || {}),
   });
 }
+
+/** 获取url GET /manager/upload/getOssUrl */
+export async function getOssUrl(options?: { [key: string]: any }) {
+  return request<API.ResultMessageObject>('/manager/upload/getOssUrl', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 获取StsToken GET /manager/upload/getStsToken/ */
+export async function getStsToken(options?: { [key: string]: any }) {
+  return request<API.ResultMessageObject>('/manager/upload/getStsToken/', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}

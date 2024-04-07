@@ -48,7 +48,7 @@ export async function get7(
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResultMessageReadingMaterials>(`/manager/learn/readingMaterials/${param0}`, {
+  return request<API.ResultMessageReadingMaterialsVO>(`/manager/learn/readingMaterials/${param0}`, {
     method: 'GET',
     params: { ...queryParams },
     ...(options || {}),

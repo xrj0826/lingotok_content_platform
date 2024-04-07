@@ -16,7 +16,7 @@
           @input-change="onInputChange"
         >
           <template #suffixIcon><search-icon /></template>
-        </t-select-input> -->
+</t-select-input> -->
       </t-space>
       <t-table :row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="small"
         :pagination="pagination" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
@@ -207,7 +207,7 @@
       <div style="padding-left: 50px;">
         <div style="display: flex;">
           <div>练习名称：</div>
-          <div style="width: 100px;margin-left: 20px;">
+          <div style="width: 400px;margin-left: 20px;">
             <t-input v-model="exerciseModifyName" />
           </div>
         </div>

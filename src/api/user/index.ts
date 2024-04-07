@@ -17,10 +17,11 @@ import * as member from './member';
 import * as readingMaterials from './readingMaterials';
 import * as exercises from './exercises';
 import * as articles from './articles';
+import * as bookApi from './bookApi';
 import * as wordsApi from './wordsApi';
 import * as file from './file';
 import * as guanliduanjiaosecaidanjiekou from './guanliduanjiaosecaidanjiekou';
-import * as bookApi from './bookApi';
+import * as webApi from './webApi';
 export default {
   guanliduanduanxinmobanjiekou,
   guanliduanduanxinqianmingjiekou,
@@ -37,8 +38,9 @@ export default {
   readingMaterials,
   exercises,
   articles,
+  bookApi,
   wordsApi,
   file,
   guanliduanjiaosecaidanjiekou,
-  bookApi,
+  webApi,
 };

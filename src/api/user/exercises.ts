@@ -48,7 +48,7 @@ export async function get8(
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;
-  return request<API.ResultMessageExercises>(`/manager/learn/exercises/${param0}`, {
+  return request<API.ResultMessageExercisesVO>(`/manager/learn/exercises/${param0}`, {
     method: 'GET',
     params: { ...queryParams },
     ...(options || {}),
@@ -65,18 +65,6 @@ export async function delete7(
   return request<API.ResultMessage>(`/manager/learn/exercises/${param0}`, {
     method: 'DELETE',
     params: { ...queryParams },
-    ...(options || {}),
-  });
-}
-
-/** 收藏句子 POST /manager/learn/exercises/collect */
-export async function collect1(body: API.CollectDTO, options?: { [key: string]: any }) {
-  return request<API.ResultMessage>('/manager/learn/exercises/collect', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
     ...(options || {}),
   });
 }

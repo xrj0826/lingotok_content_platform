@@ -1,19 +1,9 @@
 <template>
-  <t-form
-    ref="form"
-    :class="['item-container', `login-${type}`]"
-    :data="formData"
-    :rules="FORM_RULES"
-    label-width="0"
-    @submit="onSubmit"
-  >
+  <t-form ref="form" :class="['item-container', `login-${type}`]" :data="formData" :rules="FORM_RULES" label-width="0"
+    @submit="onSubmit">
     <template v-if="type == 'password'">
       <t-form-item name="account">
-        <t-input
-          v-model="formData.account"
-          size="large"
-          placeholder="请输入账号:"
-        >
+        <t-input v-model="formData.account" size="large" placeholder="请输入账号:">
           <template #prefix-icon>
             <t-icon name="user" />
           </template>
@@ -21,22 +11,15 @@
       </t-form-item>
 
       <t-form-item name="password">
-        <t-input
-          v-model="formData.password"
-          size="large"
-          :on-focus="giveCookies"
-          :type="showPsw ? 'text' : 'password'"
-          clearable
-          placeholder="请输入登录密码:"
-        >
+        <t-input v-model="formData.password" size="large" :on-focus="giveCookies" :type="showPsw ? 'text' : 'password'"
+          clearable placeholder="请输入登录密码:">
+
           <template #prefix-icon>
             <t-icon name="lock-on" />
           </template>
+
           <template #suffix-icon>
-            <t-icon
-              :name="showPsw ? 'browse' : 'browse-off'"
-              @click="showPsw = !showPsw"
-            />
+            <t-icon :name="showPsw ? 'browse' : 'browse-off'" @click="showPsw = !showPsw" />
           </template>
         </t-input>
       </t-form-item>
@@ -46,26 +29,14 @@
       </div>
     </template>
 
-    <t-form-item
-      v-if="type !== 'qrcode'"
-      class="btn-container"
-    >
-      <t-button
-        block
-        size="large"
-        type="submit"
-      >
+    <t-form-item v-if="type !== 'qrcode'" class="btn-container">
+      <t-button block size="large" type="submit">
         登录
       </t-button>
     </t-form-item>
 
     <div class="switch-container">
-      <span
-        v-if="type !== 'password'"
-        class="tip"
-        @click="switchType('password')"
-        >使用账号密码登录</span
-      >
+      <span v-if="type !== 'password'" class="tip" @click="switchType('password')">使用账号密码登录</span>
     </div>
   </t-form>
 </template>
@@ -74,18 +45,34 @@
 // import { LoginIcon } from 'tdesign-icons-vue-next';
 import type { FormInstanceFunctions, FormRule, SubmitContext } from 'tdesign-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import VueCookies from 'vue-cookies';
 import { useRoute, useRouter } from 'vue-router';
 
 // import { useCounter } from '@/hooks';
 import { useUserStore } from '@/store';
+import { getUserInfo } from '@/api/user/passport';
 // import EditPassword from './EditPassword.vue';
 
 const userStore = useUserStore();
 const userWantsToSavePassword = ref(false); // @ts-ignore
 const savedPassword = VueCookies.get('password'); // @ts-ignore
 const savedAccount = VueCookies.get('account');
+
+onMounted(() => {
+  // if (localStorage.getItem('accessToken')) {
+  //   getUserInfo().then((res) => {
+  //     console.log('11113')
+  //     const redirect = route.query.redirect as string;
+  //     const redirectUrl = redirect ? decodeURIComponent(redirect) : '/admin/base';
+  //     router.push(redirectUrl);
+  //   }).catch(() => {
+  //     MessagePlugin.error('身份信息过期，请重新登录')
+  //     localStorage.removeItem('accessToken')
+  //   })
+  // }
+  localStorage.removeItem('accessToken')
+})
 
 const INITIAL_DATA = {
   phone: '',
@@ -136,14 +123,14 @@ const onSubmit = async (ctx: SubmitContext) => {
         VueCookies.set('password', formData.value.password, { expires: '7d' }); // 设置密码Cookie，有效期7天
         // @ts-ignore
         VueCookies.set('account', formData.value.account, { expires: '7d' }); // 设置密码Cookie，有效期7天
-        console.log('检查是否记住了密码', formData.value.password);
+        // console.log('检查是否记住了密码', formData.value.password);
       }
       MessagePlugin.success('登陆成功');
       const redirect = route.query.redirect as string;
       const redirectUrl = redirect ? decodeURIComponent(redirect) : '/dashboard';
       router.push(redirectUrl);
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       MessagePlugin.error(e.message);
     }
   }

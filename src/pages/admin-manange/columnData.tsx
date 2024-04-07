@@ -356,6 +356,7 @@ export const readingDetail = (row) => {
     loading.value = false
     visibleDetail.value = true
     readingDetailContent.value = res.result
+    console.log('res', res)
   })
 }
 

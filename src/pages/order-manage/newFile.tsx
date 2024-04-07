@@ -5,17 +5,17 @@ import { useRenewDataStore } from '@/store/renewData';
 import { decrypt } from '@/utils/crypto';
 
 import Edit from './components/Edit.vue';
-import { addWord, delete10, group, groupDetail } from '@/api/user/bookApi';
+import { addWord, bookMenuList, delete10, deleteBookMenu, group, groupDetail } from '@/api/user/bookApi';
 import { ref } from 'vue';
 import { deleteWord, getByGroupId, getById } from '@/api/user/wordsApi';
 
 export const columns: PrimaryTableCol[] = [
-
   { colKey: 'bookId', title: '词汇书编码', width: "200px" },
   { colKey: 'bookName', title: '词汇书名称', width: "200px" },
   { colKey: 'url', title: '词汇书封面', width: "200px" },
   { colKey: 'bookDescription', title: '词汇书描述', width: "200px" },
   { colKey: 'label', title: '词汇书标签', width: '200px' },
+
   {
     colKey: 'edit',
     title: '查看词组列表',
@@ -143,11 +143,11 @@ export const columns4: PrimaryTableCol[] = [
 ];
 
 export const columnsrels: PrimaryTableCol[] = [
-  { colKey: 'pos', title: '词性', width: "50px" },
+  { colKey: 'pos', title: '分类', width: "150px" },
   { colKey: 'words', title: '单词', width: "200px" },
   {
     colKey: 'edit',
-    title: '修改同根词',
+    title: '修改同源树',
     width: '200px',
     cell: (h, { row, rowIndex }) => {
       return (
@@ -183,6 +183,31 @@ export const columnsSen: PrimaryTableCol[] = [
             content="确认删除吗"
             onConfirm={() => {
               delete1(row, rowIndex, 2)
+            }}
+          >
+            <t-button>删除</t-button>
+          </t-popconfirm>
+        </t-space>
+      );
+    },
+  },
+];
+
+export const columnsMenus: PrimaryTableCol[] = [
+  { colKey: 'name', title: '目录名称', width: "200px" },
+  { colKey: 'description', title: '目录描述', width: "200px" },
+  {
+    colKey: 'edit',
+    title: '删除目录',
+    width: '100px',
+    cell: (h, { row, rowIndex }) => {
+      return (
+        <t-space>
+          <t-button onClick={() => modifyMenus(row)}>修改</t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => {
+              deleteMenus(row)
             }}
           >
             <t-button>删除</t-button>
@@ -270,11 +295,12 @@ export const columnsSyno: PrimaryTableCol[] = [
 
 export const columnsWordSearch: PrimaryTableCol[] = [
   { colKey: 'word', title: '单词', width: "200px" },
-  { colKey: 'translation', title: '翻译', width: "100px" },
+  { colKey: 'translation', title: '翻译', width: "200px" },
+  { colKey: 'bookId', title: '所属词汇书', width: "100px" },
   {
     colKey: 'edit',
-    title: '修改例句',
-    width: '200px',
+    title: '单词操作',
+    width: '250px',
     cell: (h, { row, rowIndex }) => {
       return (
         <t-space>
@@ -287,6 +313,7 @@ export const columnsWordSearch: PrimaryTableCol[] = [
             <t-button>上传单词</t-button>
           </t-popconfirm>
           <t-button onClick={() => edit9(row)}>查看详情</t-button>
+          <t-button onClick={() => resourceModify1(row)}>资源修改</t-button>
         </t-space>
       );
     },
@@ -363,11 +390,11 @@ export const data4 = ref([])
 export const data5 = ref([])
 export const data6 = ref(
   {
-    sentence: { desc: "", sentences: [{ scn: "", scontent: "" }] },
-    relWord: { desc: "", rels: [{ pos: "", words: [{ hwd: "", tran: "" }] }] },
-    trans: [{ tranCn: "" }],
-    phrase: { phrases: [{ pcontent: "", pcn: "" }], desc: "" },
-    syno: { synos: [{ pos: "", tran: "", hwds: [{ w: "" }] }], desc: "" }
+    // sentence: { desc: "", sentences: [{ scn: "", scontent: "" }] },
+    // relWord: { desc: "", rels: [{ pos: "", words: [{ hwd: "", tran: "" }] }] },
+    // trans: [{ tranCn: "" }],
+    // phrase: { phrases: [{ pcontent: "", pcn: "" }], desc: "" },
+    // syno: { synos: [{ pos: "", tran: "", hwds: [{ w: "" }] }], desc: "" }
   }
 )
 export const word = ref("")
@@ -426,7 +453,7 @@ export const edit3 = async (row) => {
     for (const i in res.result) {
       data5.value.push({ id: res.result[i].id, word: res.result[i].headWord })
     }
-    console.log('data5', data5.value)
+    // console.log('data5', data5.value)
     visible3.value = true
     allLoading.value = false
     // dg(0, row.total)
@@ -437,14 +464,17 @@ export const edit3 = async (row) => {
 
 export const data7 = ref()
 const edit6 = (row) => {
+  data6.value = {}
   allLoading.value = true
   console.log('edit6', row)
   const params = {
     id: row.id
   }
   getById(params).then((res) => {
-    word.value = res.result.content.word.wordHead
-    data6.value = res.result.content.word.content
+    if (res.result.content != null) {
+      word.value = res.result.content.word.wordHead
+      data6.value = res.result.content.word.content
+    }
     console.log('data6', data6.value)
     data7.value = res.result
     console.log('data6', data6.value)
@@ -542,6 +572,19 @@ const delete1 = (row, index, num) => {
   }
 }
 
+const deleteMenus = (row) => {
+  console.log(row)
+  const params = {
+    menuId: row.id
+  }
+  deleteBookMenu(params).then((res) => {
+    if (res.code == 200) {
+      MessagePlugin.success('删除成功')
+      getMenusList()
+    }
+  })
+}
+
 export const rowWordBook = ref()
 export const row2 = ref()
 export const label = ref([])
@@ -555,6 +598,8 @@ export const bookDescription1 = ref("")
 export const bookName = ref("")
 export const bookId1 = ref("")
 export const bookid = ref("")
+export const menus = ref("")
+// export const menusItem = ref("")
 // export const imageUrl1 = ref("")
 
 const wordBookEdit = (row) => {
@@ -566,8 +611,15 @@ const wordBookEdit = (row) => {
   bookName.value = row.bookName
   bookDescription.value = row.bookDescription
   bookDescription1.value = row.bookDescription
+  menus.value = row.menus
   // }
   row2.value = row
+  bookMenuList().then((res) => {
+    // allLoading.value = false
+    menusListData.value = res.result
+    // console.log('res', res)
+    // visibleMenusList.value = true
+  })
   console.log('row', row)
   if (row.label != "") {
     label1.value = row.label
@@ -589,6 +641,20 @@ export const resourceImage = ref([])
 // export const resourceImage1 = ref([])
 export const resourceVideo = ref([])
 // export const resourceVideo1 = ref([])
+const resourceAudioRadio = ref([])
+export const resourceAudioUs = ref({})
+export const resourceAudioUk = ref({})
+export const visibleModifyMenus = ref(false)
+export const nameModify = ref("")
+export const descModify = ref("")
+export const menusId = ref("")
+
+const modifyMenus = (row) => {
+  visibleModifyMenus.value = true
+  nameModify.value = row.name
+  descModify.value = row.description
+  menusId.value = row.id
+}
 
 const resourceModify = (row) => {
   allLoading.value = true
@@ -607,17 +673,89 @@ const resourceModify = (row) => {
       resourceVideo.value = res.result.resource.videos
       // resourceVideo1.value = res.result.resource.videos
       console.log('resourceImage', resourceImage.value)
-      if (resource.value.voices) {
-        for (const i in resource.value.voices) {
-          if (resource.value.voices[i].name == "action&type=1") {
-            resourceAudio1.value = resource.value.voices[i]
+      resourceAudioRadio.value = res.result.resource.voices
+      if (resourceAudioRadio.value) {
+        for (const i in resourceAudioRadio.value) {
+          if (resourceAudioRadio.value[i].name == "usphone") {
+            resourceAudio.value.push(resourceAudioRadio.value[i])
+            resourceAudioUs.value = resourceAudioRadio.value[i]
+            console.log('Us', resourceAudio.value)
           }
-          else {
-            resourceAudio.value = resource.value.voices[i]
+          if (resourceAudioRadio.value[i].name == "ukphone") {
+            resourceAudio1.value.push(resourceAudioRadio.value[i])
+            resourceAudioUk.value = resourceAudioRadio.value[i]
+            console.log('Uk', resourceAudio1.value)
           }
         }
       }
 
     }
+    // else {
+    //   resourceAudio.value = []
+    //   resourceAudio1.value = []
+    //   resourceAudioUk.value = {}
+    //   resourceAudioUs.value = {}
+    // }
   })
-} 
+}
+
+const resourceModify1 = (row) => {
+  allLoading.value = true
+  console.log(row)
+  headWord1.value = row.word
+  const params = {
+    id: row.dbId
+  }
+  getById(params).then((res) => {
+    allLoading.value = false
+    visibleResource.value = true
+    if (res.result.resource) {
+      // resource.value = res.result.resource
+      resourceImage.value = res.result.resource.images
+      // resourceImage1.value = JSON.parse(JSON.stringify(res.result.resource.images))
+      resourceVideo.value = res.result.resource.videos
+      // resourceVideo1.value = res.result.resource.videos
+      console.log('resourceImage', resourceImage.value)
+      resourceAudioRadio.value = res.result.resource.voices
+      if (resourceAudioRadio.value) {
+        for (const i in resourceAudioRadio.value) {
+          if (resourceAudioRadio.value[i].name == "usphone") {
+            resourceAudio.value.push(resourceAudioRadio.value[i])
+            resourceAudioUs.value = resourceAudioRadio.value[i]
+            console.log('Us', resourceAudio.value)
+          }
+          if (resourceAudioRadio.value[i].name == "ukphone") {
+            resourceAudio1.value.push(resourceAudioRadio.value[i])
+            resourceAudioUk.value = resourceAudioRadio.value[i]
+            console.log('Uk', resourceAudio1.value)
+          }
+        }
+      }
+
+    }
+    // else {
+    //   resourceAudio.value = []
+    //   resourceAudio1.value = []
+    //   resourceAudioUk.value = {}
+    //   resourceAudioUs.value = {}
+    // }
+  })
+}
+
+export const visibleMenusList = ref(false)
+export const menusListData = ref([])
+export const menusFilter = ref([])
+
+export const getMenusList = () => {
+  allLoading.value = true
+  bookMenuList().then((res) => {
+    menusListData.value = []
+    // console.log('menusFilter', menusFilter.value)
+    allLoading.value = false
+    menusListData.value = res.result
+    // menusListData.value.push(res.result)
+    // console.log('menusListData', menusListData.value)
+    // console.log('res', res)
+    visibleMenusList.value = true
+  })
+}

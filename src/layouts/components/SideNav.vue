@@ -21,7 +21,7 @@
       <!--      </div>-->
       <menu-content :nav-data="menu" />
       <template #operations>
-        <span class="version-container"> {{ !collapsed ? '高校体育管理系统' : '' }} </span>
+        <span class="version-container"> {{ !collapsed ? '英语单词小程序管理系统' : '' }} </span>
       </template>
     </t-menu>
     <div :class="`${prefix}-side-nav-placeholder${collapsed ? '-hidden' : ''}`"></div>

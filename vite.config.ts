@@ -45,7 +45,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       cors: true,
       proxy: {
         '/manager': {
-          target: 'http://101.34.243.115:8866/',
+          target: 'http://111.229.66.85:8866/',
           ws: true,
           changeOrigin: true,
           rewrite: (path) => {

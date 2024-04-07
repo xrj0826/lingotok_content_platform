@@ -1,5 +1,5 @@
 <template>
-  <div
+  <!-- <div
     style="color: #aaa"
     :class="prefix + '-footer'"
   >
@@ -18,7 +18,7 @@
       target="_blank"
       >| 粤公安网备15080202000195号
     </a>
-  </div>
+  </div> -->
 </template>
 <!--Copyright 智能球馆 自由职业者与雇主交流交易平台 -->
 <script setup lang="ts">

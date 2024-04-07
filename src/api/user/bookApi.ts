@@ -16,6 +16,18 @@ export async function delete10(
   });
 }
 
+/** 新增一级目录 POST /manager/book/addBookMenu */
+export async function addBookMenu(body: API.BookMenu, options?: { [key: string]: any }) {
+  return request<API.ResultMessageObject>('/manager/book/addBookMenu', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
 /** 词组新添单词 POST /manager/book/addWord */
 export async function addWord(body: API.NewWord, options?: { [key: string]: any }) {
   return request<API.ResultMessageString>('/manager/book/addWord', {
@@ -24,6 +36,28 @@ export async function addWord(body: API.NewWord, options?: { [key: string]: any 
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** 一级目录列表 GET /manager/book/bookMenuList */
+export async function bookMenuList(options?: { [key: string]: any }) {
+  return request<API.ResultMessageListBookMenu>('/manager/book/bookMenuList', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 删除一级目录 DELETE /manager/book/deleteBookMenu/${param0} */
+export async function deleteBookMenu(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.deleteBookMenuParams,
+  options?: { [key: string]: any },
+) {
+  const { menuId: param0, ...queryParams } = params;
+  return request<API.ResultMessageBoolean>(`/manager/book/deleteBookMenu/${param0}`, {
+    method: 'DELETE',
+    params: { ...queryParams },
     ...(options || {}),
   });
 }
@@ -101,6 +135,18 @@ export async function sync(options?: { [key: string]: any }) {
 export async function updateWord1(body: API.Book, options?: { [key: string]: any }) {
   return request<API.ResultMessageObject>('/manager/book/updateBook', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 修改一级目录 PUT /manager/book/updateBookMenu */
+export async function updateBookMenu(body: API.BookMenu, options?: { [key: string]: any }) {
+  return request<API.ResultMessageBoolean>('/manager/book/updateBookMenu', {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },

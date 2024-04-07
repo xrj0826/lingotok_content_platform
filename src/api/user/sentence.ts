@@ -68,15 +68,3 @@ export async function delete3(
     ...(options || {}),
   });
 }
-
-/** 收藏句子 POST /manager/sentence/collect */
-export async function collect(body: API.CollectDTO, options?: { [key: string]: any }) {
-  return request<API.ResultMessage>('/manager/sentence/collect', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}

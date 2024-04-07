@@ -56,25 +56,12 @@ export async function search(
     `/manager/words/search/${param0}/${param1}/${param2}`,
     {
       method: 'GET',
-      params: { ...queryParams },
+      params: {
+        ...queryParams,
+      },
       ...(options || {}),
     },
   );
-}
-
-/** 此处后端没有提供注释 POST /manager/words/tts */
-export async function tts(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.ttsParams,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResultMessageObject>('/manager/words/tts', {
-    method: 'POST',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
 }
 
 /** 修改单词 POST /manager/words/updateWord/${param0} */
