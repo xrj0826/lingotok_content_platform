@@ -19,9 +19,9 @@ import * as exercises from './exercises';
 import * as articles from './articles';
 import * as bookApi from './bookApi';
 import * as wordsApi from './wordsApi';
+import * as webApi from './webApi';
 import * as file from './file';
 import * as guanliduanjiaosecaidanjiekou from './guanliduanjiaosecaidanjiekou';
-import * as webApi from './webApi';
 export default {
   guanliduanduanxinmobanjiekou,
   guanliduanduanxinqianmingjiekou,
@@ -40,7 +40,7 @@ export default {
   articles,
   bookApi,
   wordsApi,
+  webApi,
   file,
   guanliduanjiaosecaidanjiekou,
-  webApi,
 };
