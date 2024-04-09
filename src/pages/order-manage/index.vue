@@ -572,7 +572,12 @@
     <t-dialog width="800px" theme="info" header="单词书修改" @close="visibleBook = false" :visible.sync="visibleBook"
       :footer="false">
 
-      <div style="display: flex;justify-content: center;">单词书名称修改</div>
+      <div style="display: flex;justify-content: center;">单词书序号修改</div>
+      <div style="width: 300px;margin: 0 auto;margin-top: 10px;">
+        <t-input v-model="rank"></t-input>
+      </div>
+
+      <div style="display: flex;justify-content: center;margin-top: 30px;">单词书名称修改</div>
       <div style="width: 300px;margin: 0 auto;margin-top: 10px;">
         <t-input v-model="bookName"></t-input>
       </div>
@@ -737,7 +742,7 @@
 
     </t-dialog>
 
-    <t-dialog width="800px" theme="info" header="修改/删除一级目录" @close="visibleMenusList = false"
+    <t-dialog width="900px" theme="info" header="修改/删除一级目录" @close="visibleMenusList = false"
       :visible.sync="visibleMenusList" :footer="false">
       <t-table :data="menusListData" :columns="columnsMenus" resizable table-layout="fixed" :bordered="true"
         size="small" cell-empty-content="-" :loading="isLoading">
@@ -749,13 +754,21 @@
 
     <t-dialog width="800px" theme="info" header="修改一级目录" @close="visibleModifyMenus = false"
       :visible.sync="visibleModifyMenus" :footer="false">
+
       <div style="display: flex;">
+        <div>一级标签序号</div>
+        <div style="margin-left:20px">
+          <t-input v-model="rankModify" placeholder="请输入一级目录序号" ref="input" size="small"
+            style="width: 354px;margin-left: 10px;" />
+        </div>
+      </div>
+
+      <div style="display: flex;margin-top: 20px;">
         <div>一级标签名称</div>
         <div style="margin-left:20px">
           <t-input v-model="nameModify" placeholder="请输入一级目录名称" ref="input" size="small"
             style="width: 354px;margin-left: 10px;" />
         </div>
-
       </div>
 
       <div style="display: flex;margin-top: 20px;">
@@ -812,8 +825,8 @@ import {
   allLoading, visible4, data6, columnsrels, columnsSen, columnsTran, columnsPrase, columnsSyno, word, visible5,
   arrIndex, keyWord, data7, row1, edit3, visibleNewWord, wordIndex, columnsWordSearch, bookID, visibleBook, row2, labelArr,
   bookDescription, imageUrl, bookDescription1, bookId1, bookid, visibleResource, headWord1, resourceImage,
-  resourceVideo, bookName, resourceAudioUk, resourceAudioUs, resourceAudio, resourceAudio1, menus, columnsMenus,
-  menusListData, visibleMenusList, getMenusList, visibleModifyMenus, nameModify, descModify, menusId
+  resourceVideo, bookName, rank, resourceAudioUk, resourceAudioUs, resourceAudio, resourceAudio1, menus, columnsMenus,
+  menusListData, visibleMenusList, getMenusList, visibleModifyMenus, nameModify, descModify, menusId, rankModify
 } from './newFile';
 import { addBookMenu, addWord, bookMenuList, group, page1, updateWord1, updateBookMenu } from '@/api/user/bookApi';
 import { triggerAsyncId } from 'async_hooks';
@@ -1632,6 +1645,7 @@ const editLabel = () => {
     imageUrl2.value = imageUrl.value
   }
   const params = {
+    rank: rank.value,
     bookName: bookName.value,
     bookId: bookId1.value,
     url: imageUrl2.value,
@@ -1805,7 +1819,8 @@ const modifyMenus = () => {
   const params = {
     id: menusId.value,
     name: nameModify.value,
-    description: descModify.value
+    description: descModify.value,
+    rank: rankModify.value,
   }
   updateBookMenu(params).then((res) => {
     if (res.code == 200) {
