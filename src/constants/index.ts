@@ -50,7 +50,7 @@ export enum ContentTypeEnum {
   FormData = 'multipart/form-data;charset=UTF-8',
 }
 
-//IM配置
+// IM配置
 export const SDK_APPID = '1400826231';
 export const SDK_KEY = '908acd17f8c82e05aa17355f39d97f930f59d3541ddb63042b1098eacbadfece';
 export const IDENTIFIER = 'administrator';
@@ -60,3 +60,17 @@ export const USER_ID = '1686204421482299392';
 // export const USER_ID = '272b96f0-fbb7-4a24-8832-26ee8799e810';
 export const RANDOM = '1372107022';
 export const CONTENT_TYPE = 'json';
+
+export const bucket = 'stickyfinger';
+// export const bucket = 'ziyouzhehao';
+export const region = 'oss-cn-guangzhou';
+
+export const accessKey = 'Dzkd8ImUgpGSg5VE';
+// export const bucket = 'ziyouzhehao';
+export const secretKey = '2w3cjq5ZY8Xa1cht4TaljsTKfKZ1jRGf';
+export const AccessKeyId = 'Dzkd8ImUgpGSg5VE';
+// export const bucket = 'ziyouzhehao';
+export const AccessKeySecret = '2w3cjq5ZY8Xa1cht4TaljsTKfKZ1jRGf';
+export const bucketName = 'english';
+// export const bucket = 'ziyouzhehao';
+export const filename = 'upload';

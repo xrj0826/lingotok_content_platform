@@ -18,7 +18,11 @@ export default ({ mode }: ConfigEnv): UserConfig => {
         '/@': path.resolve(__dirname, './src'),
       },
     },
-
+    define: {
+      'process.env': {
+        NODE_ENV: process.env.NODE_ENV, // 将属性转化为全局变量，让代码中可以正常访问
+      },
+    },
     css: {
       preprocessorOptions: {
         less: {
@@ -60,7 +64,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           rewrite: (path) => {
             return path.replace(/^\/Common/, '');
           },
-          secure: false, // 跳过证书问题  
+          secure: false, // 跳过证书问题
         },
         '/Api': {
           target: 'http://47.99.90.88:8889/',

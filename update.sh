@@ -24,10 +24,10 @@ echo "删除对应容器"
 docker rm ${projectName}
 
 echo "删除对应镜像"
-docker image rm ${projectName}:laster
+docker image rm ${projectName}:latest
 
 echo "创建对应镜像"
-docker build -t ${projectName}:laster .
+docker build -t ${projectName}:latest .
 
 echo "创建对应容器"
 docker run --name ${projectName} -p ${port} -v ${code_path}${projectName}/dist:/dist -d ${projectName}:laster

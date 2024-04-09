@@ -152,6 +152,27 @@ declare namespace API {
     name?: string;
     /** 描述 */
     description?: string;
+    /** 排位 */
+    rank?: number;
+  };
+
+  type CompleteMultipartUploadRequest = {
+    /** 文件名称 */
+    fileName?: string;
+    /** 上传编号 */
+    uploadId?: string;
+    /** 分片数量 */
+    chunkSize?: number;
+    /** 文件大小 */
+    fileSize?: number;
+    /** 文件类型 */
+    contentType?: string;
+    /** 密码 */
+    pass?: string;
+    /** 超时时间 */
+    expire?: number;
+    /** 最大下载数 */
+    maxGetCount?: number;
   };
 
   type Content = {
@@ -357,6 +378,14 @@ declare namespace API {
     userEnums?: string;
   };
 
+  type FileUploadResponse = {
+    realName?: string;
+    uploadName?: string;
+    url?: string;
+    size?: number;
+    bucket?: string;
+  };
+
   type get1Params = {
     id: string;
   };
@@ -466,43 +495,43 @@ declare namespace API {
   };
 
   type IPageAdminUserVO = {
+    size?: number;
     total?: number;
     records?: AdminUserVO[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageBook = {
+    size?: number;
     total?: number;
     records?: Book[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageMemberVO = {
+    size?: number;
     total?: number;
     records?: MemberVO[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageSmsSign = {
+    size?: number;
     total?: number;
     records?: SmsSign[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageSmsTemplate = {
+    size?: number;
     total?: number;
     records?: SmsTemplate[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type loginParams = {
@@ -684,6 +713,20 @@ declare namespace API {
     children?: MenuVO[];
   };
 
+  type MultipartUploadCreateRequest = {
+    /** 文件名称 */
+    fileName?: string;
+    /** 分片数量 */
+    chunkSize?: number;
+  };
+
+  type MultipartUploadCreateResponse = {
+    /** 上传编号 */
+    uploadId?: string;
+    /** 分片信息 */
+    chunks?: UploadCreateItem[];
+  };
+
   type NewWord = {
     /** id */
     id?: string;
@@ -735,8 +778,8 @@ declare namespace API {
   };
 
   type Phrases = {
-    pcontent?: string;
     pcn?: string;
+    pcontent?: string;
   };
 
   type querySmsSignPageParams = {
@@ -1391,8 +1434,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertStartDate?: string;
     convertEndDate?: string;
+    convertStartDate?: string;
   };
 
   type Sentence = {
@@ -1538,10 +1581,16 @@ declare namespace API {
     id: string;
   };
 
-  type upload1Params = {
+  type upload2Params = {
     file: string;
     base64: string;
-    fileLocation: string;
+  };
+
+  type UploadCreateItem = {
+    /** 分片编号 */
+    partNumber?: number;
+    /** 上传地址 */
+    uploadUrl?: string;
   };
 
   type uploadParams = {
