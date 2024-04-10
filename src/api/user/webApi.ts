@@ -10,25 +10,32 @@ export async function update9(options?: { [key: string]: any }) {
   });
 }
 
-/** 文件上传 POST /manager/web/file */
-export async function upload1(body: string, options?: { [key: string]: any }) {
-  const formData = new FormData();
-
-  Object.keys(body).forEach((ele) => {
-    const item = (body as any)[ele];
-
-    if (item !== undefined && item !== null) {
-      formData.append(
-        ele,
-        typeof item === 'object' && !(item instanceof File) ? JSON.stringify(item) : item,
-      );
-    }
-  });
-
+/** 资源文件上传 POST /manager/web/file */
+export async function upload1(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.upload1Params,
+  options?: { [key: string]: any },
+) {
   return request<API.ResultMessageBoolean>('/manager/web/file', {
     method: 'POST',
-    data: formData,
-    requestType: 'form',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** minio分片资源上传 POST /manager/web/minioFile */
+export async function completeMultipartUpload(
+  body: API.CompleteMultipartUploadRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageBoolean>('/manager/web/minioFile', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
     ...(options || {}),
   });
 }

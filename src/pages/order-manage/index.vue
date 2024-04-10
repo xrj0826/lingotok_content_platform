@@ -1350,7 +1350,7 @@
       <!--        dir="liberty"-->
       <!--        @input="inputSuccess"-->
       <!--      />-->
-      <minio-upload />
+      <minio-upload mode="word" />
       <!--      <t-upload
         ref="uploadBatchFiles"
         v-model="files"
@@ -1380,15 +1380,12 @@ export default {
 </script>
 
 <script setup lang="tsx">
-import { fail } from 'assert';
-import { triggerAsyncId } from 'async_hooks';
 import { MessagePlugin, UploadProps } from 'tdesign-vue-next';
 import { onMounted, reactive, ref, watch } from 'vue';
 
-import { addBookMenu, addWord, bookMenuList, group, page1, updateBookMenu, updateWord1 } from '@/api/user/bookApi';
+import { addBookMenu, addWord, bookMenuList, page1, updateBookMenu1, updateWord1 } from '@/api/user/bookApi';
 import { deleteWord, search, updateWord, upload } from '@/api/user/wordsApi';
 import minioUpload from '@/components/minioUpload/index.vue';
-import UploadPan from '@/components/upload/index.vue';
 // import { get, page } from '@/api/user/changdeguanli';
 // import { delete9, page4 } from '@/api/user/dingdanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
@@ -1396,7 +1393,6 @@ import { useRenewDataStore } from '@/store/renewData';
 import {
   allLoading,
   arrIndex,
-  bookDescription,
   bookDescription1,
   bookID,
   bookid,
@@ -1438,7 +1434,6 @@ import {
   resourceImage,
   resourceVideo,
   row1,
-  row2,
   visible,
   visible2,
   visible3,
@@ -1454,14 +1449,7 @@ import {
 } from './newFile';
 
 const uploadBatchFiles = ref();
-const files = ref<UploadProps['value']>([]);
-const ABRIDGE_NAME: UploadProps['abridgeName'] = [10, 7];
-const disabled = ref(false);
-const autoUpload = ref(false);
-const showThumbnail = ref(false);
-const allowUploadDuplicateFile = ref(true);
-const isBatchUpload = ref(false);
-const uploadAllFilesInOneRequest = ref(false);
+
 const formatResponse: UploadProps['formatResponse'] = (res) => {
   if (!res) {
     return {
@@ -2440,7 +2428,7 @@ const modifyMenus = () => {
     name: nameModify.value,
     description: descModify.value,
   };
-  updateBookMenu(params).then((res) => {
+  updateBookMenu1(params).then((res) => {
     if (res.code == 200) {
       MessagePlugin.success('修改成功');
       visibleModifyMenus.value = false;
