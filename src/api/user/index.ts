@@ -2,6 +2,7 @@
 /* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
+import * as file from './file';
 import * as guanliduanduanxinmobanjiekou from './guanliduanduanxinmobanjiekou';
 import * as guanliduanduanxinqianmingjiekou from './guanliduanduanxinqianmingjiekou';
 import * as guanliduanxingzhengdequguanlijiekou from './guanliduanxingzhengdequguanlijiekou';
@@ -20,9 +21,9 @@ import * as articles from './articles';
 import * as bookApi from './bookApi';
 import * as wordsApi from './wordsApi';
 import * as webApi from './webApi';
-import * as file from './file';
 import * as guanliduanjiaosecaidanjiekou from './guanliduanjiaosecaidanjiekou';
 export default {
+  file,
   guanliduanduanxinmobanjiekou,
   guanliduanduanxinqianmingjiekou,
   guanliduanxingzhengdequguanlijiekou,
@@ -41,6 +42,5 @@ export default {
   bookApi,
   wordsApi,
   webApi,
-  file,
   guanliduanjiaosecaidanjiekou,
 };
