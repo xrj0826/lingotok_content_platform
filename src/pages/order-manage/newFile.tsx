@@ -10,6 +10,7 @@ import { ref } from 'vue';
 import { deleteWord, getByGroupId, getById } from '@/api/user/wordsApi';
 
 export const columns: PrimaryTableCol[] = [
+  { colKey: 'rank', title: '词汇书序号', width: "200px" },
   { colKey: 'bookId', title: '词汇书编码', width: "200px" },
   { colKey: 'bookName', title: '词汇书名称', width: "200px" },
   { colKey: 'url', title: '词汇书封面', width: "200px" },
@@ -194,6 +195,7 @@ export const columnsSen: PrimaryTableCol[] = [
 ];
 
 export const columnsMenus: PrimaryTableCol[] = [
+  { colKey: 'rank', title: '序号', width: "50px" },
   { colKey: 'name', title: '目录名称', width: "200px" },
   { colKey: 'description', title: '目录描述', width: "200px" },
   {
@@ -596,6 +598,7 @@ export const bookDescription = ref("")
 export const imageUrl = ref("")
 export const bookDescription1 = ref("")
 export const bookName = ref("")
+export const rank = ref("")
 export const bookId1 = ref("")
 export const bookid = ref("")
 export const menus = ref("")
@@ -608,6 +611,7 @@ const wordBookEdit = (row) => {
   imageUrl.value = row.url
   bookId1.value = row.bookId
   // if (row.bookDescription) {
+  rank.value = row.rank
   bookName.value = row.bookName
   bookDescription.value = row.bookDescription
   bookDescription1.value = row.bookDescription
@@ -648,8 +652,10 @@ export const visibleModifyMenus = ref(false)
 export const nameModify = ref("")
 export const descModify = ref("")
 export const menusId = ref("")
+export const rankModify = ref("")
 
 const modifyMenus = (row) => {
+  rankModify.value = row.rank
   visibleModifyMenus.value = true
   nameModify.value = row.name
   descModify.value = row.description
