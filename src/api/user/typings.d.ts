@@ -495,43 +495,43 @@ declare namespace API {
   };
 
   type IPageAdminUserVO = {
-    size?: number;
     total?: number;
     records?: AdminUserVO[];
     current?: number;
     pages?: number;
+    size?: number;
   };
 
   type IPageBook = {
-    size?: number;
     total?: number;
     records?: Book[];
     current?: number;
     pages?: number;
+    size?: number;
   };
 
   type IPageMemberVO = {
-    size?: number;
     total?: number;
     records?: MemberVO[];
     current?: number;
     pages?: number;
+    size?: number;
   };
 
   type IPageSmsSign = {
-    size?: number;
     total?: number;
     records?: SmsSign[];
     current?: number;
     pages?: number;
+    size?: number;
   };
 
   type IPageSmsTemplate = {
-    size?: number;
     total?: number;
     records?: SmsTemplate[];
     current?: number;
     pages?: number;
+    size?: number;
   };
 
   type loginParams = {
@@ -995,6 +995,18 @@ declare namespace API {
     result?: File;
   };
 
+  type ResultMessageFileUploadResponse = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: FileUploadResponse;
+  };
+
   type ResultMessageGroupVO = {
     /** 成功标志 */
     success?: boolean;
@@ -1257,6 +1269,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: Menu;
+  };
+
+  type ResultMessageMultipartUploadCreateResponse = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: MultipartUploadCreateResponse;
   };
 
   type ResultMessageObject = {
@@ -1579,6 +1603,10 @@ declare namespace API {
 
   type updateWordParams = {
     id: string;
+  };
+
+  type upload1Params = {
+    file: string;
   };
 
   type upload2Params = {

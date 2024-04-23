@@ -144,7 +144,7 @@ export async function updateWord1(body: API.Book, options?: { [key: string]: any
 }
 
 /** 修改一级目录 PUT /manager/book/updateBookMenu */
-export async function updateBookMenu(body: API.BookMenu, options?: { [key: string]: any }) {
+export async function updateBookMenu1(body: API.BookMenu, options?: { [key: string]: any }) {
   return request<API.ResultMessageBoolean>('/manager/book/updateBookMenu', {
     method: 'PUT',
     headers: {

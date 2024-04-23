@@ -34,11 +34,11 @@ export async function getStsToken(options?: { [key: string]: any }) {
 }
 
 /** minio合并分片 POST /manager/upload/multipart/complete */
-export async function completeMultipartUpload(
+export async function completeMultipartUpload1(
   body: API.CompleteMultipartUploadRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.FileUploadResponse>('/manager/upload/multipart/complete', {
+  return request<API.ResultMessageFileUploadResponse>('/manager/upload/multipart/complete', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -53,8 +53,23 @@ export async function createMultipartUpload(
   body: API.MultipartUploadCreateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.MultipartUploadCreateResponse>('/manager/upload/multipart/create', {
-    method: 'POST',
+  return request<API.ResultMessageMultipartUploadCreateResponse>(
+    '/manager/upload/multipart/create',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: body,
+      ...(options || {}),
+    },
+  );
+}
+
+/** 修改一级目录 PUT /manager/upload/updateBookMenu */
+export async function updateBookMenu(body: API.BookMenu, options?: { [key: string]: any }) {
+  return request<API.ResultMessageBoolean>('/manager/upload/updateBookMenu', {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },

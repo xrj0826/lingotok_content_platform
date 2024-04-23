@@ -141,7 +141,8 @@
 import axios from 'axios';
 import SparkMD5 from 'spark-md5';
 
-import { completeMultipartUpload, createMultipartUpload } from '@/api/user/file';
+import { completeMultipartUpload1, createMultipartUpload } from '@/api/user/file';
+import { completeMultipartUpload } from '@/api/user/webApi';
 
 const FILE_UPLOAD_ID_KEY = 'file_upload_id';
 const accessToken = localStorage.getItem('accessToken');
@@ -154,6 +155,12 @@ const FileStatus = {
   error: '上传错误',
 };
 export default {
+  props: {
+    mode: {
+      default: 'default',
+      type: String,
+    },
+  },
   data() {
     return {
       changeDisabled: false,
@@ -291,7 +298,13 @@ export default {
             /** 最大下载数 */
             maxGetCount: 100,
           };
-          const mergeResult = await completeMultipartUpload(params);
+          let mergeResult = {};
+          if (this.mode === 'word') {
+            // 单词上传
+            mergeResult = await completeMultipartUpload(params);
+          } else {
+            mergeResult = await completeMultipartUpload1(params);
+          }
           console.log(mergeResult);
           if (!mergeResult) {
             currentFile.status = FileStatus.error;
@@ -300,7 +313,6 @@ export default {
             currentFile.status = FileStatus.success;
             console.log(`文件访问地址：${mergeResult.result.url}`);
             self.$message.success(`上传成功，文件地址：${mergeResult.result.url}`);
-            files[index] = mergeResult.result.url;
           }
         });
       });
