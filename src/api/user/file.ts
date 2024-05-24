@@ -2,6 +2,21 @@
 /* eslint-disable */
 import request from '/@/utils/request/index';
 
+/** minio删除文件 POST /manager/upload/deleteFile */
+export async function deleteFile(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.deleteFileParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageFileUploadResponse>('/manager/upload/deleteFile', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** 文件上传 POST /manager/upload/file */
 export async function upload2(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
@@ -64,16 +79,4 @@ export async function createMultipartUpload(
       ...(options || {}),
     },
   );
-}
-
-/** 修改一级目录 PUT /manager/upload/updateBookMenu */
-export async function updateBookMenu(body: API.BookMenu, options?: { [key: string]: any }) {
-  return request<API.ResultMessageBoolean>('/manager/upload/updateBookMenu', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
 }

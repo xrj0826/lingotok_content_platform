@@ -123,6 +123,10 @@ declare namespace API {
     isCollect?: boolean;
   };
 
+  type autoSplitContentParams = {
+    exerciseId: string;
+  };
+
   type Book = {
     /** 对应mongodb中书本ID（书本名字） */
     bookId?: string;
@@ -177,6 +181,26 @@ declare namespace API {
 
   type Content = {
     word?: Word;
+  };
+
+  type CreateRecTaskParams = {
+    url: string;
+  };
+
+  type CreateRecTaskResponse = {
+    header?: Record<string, any>;
+    skipSign?: boolean;
+    data?: Task;
+    requestId?: string;
+  };
+
+  type cutAudioParams = {
+    exerciseId: string;
+  };
+
+  type cutVideoParams = {
+    exerciseId: string;
+    filepath: string;
   };
 
   type DefinitionsDTO = {
@@ -251,6 +275,15 @@ declare namespace API {
 
   type deleteBookMenuParams = {
     menuId: string;
+  };
+
+  type deleteFileParams = {
+    fileNames: string[];
+  };
+
+  type deleteSentenceResourceParams = {
+    /** ID集合 */
+    ids: string;
   };
 
   type deleteUsingDELETEParams = {
@@ -334,8 +367,23 @@ declare namespace API {
     grade?: string[];
     /** 形式信息 */
     modality?: Record<string, any>;
+    /** 词根 */
+    wordRoot?: WordRoot[];
     isCollect?: boolean;
     familiarity?: 'FAMILIAR' | 'VAGUE' | 'RARE';
+  };
+
+  type EnglishWordRoot = {
+    /** id */
+    id?: string;
+    /** 等级 */
+    level?: string;
+    /** 单词全拼 */
+    headWord?: string;
+    /** 音标 */
+    content?: string;
+    /** 中文解释 */
+    explanation?: string;
   };
 
   type Exercises = {
@@ -345,6 +393,18 @@ declare namespace API {
     title?: string;
     /** 难度分类字段 */
     difficultyLevel?: 'EASY' | 'MIDDLE' | 'HARD';
+    /** 音频文件名 */
+    audioFileName?: string;
+    /** 视频文件名 */
+    videoFileName?: string;
+    /** 视频字幕文件名 */
+    videoSubtitleFileName?: string;
+    /** 原文文档名 */
+    contentFileName?: string;
+    /** 原文翻译文档名 */
+    translationFileName?: string;
+    /** 语音识别id */
+    taskId?: number;
   };
 
   type ExercisesVO = {
@@ -354,11 +414,29 @@ declare namespace API {
     title?: string;
     /** 难度分类字段 */
     difficultyLevel?: 'EASY' | 'MIDDLE' | 'HARD';
+    /** 音频文件名 */
+    audioFileName?: string;
+    /** 视频文件名 */
+    videoFileName?: string;
+    /** 视频字幕文件名 */
+    videoSubtitleFileName?: string;
+    /** 原文文档名 */
+    contentFileName?: string;
+    /** 原文翻译文档名 */
+    translationFileName?: string;
+    /** 语音识别id */
+    taskId?: number;
     userNote?: UserNote;
-    /** 句子列表 */
-    sentenceList?: SentenceVO[];
     /** 是否收藏 */
     isCollect?: boolean;
+    /** 原文内容列表 */
+    conetentList?: SentenceResource[];
+    /** 翻译内容列表 */
+    translationList?: SentenceResource[];
+    /** 音频内容列表 */
+    audioList?: SentenceResource[];
+    /** 视频内容列表 */
+    videoList?: SentenceResource[];
   };
 
   type File = {
@@ -466,6 +544,10 @@ declare namespace API {
     id: string;
   };
 
+  type getProgressParams = {
+    exerciseId: string;
+  };
+
   type groupDetailParams = {
     groupId: string;
   };
@@ -529,6 +611,14 @@ declare namespace API {
   type IPageSmsTemplate = {
     total?: number;
     records?: SmsTemplate[];
+    current?: number;
+    pages?: number;
+    size?: number;
+  };
+
+  type IPageWordRoot = {
+    total?: number;
+    records?: WordRoot[];
     current?: number;
     pages?: number;
     size?: number;
@@ -711,6 +801,21 @@ declare namespace API {
     permission?: string;
     /** 子菜单 */
     children?: MenuVO[];
+  };
+
+  type mergeAudioParams = {
+    /** 音频资源ID集合 */
+    ids: string;
+  };
+
+  type mergeSentenceParams = {
+    /** 原文/翻译ID集合 */
+    ids: string;
+  };
+
+  type mergeVideoParams = {
+    /** 视频资源ID集合 */
+    ids: string;
   };
 
   type MultipartUploadCreateRequest = {
@@ -935,6 +1040,18 @@ declare namespace API {
     result?: boolean;
   };
 
+  type ResultMessageCreateRecTaskResponse = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: CreateRecTaskResponse;
+  };
+
   type ResultMessageDepartment = {
     /** 成功标志 */
     success?: boolean;
@@ -1077,6 +1194,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: IPageSmsTemplate;
+  };
+
+  type ResultMessageIPageWordRoot = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: IPageWordRoot;
   };
 
   type ResultMessageListBookMenu = {
@@ -1458,8 +1587,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertEndDate?: string;
     convertStartDate?: string;
+    convertEndDate?: string;
   };
 
   type Sentence = {
@@ -1469,26 +1598,30 @@ declare namespace API {
     content?: string;
     /** 翻译 */
     translation?: string;
+    /** voiceUrl */
+    voiceUrl?: string;
+    /** videoUrl */
+    videoUrl?: string;
+  };
+
+  type SentenceResource = {
+    /** 所属练习ID */
+    exercisesId?: string;
+    /** 内容 */
+    content?: string;
+    /** 类型 */
+    type?: 'CONTENT' | 'TRANSLATION' | 'VIDEO' | 'AUDIO';
     /** url */
     url?: string;
+    /** 文件名 */
+    fileName?: string;
+    /** 排序 */
+    rank?: number;
   };
 
   type Sentences = {
     sourceInfo?: SourceInfo;
     scontent?: string;
-  };
-
-  type SentenceVO = {
-    /** 所属练习ID */
-    exercisesId?: string;
-    /** 内容 */
-    content?: string;
-    /** 翻译 */
-    translation?: string;
-    /** url */
-    url?: string;
-    /** 是否收藏 */
-    isCollect?: boolean;
   };
 
   type settingGetParams = {
@@ -1560,6 +1693,12 @@ declare namespace API {
   type SynonymWord = {
     /** 单词全拼 */
     w?: string;
+  };
+
+  type Task = {
+    header?: Record<string, any>;
+    skipSign?: boolean;
+    taskId?: number;
   };
 
   type Token = {
@@ -1635,6 +1774,10 @@ declare namespace API {
     bookId: string;
   };
 
+  type uploadWordRootParams = {
+    file: string;
+  };
+
   type UserNote = {
     /** 用户ID */
     userId?: string;
@@ -1649,6 +1792,14 @@ declare namespace API {
     userId?: string;
     /** 角色唯一id */
     roleId?: string;
+  };
+
+  type voiceASRParams = {
+    exerciseId: string;
+  };
+
+  type voiceResultParams = {
+    taskId: number;
   };
 
   type Word = {
@@ -1678,6 +1829,30 @@ declare namespace API {
     star?: number;
     phone?: string;
     speech?: string;
+  };
+
+  type WordRoot = {
+    /** 语系 */
+    language?: string;
+    /** 语族 */
+    race?: string;
+    /** 子语族 */
+    subRace?: string;
+    /** 等级 */
+    level?: string;
+    /** 单词全拼 */
+    headWord?: string;
+    /** 音标 */
+    sound?: string;
+    /** 释义 */
+    explanation?: string;
+    saveFlag?: boolean;
+    list?: EnglishWordRoot[];
+  };
+
+  type wordRootParams = {
+    wordRoot: WordRoot;
+    pageVO: PageVO;
   };
 
   type WordTranslation = {

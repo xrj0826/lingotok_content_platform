@@ -1,25 +1,41 @@
 <template>
-  <t-form ref="form" :class="['item-container', `login-${type}`]" :data="formData" :rules="FORM_RULES" label-width="0"
-    @submit="onSubmit">
+  <t-form
+    ref="form"
+    :class="['item-container', `login-${type}`]"
+    :data="formData"
+    :rules="FORM_RULES"
+    label-width="0"
+    @submit="onSubmit"
+  >
     <template v-if="type == 'password'">
       <t-form-item name="account">
-        <t-input v-model="formData.account" size="large" placeholder="请输入账号:">
-          <template #prefix-icon>
-            <t-icon name="user" />
-          </template>
+        <t-input
+          v-model="formData.account"
+          size="large"
+          placeholder="请输入账号:"
+        >
+          <template #prefix-icon> <t-icon name="user" /> </template>`
         </t-input>
       </t-form-item>
 
       <t-form-item name="password">
-        <t-input v-model="formData.password" size="large" :on-focus="giveCookies" :type="showPsw ? 'text' : 'password'"
-          clearable placeholder="请输入登录密码:">
-
+        <t-input
+          v-model="formData.password"
+          size="large"
+          :on-focus="giveCookies"
+          :type="showPsw ? 'text' : 'password'"
+          clearable
+          placeholder="请输入登录密码:"
+        >
           <template #prefix-icon>
             <t-icon name="lock-on" />
           </template>
 
           <template #suffix-icon>
-            <t-icon :name="showPsw ? 'browse' : 'browse-off'" @click="showPsw = !showPsw" />
+            <t-icon
+              :name="showPsw ? 'browse' : 'browse-off'"
+              @click="showPsw = !showPsw"
+            />
           </template>
         </t-input>
       </t-form-item>
@@ -29,14 +45,26 @@
       </div>
     </template>
 
-    <t-form-item v-if="type !== 'qrcode'" class="btn-container">
-      <t-button block size="large" type="submit">
+    <t-form-item
+      v-if="type !== 'qrcode'"
+      class="btn-container"
+    >
+      <t-button
+        block
+        size="large"
+        type="submit"
+      >
         登录
       </t-button>
     </t-form-item>
 
     <div class="switch-container">
-      <span v-if="type !== 'password'" class="tip" @click="switchType('password')">使用账号密码登录</span>
+      <span
+        v-if="type !== 'password'"
+        class="tip"
+        @click="switchType('password')"
+        >使用账号密码登录</span
+      >
     </div>
   </t-form>
 </template>
@@ -51,7 +79,6 @@ import { useRoute, useRouter } from 'vue-router';
 
 // import { useCounter } from '@/hooks';
 import { useUserStore } from '@/store';
-import { getUserInfo } from '@/api/user/passport';
 // import EditPassword from './EditPassword.vue';
 
 const userStore = useUserStore();
@@ -71,8 +98,8 @@ onMounted(() => {
   //     localStorage.removeItem('accessToken')
   //   })
   // }
-  localStorage.removeItem('accessToken')
-})
+  localStorage.removeItem('accessToken');
+});
 
 const INITIAL_DATA = {
   phone: '',

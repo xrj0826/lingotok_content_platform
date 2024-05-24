@@ -101,3 +101,22 @@ export async function upload(
     ...(options || {}),
   });
 }
+
+/** 获取词根分页 GET /manager/words/wordRoot */
+export async function wordRoot(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.wordRootParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageIPageWordRoot>('/manager/words/wordRoot', {
+    method: 'GET',
+    params: {
+      ...params,
+      wordRoot: undefined,
+      ...params['wordRoot'],
+      pageVO: undefined,
+      ...params['pageVO'],
+    },
+    ...(options || {}),
+  });
+}

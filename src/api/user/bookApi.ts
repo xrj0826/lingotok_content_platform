@@ -144,7 +144,7 @@ export async function updateWord1(body: API.Book, options?: { [key: string]: any
 }
 
 /** 修改一级目录 PUT /manager/book/updateBookMenu */
-export async function updateBookMenu1(body: API.BookMenu, options?: { [key: string]: any }) {
+export async function updateBookMenu(body: API.BookMenu, options?: { [key: string]: any }) {
   return request<API.ResultMessageBoolean>('/manager/book/updateBookMenu', {
     method: 'PUT',
     headers: {
@@ -177,6 +177,21 @@ export async function uploadWordByJson(
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessageObject>('/manager/book/uploadWordByJson', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** 单词词根导入 文件格式为.excel,按行读取 POST /manager/book/uploadWordRoot */
+export async function uploadWordRoot(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.uploadWordRootParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageObject>('/manager/book/uploadWordRoot', {
     method: 'POST',
     params: {
       ...params,

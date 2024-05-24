@@ -1,14 +1,9 @@
 <template>
   <div class="container">
     <div style="display: flex">
-      <div style="width: 120px">
-        {{ title }}
-      </div>
       <el-upload
         ref="upload"
         class="upload-demo"
-        :multiple="!single"
-        :limit="single ? 1 : 10"
         :on-remove="handleRemove"
         :on-change="handleFileChange"
         :file-list="uploadFileList"
@@ -16,7 +11,6 @@
         :auto-upload="false"
       >
         <t-button
-          v-if="!(single && uploadFileList.length > 0)"
           slot="trigger"
           type="primary"
           plain
@@ -165,24 +159,7 @@ export default {
       default: 'default',
       type: String,
     },
-    single: {
-      default: false,
-      type: Boolean,
-    },
-    title: {
-      default: '',
-      type: String,
-    },
-    url: {
-      default: '',
-      type: String,
-    },
-    fileName: {
-      default: '',
-      type: String,
-    },
   },
-  emits: ['update:url'],
   data() {
     return {
       changeDisabled: false,
@@ -336,8 +313,6 @@ export default {
             currentFile.status = FileStatus.success;
             console.log(`文件访问地址：${mergeResult.result.url}`);
             self.$message.success(`上传成功，文件地址：${mergeResult.result.url}`);
-            this.$emit('update:url', mergeResult.result.url);
-            this.$emit('update:fileName', currentFile.name);
           }
         });
       });
