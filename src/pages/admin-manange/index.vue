@@ -678,11 +678,16 @@
           :single="true"
           title="音频文件"
         />
-        <minio-upload
-          v-model:fileName="fileForm.videoFileName"
-          :single="true"
-          title="视频文件"
-        />
+        <div style="display: flex; gap: 20px">
+          <div>视频文件</div>
+          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>
+          <div>
+            文件名：<t-input
+              v-model="fileForm.audioFileName"
+              placeholder="请输入文件名"
+            ></t-input>
+          </div>
+        </div>
         <minio-upload
           v-model:fileName="fileForm.videoSubtitleFileName"
           :single="true"
