@@ -228,6 +228,10 @@
           >
           <p style="font-size: 10px; color: gray">每个资源列表最多只能选择一项！</p>
         </div>
+        <div>
+          <t-button @click="mergeInSentence">批量组成句子</t-button>
+          <p style="font-size: 10px; color: gray">请保证每列勾选的数量一致</p>
+        </div>
         <t-popconfirm
           content="确认删除吗"
           :on-confirm="handleMoreDeleteContent"
@@ -674,6 +678,16 @@
       </div>
       <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
         <minio-upload
+          v-model:fileName="fileForm.contentFileName"
+          :single="true"
+          title="原文文档"
+        />
+        <minio-upload
+          v-model:fileName="fileForm.translationFileName"
+          :single="true"
+          title="原文翻译文档"
+        />
+        <minio-upload
           v-model:fileName="fileForm.audioFileName"
           :single="true"
           title="音频文件"
@@ -692,16 +706,6 @@
           v-model:fileName="fileForm.videoSubtitleFileName"
           :single="true"
           title="视频字幕文件"
-        />
-        <minio-upload
-          v-model:fileName="fileForm.contentFileName"
-          :single="true"
-          title="原文文档"
-        />
-        <minio-upload
-          v-model:fileName="fileForm.translationFileName"
-          :single="true"
-          title="原文翻译文档"
         />
       </div>
       <div style="display: flex; justify-content: center; margin-top: 20px">
