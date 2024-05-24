@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json /app/package.json
 # 如果package.json没有进行改变,就不安装了,直接跳过
 RUN npm config set registry https://registry.npmmirror.com
-RUN npm install pnpm
+RUN npm install pnpm --force
 RUN pnpm i
 # 复制整个项目,进行打包
 COPY . /app
