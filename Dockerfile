@@ -9,7 +9,7 @@ RUN npm install --force
 # 复制整个项目,进行打包
 COPY . /app
 
-RUN npm run build
+RUN npm run build --force
 
 # 复制配置文件和项目运行文件,然后开启端口
 FROM nginx
