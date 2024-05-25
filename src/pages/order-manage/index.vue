@@ -76,20 +76,25 @@
       @close="closeExcel()"
       @confirm=""
     >
-      <div style="font-size: 14px; font-weight: 700; justify-content: center; display: flex">请先输入bookId</div>
-      <div style="width: 300px; display: flex; justify-content: space-around; margin-top: 10px">
+      <div style="font-size: 14px; font-weight: 700; justify-content: center; display: flex">批量导入单词</div>
+      <div style="width: 300px; display: flex; margin-bottom: 30px; justify-content: space-around; margin-top: 10px">
         <div style="line-height: 30px">bookId:</div>
-        <div><t-input v-model="excelBookId"></t-input></div>
+        <div>
+          <t-input
+            v-model="excelBookId"
+            placeholder="请先输入bookId"
+          ></t-input>
+        </div>
       </div>
       <div v-if="excelBookId != ''">
-        <div style="margin-top: 20px; display: flex; justify-content: center">
+        <div style="margin: 20px 0; display: flex; justify-content: center">
           <t-upload
             v-model="excel"
             action="/manager/manager/book/uploadWordByExcel"
             theme="file"
             :draggable="draggable"
             :headers="{ accessToken: accessToken }"
-            :max="2"
+            :max="1"
             :auto-upload="false"
             :data="{ bookId: excelBookId }"
             @success="handleuploadExcel"
@@ -97,6 +102,32 @@
             @onRemove="removeExcel()"
           ></t-upload>
         </div>
+      </div>
+      <hr class="hr-twill" />
+      <div
+        style="
+          font-size: 14px;
+          font-weight: 700;
+          justify-content: center;
+          display: flex;
+          margin-top: 50px;
+          border: soild 1px #aaaaaa;
+        "
+      >
+        批量导入词根
+      </div>
+      <div style="margin-top: 20px; display: flex; justify-content: center">
+        <t-upload
+          v-model="rootExcel"
+          action="/manager/manager/book/uploadWordRoot"
+          theme="file"
+          :draggable="draggable"
+          :headers="{ accessToken: accessToken }"
+          :max="1"
+          :auto-upload="false"
+          @success="handleuploadExcel"
+          @onRemove="removeExcel()"
+        ></t-upload>
       </div>
     </t-dialog>
 
@@ -1484,6 +1515,7 @@ const formatResponse: UploadProps['formatResponse'] = (res) => {
 const visibleMenus = ref(false);
 const excelBookId = ref('');
 const excel = ref([]);
+const rootExcel = ref([]);
 const visibleExcel = ref(false);
 // const resourceAudio = ref([])
 // const resourceImage1 = ref([])
@@ -1570,6 +1602,7 @@ const handleuploadExcel = (value) => {
     console.log('valueExcel', value);
     visibleExcel.value = false;
     excel.value = [];
+    rootExcel.value = [];
     queryData({
       pageNumber: pagination.current,
       pageSize: pagination.pageSize,
@@ -2411,6 +2444,7 @@ const closeExcel = () => {
 
 const removeExcel = () => {
   excel.value = [];
+  rootExcel.value = [];
 };
 
 const excelFail = () => {
@@ -2465,4 +2499,10 @@ watch(searchWord, (newValue, oldValue) => {
 });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.hr-twill {
+  border: 0;
+  padding: 3px;
+  background: repeating-linear-gradient(135deg, #a2a9b6 0px, #a2a9b6 1px, transparent 1px, transparent 6px);
+}
+</style>

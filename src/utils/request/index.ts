@@ -4,8 +4,8 @@
  */
 import { extend } from 'umi-request';
 import { v4 as uuidv4 } from 'uuid';
-import { useRouter } from "vue-router";
-import { rejects } from 'assert';
+import { useRouter } from 'vue-router';
+
 const router = useRouter();
 const config = {
   // api: 'http://47.99.90.88:8889',
@@ -50,12 +50,12 @@ require.interceptors.request.use(
     // console.log('accessToken', localStorage.getItem('accessToken'));
     const headers = localStorage.getItem('accessToken')
       ? {
-        accessToken: `${localStorage.getItem('accessToken')}`,
-        uuid: `${uuid}`,
-      }
+          accessToken: `${localStorage.getItem('accessToken')}`,
+          uuid: `${uuid}`,
+        }
       : {
-        uuid: `${uuid}`,
-      };
+          uuid: `${uuid}`,
+        };
 
     return {
       url,
@@ -77,12 +77,11 @@ require.interceptors.response.use(async (response) => {
       // router.push('/login')
       // window.__POWERED_BY_QIANKUN__ ? (window.location.href = '/#/') : router.replace('/user/login')
       // router.push({ path: "/login" });
-      console.log('请重新登录')
+      console.log('请重新登录');
       return data;
     }
-    return data
-
-  } catch (error) { }
+    return data;
+  } catch (error) {}
   return response;
 });
 

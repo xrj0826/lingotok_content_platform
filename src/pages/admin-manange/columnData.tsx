@@ -222,22 +222,19 @@ export const columnsExercise: PrimaryTableCol[] = [
     width: '200px',
   },
   // { colKey: 'nickName', title: '昵称' },
-  { colKey: 'content', title: '练习内容', width: '400px' },
-  { colKey: 'translation', title: '练习翻译', width: '400px' },
-  {
-    colKey: 'edit',
-    title: '编辑句子内容',
-    width: '100px',
-    cell: (h, { row }) => {
-      return <t-button onClick={() => modifySen(row)}>编辑</t-button>;
-    },
-  },
+  { colKey: 'content', title: '练习内容', width: '300px' },
+  { colKey: 'translation', title: '练习翻译', width: '300px' },
+  { colKey: 'voiceUrl', title: '音频', width: '300px' },
+  { colKey: 'videoUrl', title: '视频', width: '300px' },
   {
     colKey: 'operation',
     title: '操作',
+    width: '150px',
+    fixed: 'right',
     cell: (h, { row }) => {
       return (
         <t-space>
+          <t-button onClick={() => modifySen(row)}>编辑</t-button>
           <t-popconfirm
             content="确认删除吗"
             onConfirm={() => {
@@ -287,6 +284,7 @@ export const columnsContent: PrimaryTableCol[] = [
   {
     colKey: 'content',
     title: '内容',
+    width: 300,
   },
   {
     colKey: 'operation',
@@ -317,6 +315,21 @@ export const columnsContent: PrimaryTableCol[] = [
 ];
 
 export const columnsVideo: PrimaryTableCol[] = [
+  {
+    colKey: 'drag', // 列拖拽排序必要参数
+    title: '排序',
+    cell: (h) => (
+      <span>
+        <MoveIcon />
+      </span>
+    ),
+    width: 50,
+  },
+  {
+    colKey: 'rank', // 列拖拽排序必要参数
+    title: '排序值',
+    width: 70,
+  },
   {
     colKey: 'row-select',
     type: 'multiple',
@@ -547,8 +560,6 @@ export const visibleModifySen = ref(false);
 const modifyExercise = (row) => {
   visivleModifyExercise.value = true;
   modifyEx.value = row;
-  exerciseModifyName.value = row.title;
-  exerciseModifyLevel.value = row.difficultyLevel;
   console.log('value', modifyEx.value.difficultyLevel);
 };
 

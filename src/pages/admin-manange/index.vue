@@ -56,7 +56,7 @@
     <t-dialog
       v-model:visible="visibleDetail"
       header="读物详情"
-      width="1000px"
+      width="1200px"
       :footer="false"
       @close="visibleDetail = false"
     >
@@ -140,7 +140,7 @@
     <t-dialog
       v-model:visible="visibleExercise"
       header="练习详情"
-      width="1200px"
+      width="1400px"
       :footer="false"
       @close="visibleExercise = false"
     >
@@ -193,6 +193,28 @@
         @row-click="handleRowClick"
         @select-change="onSelectChangeSen"
       >
+        <template #voiceUrl="{ row }">
+          <audio
+            v-if="row.voiceUrl"
+            :autoplay="false"
+            controls="controls"
+            preload="meta"
+            :src="row.voiceUrl"
+          ></audio>
+        </template>
+        <template #videoUrl="{ row }">
+          <video
+            v-if="row.videoUrl"
+            ref="videoRef"
+            :src="row.videoUrl"
+            width="200"
+            height="100"
+            :poster="row.videoUrl + '?vframe/jpg/offset/10/w/200/h/100'"
+            preload="none"
+            :autoplay="false"
+            controls
+          ></video>
+        </template>
       </t-table>
     </t-dialog>
     <t-dialog
@@ -228,10 +250,10 @@
           >
           <p style="font-size: 10px; color: gray">每个资源列表最多只能选择一项！</p>
         </div>
-        <div>
+        <!--        <div>
           <t-button @click="mergeInSentence">批量组成句子</t-button>
           <p style="font-size: 10px; color: gray">请保证每列勾选的数量一致</p>
-        </div>
+        </div>-->
         <t-popconfirm
           content="确认删除吗"
           :on-confirm="handleMoreDeleteContent"
@@ -284,7 +306,7 @@
             :show-sort-column-bg-color="true"
             right-fixed-column="1"
             :selected-row-keys="selectedRowKeysContent"
-            @drag-sort="onSortChange"
+            @drag-sort="(e) => onSortChange(e, 'content')"
             @row-click="handleRowClick"
             @select-change="onSelectChangeContent"
           >
@@ -292,11 +314,10 @@
               <div>
                 <t-input
                   v-model="row.content"
-                  style="min-width: 400px"
+                  style="min-width: 300px"
                   clearable
                   size="small"
                   borderless
-                  :auto-width="true"
                   placeholder="请输入内容"
                 ></t-input>
               </div>
@@ -331,6 +352,7 @@
             :data="exercises.translationList"
             :columns="columnsContent"
             table-layout="fixed"
+            drag-sort="row-handler"
             size="small"
             cell-empty-content="-"
             resizable
@@ -339,6 +361,7 @@
             :show-sort-column-bg-color="true"
             right-fixed-column="1"
             :selected-row-keys="selectedRowKeysTrans"
+            @drag-sort="(e) => onSortChange(e, 'trans')"
             @row-click="handleRowClick"
             @select-change="onSelectChangeTrans"
           >
@@ -346,11 +369,10 @@
               <div>
                 <t-input
                   v-model="row.content"
-                  style="min-width: 400px"
+                  style="min-width: 300px"
                   clearable
                   size="small"
                   borderless
-                  :auto-width="true"
                   placeholder="请输入内容"
                 ></t-input>
               </div>
@@ -386,6 +408,7 @@
             :row-key="id"
             :data="exercises.audioList"
             :columns="columnsVideo"
+            drag-sort="row-handler"
             table-layout="fixed"
             size="small"
             cell-empty-content="-"
@@ -395,6 +418,7 @@
             :show-sort-column-bg-color="true"
             right-fixed-column="1"
             :selected-row-keys="selectedRowKeysAudio"
+            @drag-sort="(e) => onSortChange(e, 'audio')"
             @row-click="handleRowClick"
             @select-change="onSelectChangeAudio"
           >
@@ -435,6 +459,7 @@
             :row-key="id"
             :data="exercises.videoList.slice((current - 1) * pageSize, current * pageSize)"
             :columns="columnsVideo"
+            drag-sort="row-handler"
             table-layout="fixed"
             size="small"
             cell-empty-content="-"
@@ -444,6 +469,7 @@
             :show-sort-column-bg-color="true"
             right-fixed-column="1"
             :selected-row-keys="selectedRowKeysVideo"
+            @drag-sort="(e) => onSortChange(e, 'video')"
             @row-click="handleRowClick"
             @select-change="onSelectChangeVideo"
           >
@@ -471,49 +497,6 @@
           />
         </div>
       </div>
-
-      <!--      <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px; color: black">
-        音频资源
-      </div>
-      <t-table
-        :row-key="index"
-        :data="exercises.audioList"
-        :columns="columnsContent"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeysMerge"
-        @row-click="handleRowClick"
-        @select-change="onSelectChangeMerge"
-      >
-      </t-table>
-      <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px; color: black">
-        视频资源
-      </div>
-      <t-table
-        :row-key="index"
-        :data="exercises.videoList"
-        :columns="columnsExercise"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeysMerge"
-        @row-click="handleRowClick"
-        @select-change="onSelectChangeMerge"
-      >
-      </t-table>-->
     </t-dialog>
 
     <t-dialog
@@ -677,7 +660,59 @@
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
-        <minio-upload
+        <div style="display: flex; width: 500px">
+          <div style="width: 130px">原文文档</div>
+          <t-upload
+            v-model="fileList.contentFileName"
+            action="/manager/manager/upload/file"
+            theme="file"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            @onWaitingUploadFilesChange="console.log('发生变化')"
+            @success="(e) => fileUpload(e, 'contentFileName')"
+            @remove="(e) => removeFile('contentFileName')"
+          ></t-upload>
+        </div>
+        <div style="display: flex; width: 500px">
+          <div style="width: 130px">翻译文档</div>
+          <t-upload
+            v-model="fileList.translationFileName"
+            action="/manager/manager/upload/file"
+            theme="file"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            @onWaitingUploadFilesChange="console.log('发生变化')"
+            @success="(e) => fileUpload(e, 'translationFileName')"
+            @remove="(e) => removeFile('translationFileName')"
+          ></t-upload>
+        </div>
+        <div style="display: flex; width: 500px">
+          <div style="width: 130px">音频文件</div>
+          <t-upload
+            v-model="fileList.audioFileName"
+            action="/manager/manager/upload/file"
+            theme="file"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            @onWaitingUploadFilesChange="console.log('发生变化')"
+            @success="(e) => fileUpload(e, 'audioFileName')"
+            @remove="(e) => removeFile('audioFileName')"
+          ></t-upload>
+        </div>
+        <div style="display: flex; width: 500px">
+          <div style="width: 130px">视频字幕文件</div>
+          <t-upload
+            v-model="fileList.videoSubtitleFileName"
+            action="/manager/manager/upload/file"
+            theme="file"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            @onWaitingUploadFilesChange="console.log('发生变化')"
+            @success="(e) => fileUpload(e, 'videoSubtitleFileName')"
+            @remove="(e) => removeFile('videoSubtitleFileName')"
+          ></t-upload>
+        </div>
+        <!--        <minio-upload
           v-model:fileName="fileForm.contentFileName"
           :single="true"
           title="原文文档"
@@ -691,22 +726,22 @@
           v-model:fileName="fileForm.audioFileName"
           :single="true"
           title="音频文件"
-        />
+        />-->
         <div style="display: flex; gap: 20px">
           <div>视频文件</div>
-          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>
+          <!--          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>-->
           <div>
             文件名：<t-input
-              v-model="fileForm.audioFileName"
+              v-model="fileForm.videoFileName"
               placeholder="请输入文件名"
             ></t-input>
           </div>
         </div>
-        <minio-upload
+        <!--        <minio-upload
           v-model:fileName="fileForm.videoSubtitleFileName"
           :single="true"
           title="视频字幕文件"
-        />
+        />-->
       </div>
       <div style="display: flex; justify-content: center; margin-top: 20px">
         <t-button
@@ -728,7 +763,7 @@
         <div style="display: flex">
           <div>练习名称：</div>
           <div style="width: 400px; margin-left: 20px">
-            <t-input v-model="exerciseModifyName" />
+            <t-input v-model="modifyEx.title" />
           </div>
         </div>
 
@@ -736,20 +771,20 @@
           <div>练习难度：</div>
           <div style="margin-left: 20px; display: flex">
             <div
-              :class="exerciseModifyLevel == 'EASY' ? 'choose' : 'unchoose'"
+              :class="modifyEx.difficultyLevel == 'EASY' ? 'choose' : 'unchoose'"
               @click="levelChange('EASY')"
             >
               easy
             </div>
             <div
-              :class="exerciseModifyLevel == 'MIDDLE' ? 'choose' : 'unchoose'"
+              :class="modifyEx.difficultyLevel == 'MIDDLE' ? 'choose' : 'unchoose'"
               style="margin-left: 10px"
               @click="levelChange('MIDDLE')"
             >
               middle
             </div>
             <div
-              :class="exerciseModifyLevel == 'HARD' ? 'choose' : 'unchoose'"
+              :class="modifyEx.difficultyLevel == 'HARD' ? 'choose' : 'unchoose'"
               style="margin-left: 10px"
               @click="levelChange('HARD')"
             >
@@ -757,10 +792,125 @@
             </div>
           </div>
         </div>
+        <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
+          上传完文件请先点击确认修改保存文件
+          <div style="display: flex">
+            <div style="width: 130px">原文文档</div>
+            <div
+              v-if="modifyEx.contentFileName"
+              style="width: 200px; margin-right: 20px"
+            >
+              当前文件：
+              {{ modifyEx.contentFileName }}
+            </div>
+            <t-upload
+              v-model="fileList.contentFileName"
+              action="/manager/manager/upload/file"
+              theme="file"
+              :headers="{ accessToken: accessToken }"
+              :max="1"
+              @onWaitingUploadFilesChange="console.log('发生变化')"
+              @success="(e) => fileUpload(e, 'contentFileName')"
+              @remove="(e) => removeFile('contentFileName')"
+            ></t-upload>
+          </div>
+          <div style="display: flex">
+            <div style="width: 130px">翻译文档</div>
+            <div
+              v-if="modifyEx.translationFileName"
+              style="width: 200px; margin-right: 20px"
+            >
+              当前文件：
+              {{ modifyEx.translationFileName }}
+            </div>
+            <t-upload
+              v-model="fileList.translationFileName"
+              action="/manager/manager/upload/file"
+              theme="file"
+              :headers="{ accessToken: accessToken }"
+              :max="1"
+              @onWaitingUploadFilesChange="console.log('发生变化')"
+              @success="(e) => fileUpload(e, 'translationFileName')"
+              @remove="(e) => removeFile('translationFileName')"
+            ></t-upload>
+          </div>
+          <div style="display: flex">
+            <div style="width: 130px">音频文件</div>
+            <div
+              v-if="modifyEx.audioFileName"
+              style="width: 200px; margin-right: 20px"
+            >
+              当前文件：
+              {{ modifyEx.audioFileName }}
+            </div>
+            <t-upload
+              v-model="fileList.audioFileName"
+              action="/manager/manager/upload/file"
+              theme="file"
+              :headers="{ accessToken: accessToken }"
+              :max="1"
+              @onWaitingUploadFilesChange="console.log('发生变化')"
+              @success="(e) => fileUpload(e, 'audioFileName')"
+              @remove="(e) => removeFile('audioFileName')"
+            ></t-upload>
+          </div>
+          <div style="display: flex">
+            <div style="width: 130px">视频字幕文件</div>
+            <div
+              v-if="modifyEx.videoSubtitleFileName"
+              style="width: 200px; margin-right: 20px"
+            >
+              当前文件：
+              {{ modifyEx.videoSubtitleFileName }}
+            </div>
+            <t-upload
+              v-model="fileList.videoSubtitleFileName"
+              action="/manager/manager/upload/file"
+              theme="file"
+              :headers="{ accessToken: accessToken }"
+              :max="1"
+              @onWaitingUploadFilesChange="console.log('发生变化')"
+              @success="(e) => fileUpload(e, 'videoSubtitleFileName')"
+              @remove="(e) => removeFile('videoSubtitleFileName')"
+            ></t-upload>
+          </div>
+          <div style="display: flex">
+            <div style="width: 130px">视频文件</div>
+            <!--            <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>-->
+            <div>
+              文件名：<t-input
+                v-model="fileForm.videoFileName"
+                placeholder="请输入文件名"
+              ></t-input>
+            </div>
+          </div>
+        </div>
       </div>
-
+      <div v-if="progressVisible">
+        视频文件分段中
+        <t-progress
+          theme="plump"
+          :color="{ from: '#0052D9', to: '#00A870' }"
+          :percentage="progressVal"
+          :status="'active'"
+        />
+      </div>
       <div style="display: flex; justify-content: center; margin-top: 20px">
         <t-button
+          size="large"
+          @click="cutContentFun()"
+          >文档分段</t-button
+        >
+        <t-button
+          size="large"
+          @click="cutAudioFun()"
+          >音频分段</t-button
+        >
+        <t-button
+          size="large"
+          @click="cutVideoFun()"
+          >视频分段</t-button
+        ><t-button
           size="large"
           @click="exerciseUploadModify()"
           >确认修改</t-button
@@ -812,7 +962,7 @@
       :footer="false"
       @close="closeSenModify()"
     >
-      <div style="padding: 20px">
+      <div style="display: flex; flex-direction: column; padding: 20px; gap: 30px">
         <div style="display: flex">
           <div>句子内容</div>
           <div style="margin-left: 20px; width: 400px">
@@ -824,8 +974,7 @@
             ></t-textarea>
           </div>
         </div>
-
-        <div style="margin-top: 20px; display: flex">
+        <div style="display: flex">
           <div>句子翻译</div>
           <div style="margin-left: 20px; width: 400px">
             <t-textarea
@@ -836,7 +985,30 @@
             ></t-textarea>
           </div>
         </div>
-
+        <div style="display: flex; width: 500px">
+          <div style="width: 130px">音频文件</div>
+          <t-upload
+            v-model="sentenceFiles.voiceUrl"
+            action="/manager/manager/upload/file"
+            theme="file"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            @success="(e) => sentenceFileUpload(e, 'voiceUrl')"
+            @remove="(e) => sentenceRemoveFile('voiceUrl')"
+          ></t-upload>
+        </div>
+        <div style="display: flex; width: 500px">
+          <div style="width: 130px">视频文件</div>
+          <t-upload
+            v-model="sentenceFiles.videoUrl"
+            action="/manager/manager/upload/file"
+            theme="file"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            @success="(e) => sentenceFileUpload(e, 'videoUrl')"
+            @remove="(e) => sentenceRemoveFile('videoUrl')"
+          ></t-upload>
+        </div>
         <div style="display: flex; justify-content: center; margin-top: 20px">
           <t-button @click="senModify()">确认修改</t-button>
         </div>
@@ -864,13 +1036,18 @@ import { onMounted, reactive, ref } from 'vue';
 
 import { delete8, save9, update8 } from '@/api/user/articles';
 import {
+  autoSplitContent,
+  cutAudio,
+  cutVideo,
   delete6,
   deleteSentenceResource,
+  getProgress,
   mergeAudio,
   mergeSentence,
   mergeVideo,
   save8,
   update7,
+  voiceASR,
 } from '@/api/user/exercises';
 import { delete4, page, update6 } from '@/api/user/readingMaterials';
 import { delete2, save3, update1 } from '@/api/user/sentence';
@@ -1122,6 +1299,12 @@ const mergeInSentence = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选组合项');
     } else {
+      /*      Math.min(
+        selectedRowKeysContent.value.length,
+        selectedRowKeysTrans.value,
+        selectedRowKeysAudio.value,
+        selectedRowKeysVideo.value,
+      ); */
       console.log(exercises.value);
       const content = exercises.value.conetentList?.find((item) => selectedRowKeysContent.value[0] === item.id) || '';
       const translation =
@@ -1138,8 +1321,13 @@ const mergeInSentence = async () => {
       loading.value = true;
       save3(params).then(() => {
         MessagePlugin.success('句子组合成功');
+        selectedRowKeysContent.value = [];
+        selectedRowKeysTrans.value = [];
+        selectedRowKeysAudio.value = [];
+        selectedRowKeysVideo.value = [];
         exercisesDetail(rowExercise.value);
         loading.value = false;
+        deleteSentenceResource({ ids });
       });
     }
   } catch (error) {
@@ -1299,7 +1487,14 @@ const pagination = reactive({
     console.log('pagination.onChange', pageInfo);
   },
 });
+const sentenceFiles = ref({ voiceUrl: [], videoUrl: [] });
 
+const sentenceFileUpload = (value, name) => {
+  rowModifySen.value[name] = value.response.result.url;
+};
+const sentenceRemoveFile = (name) => {
+  sentenceFiles.value[name] = [];
+};
 const AddFinsh = (newData) => {
   console.log(newData);
   queryData({
@@ -1307,7 +1502,12 @@ const AddFinsh = (newData) => {
     pageSize: pagination.pageSize,
   });
 };
-
+const fileUpload = (value, name) => {
+  fileForm.value[name] = value.response.result.name;
+};
+const removeFile = (name) => {
+  fileList.value[name] = [];
+};
 const pictureUpload = (value) => {
   articlePicture.value = value.response.result.url;
   console.log('articlePicture', articlePicture.value);
@@ -1375,21 +1575,22 @@ const fileForm = ref({
   contentFileName: '',
   translationFileName: '',
 });
+const fileList = ref({
+  audioFileName: [],
+  videoFileName: [],
+  videoSubtitleFileName: [],
+  contentFileName: [],
+  translationFileName: [],
+});
 const exerciseUploadModify = () => {
   loading.value = true;
-  const params = {
-    articleId: modifyEx.value.articleId,
-    title: exerciseModifyName.value,
-    difficultyLevel: exerciseModifyLevel.value,
-    id: modifyEx.value.id,
-    ...fileForm.value,
-  };
-  update7(params).then((res) => {
+  modifyEx.value = Object.assign(modifyEx.value, fileForm.value);
+  update7(modifyEx.value).then((res) => {
     loading.value = false;
     essayDetail(rowArticle.value);
     // closeExerxciseUpload()
-    closeExerciseModify();
-    MessagePlugin.success('练习上传成功');
+    // closeExerciseModify();
+    MessagePlugin.success('练习修改成功');
   });
 };
 
@@ -1404,14 +1605,52 @@ const exerciseUpload = () => {
     taskId: '',
   };
   save8(params).then((res) => {
-    loading.value = false;
-    essayDetail(rowArticle.value);
-    // closeExerxciseUpload()
-    closeExerciseUpload();
-    MessagePlugin.success('练习上传成功');
+    if (res.success) {
+      loading.value = false;
+      essayDetail(rowArticle.value);
+      MessagePlugin.success('练习上传成功');
+      if (fileForm.value.audioFileName) {
+        voiceASR({ exerciseId: modifyEx.value.id });
+      }
+      closeExerciseUpload();
+    }
   });
 };
-
+const cutContentFun = () => {
+  autoSplitContent({ exerciseId: modifyEx.value.id }).then((res) => {
+    if (res.success) {
+      MessagePlugin.success('文档分段成功');
+    }
+  });
+};
+const cutAudioFun = () => {
+  cutAudio({ exerciseId: modifyEx.value.id }).then((res) => {
+    if (res.success) {
+      MessagePlugin.success('音频分段成功');
+    }
+  });
+};
+const cutVideoFun = () => {
+  cutVideo({ exerciseId: modifyEx.value.id }).then((res) => {
+    if (res.success) {
+      progressVisible.value = true;
+      progressInterval.value = setInterval(() => {
+        getProgressMethods(rowExercise.id);
+      }, 1000);
+    }
+  });
+};
+const progressInterval = ref(null);
+const progressVisible = ref(false);
+const progressVal = ref(0);
+const getProgressMethods = (exerciseId) => {
+  getProgress({ exerciseId }).then((res) => {
+    progressVal.value = res.result;
+    if (progressVal.value == 100) {
+      clearInterval(progressVal.value);
+    }
+  });
+};
 const closeExerciseUpload = () => {
   visibleUploadExercise.value = false;
   exerciseTitle.value = '';
@@ -1438,7 +1677,7 @@ const closeSenModify = () => {
 };
 
 const levelChange = (level) => {
-  exerciseModifyLevel.value = level;
+  modifyEx.value.difficultyLevel = level;
 };
 
 const senUpload = () => {
@@ -1458,13 +1697,7 @@ const senUpload = () => {
 
 const senModify = () => {
   loading.value = true;
-  const params = {
-    id: rowModifySen.value.id,
-    exercisesId: rowModifySen.value.exercisesId,
-    content: rowModifySen.value.content,
-    translation: rowModifySen.value.translation,
-  };
-  update1(params).then(() => {
+  update1(rowModifySen.value).then(() => {
     MessagePlugin.success('句子修改成功');
     loading.value = false;
     exercisesDetail(rowExercise.value);

@@ -5,7 +5,7 @@ master:
         HOST: 111.229.66.85   #服务器ip
         HOST_PASSWORD: 8wy,9{F%gB3d  #服务器密码
         APP_MANAGER_NAME: english-manager-front   #服务名称 项目+服务名  客户端
-        MANAGER_PORT: 8004   #客户端端口
+        MANAGER_PORT: 8333   #客户端端口
       docker:
         image: node:18
         volumes:
