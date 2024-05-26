@@ -757,6 +757,7 @@
       header="修改练习"
       width="1000px"
       :footer="false"
+      @opened="setProgress()"
       @close="closeExerciseModify()"
     >
       <div style="padding-left: 50px">
@@ -878,16 +879,16 @@
             <div style="width: 130px">视频文件</div>
             <!--            <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>-->
             <div>
-              文件名：<t-input
-                v-model="fileForm.videoFileName"
-                placeholder="请输入文件名"
+              文件路径：<t-input
+                v-model="modifyEx.videoFileName"
+                placeholder="例如：/data/english/T.mp4"
               ></t-input>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="progressVisible">
-        视频文件分段中
+      <div v-if="progressVisible && progressVal">
+        {{ progressVal == '100' ? '视频分段完成' : '视频文件分段中' }}
         <t-progress
           theme="plump"
           :color="{ from: '#0052D9', to: '#00A870' }"
@@ -1584,7 +1585,9 @@ const fileList = ref({
 });
 const exerciseUploadModify = () => {
   loading.value = true;
-  modifyEx.value = Object.assign(modifyEx.value, fileForm.value);
+  const file = fileForm.value;
+  delete file.videoFileName;
+  modifyEx.value = Object.assign(modifyEx.value, file);
   update7(modifyEx.value).then((res) => {
     loading.value = false;
     essayDetail(rowArticle.value);
@@ -1631,23 +1634,37 @@ const cutAudioFun = () => {
   });
 };
 const cutVideoFun = () => {
-  cutVideo({ exerciseId: modifyEx.value.id }).then((res) => {
-    if (res.success) {
-      progressVisible.value = true;
-      progressInterval.value = setInterval(() => {
-        getProgressMethods(rowExercise.id);
-      }, 1000);
-    }
-  });
+  cutVideo({ exerciseId: modifyEx.value.id, filepath: modifyEx.value.videoFileName });
+  clearInterval(progressInterval.value);
+  progressInterval.value = null;
+  progressInterval.value = setInterval(() => {
+    getProgressMethods(modifyEx.value.id);
+  }, 1000);
 };
 const progressInterval = ref(null);
 const progressVisible = ref(false);
 const progressVal = ref(0);
+const setProgress = () => {
+  progressInterval.value = setInterval(() => {
+    getProgressMethods(modifyEx.value.id);
+  }, 1000);
+};
 const getProgressMethods = (exerciseId) => {
+  progressVisible.value = true;
   getProgress({ exerciseId }).then((res) => {
-    progressVal.value = res.result;
-    if (progressVal.value == 100) {
-      clearInterval(progressVal.value);
+    if (res.result && res.success) {
+      const nums = res.result.split('/');
+      progressVal.value = Number((Number(nums[0]) / Number(nums[1])).toFixed(4)) * 100;
+      if (progressVal.value == '100') {
+        clearInterval(progressInterval.value);
+        progressInterval.value = null;
+        MessagePlugin.success('视频分段完成');
+      }
+    } else {
+      // MessagePlugin.error('视频分段失败');
+      progressVisible.value = false;
+      clearInterval(progressInterval);
+      progressInterval.value = null;
     }
   });
 };
@@ -1664,6 +1681,8 @@ const radioChange = (value) => {
 
 const closeExerciseModify = () => {
   visivleModifyExercise.value = false;
+  clearInterval(progressInterval.value);
+  progressInterval.value = null;
 };
 
 const closeSenUpload = () => {

@@ -551,7 +551,16 @@ const modifyArticle = (row) => {
 };
 
 export const visivleModifyExercise = ref(false);
-export const modifyEx = ref({ articleId: '', title: '', id: '' });
+export const modifyEx = ref({
+  articleId: '',
+  title: '',
+  id: '',
+  audioFileName: '',
+  videoFileName: '',
+  videoSubtitleFileName: '',
+  contentFileName: '',
+  translationFileName: '',
+});
 export const exerciseModifyLevel = ref('');
 export const exerciseModifyName = ref('');
 export const rowModifySen = ref({ content: '', id: '', exercisesId: '', translation: '' });
