@@ -1585,9 +1585,13 @@ const fileList = ref({
 });
 const exerciseUploadModify = () => {
   loading.value = true;
-  const file = fileForm.value;
-  delete file.videoFileName;
-  modifyEx.value = Object.assign(modifyEx.value, file);
+  const omitNull = (obj) => {
+    Object.keys(obj)
+      .filter((k) => obj[k] === null)
+      .forEach((k) => delete obj[k]);
+    return obj;
+  };
+  modifyEx.value = { ...omitNull(modifyEx.value), ...omitNull(fileForm.value) };
   update7(modifyEx.value).then((res) => {
     loading.value = false;
     essayDetail(rowArticle.value);
@@ -1637,24 +1641,26 @@ const cutVideoFun = () => {
   cutVideo({ exerciseId: modifyEx.value.id, filepath: modifyEx.value.videoFileName });
   clearInterval(progressInterval.value);
   progressInterval.value = null;
+  getProgressMethods(modifyEx.value.id);
   progressInterval.value = setInterval(() => {
     getProgressMethods(modifyEx.value.id);
-  }, 1000);
+  }, 10000);
 };
 const progressInterval = ref(null);
 const progressVisible = ref(false);
 const progressVal = ref(0);
 const setProgress = () => {
+  getProgressMethods(modifyEx.value.id);
   progressInterval.value = setInterval(() => {
     getProgressMethods(modifyEx.value.id);
-  }, 1000);
+  }, 10000);
 };
 const getProgressMethods = (exerciseId) => {
   progressVisible.value = true;
   getProgress({ exerciseId }).then((res) => {
     if (res.result && res.success) {
       const nums = res.result.split('/');
-      progressVal.value = Number((Number(nums[0]) / Number(nums[1])).toFixed(4)) * 100;
+      progressVal.value = Number(Number((Number(nums[0]) / Number(nums[1])) * 100).toFixed(2));
       if (progressVal.value == '100') {
         clearInterval(progressInterval.value);
         progressInterval.value = null;
@@ -1663,7 +1669,7 @@ const getProgressMethods = (exerciseId) => {
     } else {
       // MessagePlugin.error('视频分段失败');
       progressVisible.value = false;
-      clearInterval(progressInterval);
+      clearInterval(progressInterval.value);
       progressInterval.value = null;
     }
   });
