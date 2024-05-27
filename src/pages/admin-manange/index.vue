@@ -1585,9 +1585,10 @@ const fileList = ref({
 });
 const exerciseUploadModify = () => {
   loading.value = true;
+
   const omitNull = (obj) => {
     Object.keys(obj)
-      .filter((k) => obj[k] === null)
+      .filter((k) => obj[k] === '')
       .forEach((k) => delete obj[k]);
     return obj;
   };
