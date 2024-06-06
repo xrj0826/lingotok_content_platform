@@ -910,6 +910,7 @@
         <t-popconfirm :on-confirm="cutVideoFun">
           <template #content>
             请先选择视频字幕类型
+
             <t-card>
               <t-radio-group v-model="type">
                 <t-radio-button :value="1">类型1：Dialogue +时间戳</t-radio-button>
