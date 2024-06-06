@@ -69,12 +69,11 @@
   </div>
 </template>
 <script setup lang="tsx">
-import TIM from 'tim-js-sdk';
+// import TIM from 'tim-js-sdk';
 import type { PropType } from 'vue';
 import { computed, onMounted, ref } from 'vue';
 
 import { getUserSignature } from '@/api/common/imUser';
-import { SDK_APPID } from '@/constants';
 import { getActive } from '@/router';
 import type { MenuRoute } from '@/types/interface';
 
@@ -148,11 +147,11 @@ const getPath = (item: ListItemType) => {
 const openHref = (url: string) => {
   window.open(url);
 };
-const chatId = ref(`SERVICES${localStorage.getItem('userId')}`);
+/* const chatId = ref(`SERVICES${localStorage.getItem('userId')}`);
 const options = {
   SDKAppID: Number(SDK_APPID), // 接入时需要将0替换为您的云通信应用的 SDKAppID，类型为 Number
-};
-const chat = TIM.create(options);
+}; */
+// const chat = TIM.create(options);
 const usersig = ref('');
 
 const getUserSig = async () => {
@@ -161,10 +160,10 @@ const getUserSig = async () => {
   };
   await getUserSignature(data).then(async (res) => {
     usersig.value = res.result;
-    await chatLogin();
+    // await chatLogin();
   });
 };
-const chatLogin = async () => {
+/* const chatLogin = async () => {
   chat
     .login({ userID: chatId.value, userSig: usersig.value })
     .then(function (imResponse) {
@@ -190,11 +189,11 @@ const getMark = () => {
   chat.on(TIM.EVENT.TOTAL_UNREAD_MESSAGE_COUNT_UPDATED, onTotalUnreadMessageCountUpdated);
   unreadCount.value = String(totalUnreadCount);
   console.log('未读总数', totalUnreadCount);
-};
+}; */
 onMounted(() => {
-  window.reLogin = () => {
-    getUserSig();
-  };
-  getUserSig();
+  // window.reLogin = () => {
+  //   getUserSig();
+  // };
+  // getUserSig();
 });
 </script>

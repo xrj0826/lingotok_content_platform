@@ -16,7 +16,7 @@ export async function update7(body: API.Exercises, options?: { [key: string]: an
 
 /** 上传练习 POST /manager/learn/exercises */
 export async function save8(body: API.Exercises, options?: { [key: string]: any }) {
-  return request<API.ResultMessageBoolean>('/manager/learn/exercises', {
+  return request<API.ResultMessageString>('/manager/learn/exercises', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export async function deleteSentenceResource(
   });
 }
 
-/** 视频文件合并拼接进度查询 PUT /manager/learn/exercises/getProgress */
+/** 视频文件剪切进度查询 PUT /manager/learn/exercises/getProgress */
 export async function getProgress(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.getProgressParams,

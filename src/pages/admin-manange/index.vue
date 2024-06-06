@@ -907,11 +907,20 @@
           @click="cutAudioFun()"
           >音频分段</t-button
         >
+        <t-popconfirm :on-confirm="cutVideoFun">
+          <template #content>
+            请先选择视频字幕类型
+            <t-card>
+              <t-radio-group v-model="type">
+                <t-radio-button :value="1">类型1：Dialogue +时间戳</t-radio-button>
+                <t-radio-button :value="2">类型2：单独时间戳</t-radio-button>
+              </t-radio-group>
+            </t-card>
+          </template>
+          <t-button size="large">视频分段</t-button>
+        </t-popconfirm>
+
         <t-button
-          size="large"
-          @click="cutVideoFun()"
-          >视频分段</t-button
-        ><t-button
           size="large"
           @click="exerciseUploadModify()"
           >确认修改</t-button
@@ -1638,8 +1647,9 @@ const cutAudioFun = () => {
     }
   });
 };
+const type = ref(1);
 const cutVideoFun = () => {
-  cutVideo({ exerciseId: modifyEx.value.id, filepath: modifyEx.value.videoFileName });
+  cutVideo({ exerciseId: modifyEx.value.id, filepath: modifyEx.value.videoFileName, type: type.value });
   clearInterval(progressInterval.value);
   progressInterval.value = null;
   getProgressMethods(modifyEx.value.id);

@@ -131,32 +131,50 @@
       </div>
     </t-dialog>
 
-    <t-card>
-      <t-table
-        :row-key="index"
-        :data="data"
-        :columns="columns"
-        resizable
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        :pagination="pagination"
-        :filter-row="null"
-        cell-empty-content="-"
-        :loading="isLoading"
-        :selected-row-keys="selectedRowKeys"
-        @row-click="handleRowClick"
-        @filter-change="filterChange"
-        @change="onChange"
+    <t-tabs
+      style="height: 80vh"
+      placement="left"
+      size="large"
+      @change="
+        (e) => {
+          menusChoose = e;
+          console.log(e);
+          inquire();
+        }
+      "
+    >
+      <t-tab-panel
+        v-for="(item, index2) in menusListData"
+        :key="index2"
+        :value="item.id"
+        :label="item.name"
       >
-        <template #url="{ row }">
-          <img
-            :src="row.url"
-            style="width: 80px; height: 110px"
-          />
-        </template>
-      </t-table>
-    </t-card>
+        <t-table
+          :row-key="index"
+          :data="data"
+          :columns="columns"
+          resizable
+          table-layout="fixed"
+          :bordered="true"
+          size="small"
+          :pagination="pagination"
+          :filter-row="null"
+          cell-empty-content="-"
+          :loading="isLoading"
+          :selected-row-keys="selectedRowKeys"
+          @row-click="handleRowClick"
+          @filter-change="filterChange"
+          @change="onChange"
+        >
+          <template #url="{ row }">
+            <img
+              :src="row.url"
+              style="width: 80px; height: 110px"
+            />
+          </template>
+        </t-table>
+      </t-tab-panel>
+    </t-tabs>
 
     <t-dialog
       v-model:visible="visible"
@@ -2268,6 +2286,7 @@ const handleInputEnter = () => {
 
 const labelString = ref('');
 const imageUrl2 = ref('');
+const rank = ref(0);
 
 const editLabel = () => {
   console.log('menus', menus);

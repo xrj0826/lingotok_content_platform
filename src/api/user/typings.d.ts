@@ -201,6 +201,7 @@ declare namespace API {
   type cutVideoParams = {
     exerciseId: string;
     filepath: string;
+    type: number;
   };
 
   type DefinitionsDTO = {
@@ -437,6 +438,8 @@ declare namespace API {
     audioList?: SentenceResource[];
     /** 视频内容列表 */
     videoList?: SentenceResource[];
+    /** 句子列表 */
+    sentenceList?: SentenceVO[];
   };
 
   type File = {
@@ -1587,8 +1590,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertStartDate?: string;
     convertEndDate?: string;
+    convertStartDate?: string;
   };
 
   type Sentence = {
@@ -1622,6 +1625,21 @@ declare namespace API {
   type Sentences = {
     sourceInfo?: SourceInfo;
     scontent?: string;
+  };
+
+  type SentenceVO = {
+    /** 所属练习ID */
+    exercisesId?: string;
+    /** 内容 */
+    content?: string;
+    /** 翻译 */
+    translation?: string;
+    /** voiceUrl */
+    voiceUrl?: string;
+    /** videoUrl */
+    videoUrl?: string;
+    /** 是否收藏 */
+    isCollect?: boolean;
   };
 
   type settingGetParams = {
