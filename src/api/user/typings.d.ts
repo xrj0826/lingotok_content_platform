@@ -362,29 +362,19 @@ declare namespace API {
     content?: Content;
     /** 单词书ID */
     bookId?: string;
+    /** 词组ID */
+    groupId?: string;
     resource?: Resource;
     definition?: DefinitionsDTO;
     /** 等级信息 */
     grade?: string[];
     /** 形式信息 */
     modality?: Record<string, any>;
-    /** 词根 */
-    wordRoot?: WordRoot[];
+    /** 词根构成（绿色内容） */
+    structure?: string[];
+    rootTree?: WordRootVO;
     isCollect?: boolean;
     familiarity?: 'FAMILIAR' | 'VAGUE' | 'RARE';
-  };
-
-  type EnglishWordRoot = {
-    /** id */
-    id?: string;
-    /** 等级 */
-    level?: string;
-    /** 单词全拼 */
-    headWord?: string;
-    /** 音标 */
-    content?: string;
-    /** 中文解释 */
-    explanation?: string;
   };
 
   type Exercises = {
@@ -504,6 +494,11 @@ declare namespace API {
     id: string;
   };
 
+  type getBadWordListParams = {
+    pageNumber: number;
+    pageSize: number;
+  };
+
   type getByConditionParams = {
     user: AdminUserDTO;
     searchVo: SearchVO;
@@ -555,10 +550,6 @@ declare namespace API {
     groupId: string;
   };
 
-  type groupInsertParams = {
-    bookId: string;
-  };
-
   type groupParams = {
     bookId: string;
   };
@@ -573,6 +564,8 @@ declare namespace API {
     vagueList?: string[];
     /** 生僻单词 */
     rareList?: string[];
+    /** 全部单词 */
+    allList?: string[];
     /** 通过标记 */
     finish?: boolean;
     /** 单词总数 */
@@ -619,9 +612,9 @@ declare namespace API {
     size?: number;
   };
 
-  type IPageWordRoot = {
+  type IPageWordRootVO = {
     total?: number;
-    records?: WordRoot[];
+    records?: WordRootVO[];
     current?: number;
     pages?: number;
     size?: number;
@@ -886,8 +879,8 @@ declare namespace API {
   };
 
   type Phrases = {
-    pcn?: string;
     pcontent?: string;
+    pcn?: string;
   };
 
   type querySmsSignPageParams = {
@@ -1199,7 +1192,7 @@ declare namespace API {
     result?: IPageSmsTemplate;
   };
 
-  type ResultMessageIPageWordRoot = {
+  type ResultMessageIPageWordRootVO = {
     /** 成功标志 */
     success?: boolean;
     /** 消息 */
@@ -1208,7 +1201,7 @@ declare namespace API {
     code?: number;
     /** 时间戳 */
     timestamp?: number;
-    result?: IPageWordRoot;
+    result?: IPageWordRootVO;
   };
 
   type ResultMessageListBookMenu = {
@@ -1326,19 +1319,6 @@ declare namespace API {
     timestamp?: number;
     /** 结果对象 */
     result?: RoleMenu[];
-  };
-
-  type ResultMessageListString = {
-    /** 成功标志 */
-    success?: boolean;
-    /** 消息 */
-    message?: string;
-    /** 返回代码 */
-    code?: number;
-    /** 时间戳 */
-    timestamp?: number;
-    /** 结果对象 */
-    result?: string[];
   };
 
   type ResultMessageListWordTranslation = {
@@ -1590,8 +1570,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertEndDate?: string;
     convertStartDate?: string;
+    convertEndDate?: string;
   };
 
   type Sentence = {
@@ -1620,6 +1600,8 @@ declare namespace API {
     fileName?: string;
     /** 排序 */
     rank?: number;
+    /** 例句ID */
+    sentenceId?: string;
   };
 
   type Sentences = {
@@ -1678,6 +1660,14 @@ declare namespace API {
     templateCode?: string;
     /** 审核备注 */
     reason?: string;
+  };
+
+  type sortBookParams = {
+    ids: string[];
+  };
+
+  type sortMenuParams = {
+    ids: string[];
   };
 
   type SourceInfo = {
@@ -1784,7 +1774,6 @@ declare namespace API {
 
   type uploadWordByExcelParams = {
     file: string;
-    bookId: string;
   };
 
   type uploadWordByJsonParams = {
@@ -1849,28 +1838,58 @@ declare namespace API {
     speech?: string;
   };
 
-  type WordRoot = {
+  type WordRootData = {
+    /** 词根ID */
+    id?: string;
+    /** 分类 */
+    level?: string;
+    /** 词汇 */
+    headWord?: string;
+    /** 音标 */
+    sound?: string;
+    /** 释义 */
+    explanation?: string;
+    rootTree?: WordRootTree;
+    /** 词根构成（绿色内容） */
+    structure?: string[];
+    /** 词根搜索 */
+    search?: string;
+    /** 同族词 */
+    sameWords?: WordSame[];
+    /** 关联id */
+    relatedId?: string;
+  };
+
+  type wordRootParams = {
+    search: string;
+    pageVO: PageVO;
+  };
+
+  type WordRootTree = {
     /** 语系 */
     language?: string;
     /** 语族 */
     race?: string;
     /** 子语族 */
     subRace?: string;
-    /** 等级 */
+  };
+
+  type WordRootVO = {
+    /** 语系 */
+    name?: string;
+    /** 单词列表 */
+    wordDatalist?: WordRootData[];
+  };
+
+  type WordSame = {
+    /** 分类 */
     level?: string;
-    /** 单词全拼 */
+    /** 词汇 */
     headWord?: string;
     /** 音标 */
     sound?: string;
     /** 释义 */
     explanation?: string;
-    saveFlag?: boolean;
-    list?: EnglishWordRoot[];
-  };
-
-  type wordRootParams = {
-    wordRoot: WordRoot;
-    pageVO: PageVO;
   };
 
   type WordTranslation = {

@@ -90,20 +90,6 @@ export async function groupDetail(
   });
 }
 
-/** 单词书自动分组 GET /manager/book/groupInsert/${param0} */
-export async function groupInsert(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.groupInsertParams,
-  options?: { [key: string]: any },
-) {
-  const { bookId: param0, ...queryParams } = params;
-  return request<any>(`/manager/book/groupInsert/${param0}`, {
-    method: 'GET',
-    params: { ...queryParams },
-    ...(options || {}),
-  });
-}
-
 /** 单词书分页 GET /manager/book/page */
 export async function page1(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
@@ -123,10 +109,32 @@ export async function page1(
   });
 }
 
-/** 同步数据库 GET /manager/book/sync */
-export async function sync(options?: { [key: string]: any }) {
-  return request<API.ResultMessageListString>('/manager/book/sync', {
-    method: 'GET',
+/** 单词书排序 PUT /manager/book/sortBook */
+export async function sortBook(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.sortBookParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageObject>('/manager/book/sortBook', {
+    method: 'PUT',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** 单词书排序 PUT /manager/book/sortMenu */
+export async function sortMenu(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.sortMenuParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageObject>('/manager/book/sortMenu', {
+    method: 'PUT',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }

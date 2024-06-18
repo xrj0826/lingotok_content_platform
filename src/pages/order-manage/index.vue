@@ -132,13 +132,12 @@
     </t-dialog>
 
     <t-tabs
-      style="height: 80vh"
       placement="left"
       size="large"
+      :value="menusChoose"
       @change="
         (e) => {
           menusChoose = e;
-          console.log(e);
           inquire();
         }
       "
@@ -159,9 +158,11 @@
           size="small"
           :pagination="pagination"
           :filter-row="null"
+          drag-sort="row-handler"
           cell-empty-content="-"
           :loading="isLoading"
           :selected-row-keys="selectedRowKeys"
+          @drag-sort="(e) => bookSort(e)"
           @row-click="handleRowClick"
           @filter-change="filterChange"
           @change="onChange"
@@ -1317,12 +1318,14 @@
       <t-table
         :data="menusListData"
         :columns="columnsMenus"
+        drag-sort="row-handler"
         resizable
         table-layout="fixed"
         :bordered="true"
         size="small"
         cell-empty-content="-"
         :loading="isLoading"
+        @drag-sort="(e) => onSortChange(e)"
       >
         <template #url="{ row }">
           <img
@@ -1450,9 +1453,19 @@ export default {
 import { MessagePlugin, UploadProps } from 'tdesign-vue-next';
 import { onMounted, reactive, ref, watch } from 'vue';
 
-import { addBookMenu, addWord, bookMenuList, page1, updateBookMenu, updateWord1 } from '@/api/user/bookApi';
+import {
+  addBookMenu,
+  addWord,
+  bookMenuList,
+  page1,
+  sortBook,
+  sortMenu,
+  updateBookMenu,
+  updateWord1,
+} from '@/api/user/bookApi';
 import { deleteWord, search, updateWord, upload } from '@/api/user/wordsApi';
 import minioUpload from '@/components/minioUpload/index.vue';
+import { exercises } from '@/pages/admin-manange/columnData';
 // import { get, page } from '@/api/user/changdeguanli';
 // import { delete9, page4 } from '@/api/user/dingdanguanlijiekou';
 import { useRenewDataStore } from '@/store/renewData';
@@ -1569,7 +1582,7 @@ const data = ref([]);
 const isLoading = ref(false);
 const isloadingBook = ref(false);
 const accessToken = ref<string | null>();
-const menusChoose = ref('');
+const menusChoose = ref('0');
 const batchFiles = ref([]);
 const batchFiles2 = ref([]);
 // const data2 = ref([]);
@@ -1613,7 +1626,24 @@ const handleupload = (value) => {
   console.log('image2', image2.value);
   // console.log('imagevalue', value, value.response.result)
 };
+const sortIds = ref([]);
+const currentMenu = ref(0);
+const onSortChange = (e) => {
+  console.log('排序', e);
+  menusListData.value = e.currentData;
+  sortIds.value = e.currentData.map((item) => {
+    return item.id;
+  });
+  sortMenu({ ids: sortIds.value }).then(() => {});
+};
 
+const bookSort = (e, menuId) => {
+  data.value = e.currentData;
+  sortIds.value = e.currentData.map((item) => {
+    return item.id;
+  });
+  sortBook({ ids: sortIds.value }).then(() => {});
+};
 const handleuploadExcel = (value) => {
   if (value.response.code == 200) {
     MessagePlugin.success('上传成功');
@@ -1714,13 +1744,9 @@ const handleuploadBatch = (value1) => {
 onMounted(async () => {
   accessToken.value = localStorage.getItem('accessToken');
   bookMenuList().then((res) => {
-    // allLoading.value = false
-    // menusListData.value = res.result
     menusListData.value = [];
     menusListData.value = res.result;
-    console.log('menus', menusListData.value);
-    // console.log('res', res)
-    // visibleMenusList.value = true
+    menusListData.value.unshift({ name: '全部', rank: 0, id: '0' });
   });
   queryData({
     pageNumber: pagination.current,
@@ -1935,13 +1961,12 @@ const queryData = async (paginationInfo?, entityInfo?: undefined) => {
     console.log('请求', entityInfo, paginationInfo);
     if (inquireBool.value) {
       const params = {
-        entity: entityInfo,
         page: paginationInfo,
-        menus: menusChoose.value,
+        entity: {
+          menus: menusChoose.value == '0' ? '' : menusChoose.value,
+        },
       };
       const res = await page1(params); // 在此发送请求
-
-      console.log('数据已送达', res);
       data.value = res.result.records; // 获得表格数据
       isLoading.value = false;
       pagination.total = res.result.total; // 数据加载完成，设置数据总条数
@@ -1950,7 +1975,9 @@ const queryData = async (paginationInfo?, entityInfo?: undefined) => {
       const deleteArr: string[] = [];
     } else {
       const params = {
-        entity: entityInfo,
+        entity: {
+          menus: menusChoose.value == '0' ? '' : menusChoose.value,
+        },
         page: paginationInfo,
       };
       const res = await page1(params); // 在此发送请求
@@ -2240,7 +2267,7 @@ const remake = () => {
     MessagePlugin.error('当前为全部查询');
     return;
   }
-  menusChoose.value = '';
+  menusChoose.value = '0';
   queryData({
     pageNumber: pagination.current,
     pageSize: pagination.pageSize,
@@ -2323,7 +2350,6 @@ const editLabel = () => {
     imageUrl2.value = imageUrl.value;
   }
   const params = {
-    rank: rank.value,
     bookName: bookName.value,
     bookId: bookId1.value,
     url: imageUrl2.value,
@@ -2368,15 +2394,16 @@ const inquire = async (paginationInfo?, entityInfo?: undefined) => {
       return;
     }
     isLoading.value = true;
-    console.log('请求', entityInfo, paginationInfo);
     const params = {
-      pageNumber: 1,
-      pageSize: 10,
-      menus: menusChoose.value,
+      page: {
+        pageNumber: 1,
+        pageSize: 10,
+      },
+      entity: {
+        menus: menusChoose.value == '0' ? '' : menusChoose.value,
+      },
     };
     const res = await page1(params); // 在此发送请求
-
-    console.log('数据已送达', res);
     data.value = res.result.records; // 获得表格数据
     isLoading.value = false;
     pagination.total = res.result.total; // 数据加载完成，设置数据总条数
@@ -2481,13 +2508,8 @@ const editMenus = () => {
       visibleMenus.value = false;
       bookMenuList().then((res) => {
         menusListData.value = [];
-        // console.log('menusFilter', menusFilter.value)
         allLoading.value = false;
         menusListData.value = res.result;
-        // menusListData.value.push(res.result)
-        // console.log('menusListData', menusListData.value)
-        // console.log('res', res)
-        // visibleMenusList.value = true
       });
     } else {
       MessagePlugin.success('添加失败，请稍后再试');

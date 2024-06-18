@@ -17,6 +17,21 @@ export async function deleteWord(
   });
 }
 
+/** 获取缺失详情单词列表 GET /manager/words/getBadWordList */
+export async function getBadWordList(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getBadWordListParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageListEnglishWord>('/manager/words/getBadWordList', {
+    method: 'GET',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
 /** 获取单词组详情 GET /manager/words/getByGroupId/${param0} */
 export async function getByGroupId(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
@@ -108,12 +123,10 @@ export async function wordRoot(
   params: API.wordRootParams,
   options?: { [key: string]: any },
 ) {
-  return request<API.ResultMessageIPageWordRoot>('/manager/words/wordRoot', {
+  return request<API.ResultMessageIPageWordRootVO>('/manager/words/wordRoot', {
     method: 'GET',
     params: {
       ...params,
-      wordRoot: undefined,
-      ...params['wordRoot'],
       pageVO: undefined,
       ...params['pageVO'],
     },
