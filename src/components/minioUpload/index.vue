@@ -443,6 +443,8 @@ export default {
           if (chunkList.length) {
             const chunkItem = chunkList.shift();
             // 直接上传二进制，不需要构造 FormData，否则上传后文件损坏
+            // 使用正则表达式移除X-Amz-Credential参数
+            chunkItem.uploadUrl = chunkItem.uploadUrl.replace(/&?X-Amz-Credential=[^&]*/g, '');
             axios
               .put(chunkItem.uploadUrl, chunkItem.chunk.file, {
                 // 上传进度处理

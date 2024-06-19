@@ -1664,10 +1664,14 @@ declare namespace API {
 
   type sortBookParams = {
     ids: string[];
+    pageNumber: number;
+    pageSize: number;
   };
 
   type sortMenuParams = {
     ids: string[];
+    pageNumber: number;
+    pageSize: number;
   };
 
   type SourceInfo = {
@@ -1774,11 +1778,6 @@ declare namespace API {
 
   type uploadWordByExcelParams = {
     file: string;
-  };
-
-  type uploadWordByJsonParams = {
-    file: string;
-    bookId: string;
   };
 
   type uploadWordRootParams = {

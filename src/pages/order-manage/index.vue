@@ -77,16 +77,16 @@
       @confirm=""
     >
       <div style="font-size: 14px; font-weight: 700; justify-content: center; display: flex">批量导入单词</div>
-      <div style="width: 300px; display: flex; margin-bottom: 30px; justify-content: space-around; margin-top: 10px">
-        <div style="line-height: 30px">bookId:</div>
+      <!--     <div style="width: 300px; display: flex; margin-bottom: 30px; justify-content: space-around; margin-top: 10px">
+       <div style="line-height: 30px">bookId:</div>
         <div>
           <t-input
             v-model="excelBookId"
             placeholder="请先输入bookId"
           ></t-input>
         </div>
-      </div>
-      <div v-if="excelBookId != ''">
+      </div>-->
+      <div>
         <div style="margin: 20px 0; display: flex; justify-content: center">
           <t-upload
             v-model="excel"
@@ -1540,33 +1540,23 @@ const formatResponse: UploadProps['formatResponse'] = (res) => {
   return res;
 };
 
-// const visibleBook = ref(false)
-// const imagefiles = ref([])
-// const resourceImage = ref([])
 const visibleMenus = ref(false);
 const excelBookId = ref('');
 const excel = ref([]);
 const rootExcel = ref([]);
 const visibleExcel = ref(false);
-// const resourceAudio = ref([])
-// const resourceImage1 = ref([])
-// const resourceAudio1 = ref([])
 const usUrl = ref('');
-// const resourceAudioUs = ref({})
-// const resourceAudioUk = ref({})
 const labelAdd = ref('');
 const menusNmae = ref('');
 const menusDesc = ref('');
 const draggable = ref(true);
 const image = ref([]);
-const uploadBatch = ref();
 const addWord1 = ref('');
 const visibleWordAdd = ref(false);
 const showSynoDelete = ref(false);
 const syno1 = ref({ pos: '', tran: '', hwds: [{ w: '' }] });
 const showSynoPos = ref(false);
 const showSynoTran = ref(false);
-const showSynoHwd = ref(false);
 const phrase1 = ref([{ pcontent: '', pcn: '' }]);
 const tran1 = ref([{ tranCn: '' }]);
 const sentence1 = ref([{ scn: '', scontent: '' }]);
@@ -1594,14 +1584,6 @@ const inputSuccess = (files) => {
   console.log('--files--', files);
   fileList.value = files;
 };
-// const visibleMenusList = ref(false)
-// const visible = ref(false)
-
-// enum paymentMethod {
-//   'WECHAT',
-//   'CARD',
-// }
-// 暂存查询条件
 
 const uploadBatch2 = () => {
   uploadBatchFiles.value.uploadFiles();
@@ -1619,12 +1601,9 @@ const querySave = reactive({
 const image2 = ref('');
 
 const handleupload = (value) => {
-  // avatar.value=
-  // image.value=
   console.log('内容', value);
   image2.value = value.response.result.url;
   console.log('image2', image2.value);
-  // console.log('imagevalue', value, value.response.result)
 };
 const sortIds = ref([]);
 const currentMenu = ref(0);
@@ -1634,7 +1613,7 @@ const onSortChange = (e) => {
   sortIds.value = e.currentData.map((item) => {
     return item.id;
   });
-  sortMenu({ ids: sortIds.value }).then(() => {});
+  sortMenu({ ids: sortIds.value, pageNumber: 1, pageSize: 100 }).then(() => {});
 };
 
 const bookSort = (e, menuId) => {
@@ -1642,7 +1621,7 @@ const bookSort = (e, menuId) => {
   sortIds.value = e.currentData.map((item) => {
     return item.id;
   });
-  sortBook({ ids: sortIds.value }).then(() => {});
+  sortBook({ ids: sortIds.value, pageNumber: pagination.current, pageSize: pagination.pageSize }).then(() => {});
 };
 const handleuploadExcel = (value) => {
   if (value.response.code == 200) {
