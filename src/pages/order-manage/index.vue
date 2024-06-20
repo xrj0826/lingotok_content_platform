@@ -19,18 +19,10 @@
 
       <div style="display: flex; justify-content: center; margin-bottom: 20px">
         <t-button
-          size="large"
-          @click="visibleMenus = true"
-          >新增一级目录</t-button
-        >
-      </div>
-
-      <div style="display: flex; justify-content: center; margin-bottom: 20px">
-        <t-button
-          theme="danger"
+          theme="primary"
           size="large"
           @click="getMenusList"
-          >修改/删除一级目录</t-button
+          >管理一级目录</t-button
         >
       </div>
 
@@ -43,12 +35,12 @@
       </div>
     </div>
 
-    <t-card>
-      <view style="display: grid">
-        <view style="display: flex; justify-content: center; margin-bottom: 20px; font-size: 16px">一级目录查询</view>
-        <view style="display: flex; justify-content: center">
-          <view>请选择要查询的一级目录</view>
-          <view style="width: 400px; margin-left: 20px; margin-right: 20px">
+    <!--    <t-card>
+      <div style="display: grid">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px; font-size: 16px">一级目录查询</div>
+        <div style="display: flex; justify-content: center">
+          <div>请选择要查询的一级目录</div>
+          <div style="width: 400px; margin-left: 20px; margin-right: 20px">
             <t-select
               v-model="menusChoose"
               placeholder="无"
@@ -60,12 +52,12 @@
                 :value="item.id"
               />
             </t-select>
-          </view>
+          </div>
           <t-button @click="remake">重置</t-button>
           <t-button @click="inquire">查询</t-button>
-        </view>
-      </view>
-    </t-card>
+        </div>
+      </div>
+    </t-card>-->
 
     <t-dialog
       v-model:visible="visibleExcel"
@@ -306,13 +298,13 @@
           <t-button @click="wordSearch()">搜索</t-button>
         </div>
       </div>
-      <div style="display: flex; justify-content: center; margin-bottom: 10px">
+      <!--      <div style="display: flex; justify-content: center; margin-bottom: 10px">
         <t-link
           theme="primary"
           @click="visibleWordAdd = true"
           >没有搜索到想要添加的单词？点击这里添加</t-link
         >
-      </div>
+      </div>-->
 
       <t-table
         :row-key="index"
@@ -1267,6 +1259,7 @@
 
     <t-dialog
       v-model:visible="visibleMenus"
+      z-index="2501"
       width="800px"
       theme="info"
       header="新增一级目录"
@@ -1311,10 +1304,17 @@
       v-model:visible="visibleMenusList"
       width="900px"
       theme="info"
-      header="修改/删除一级目录"
+      header="管理一级目录"
       :footer="false"
       @close="visibleMenusList = false"
     >
+      <div style="display: flex; justify-content: right; margin-bottom: 20px">
+        <t-button
+          size="large"
+          @click="visibleMenus = true"
+          >新增一级目录</t-button
+        >
+      </div>
       <t-table
         :data="menusListData"
         :columns="columnsMenus"
@@ -1399,16 +1399,19 @@
       :footer="false"
       @close="visibleBatch = false"
     >
-      <view style="display: flex; justify-content: center"
-        >针对单词视频，图片资源的批量上传，重复上传不会覆盖原有资源</view
-      >
-      <view style="display: flex; justify-content: center; margin: 10px 0">
+      <div style="display: flex; justify-content: center; align-items: center">
+        <div>针对单词视频，图片资源的批量上传，重复上传不会覆盖原有资源</div>
+        <t-tooltip content="上传单词视频、图片需把文件名改成对应单词名">
+          <help-circle-icon />
+        </t-tooltip>
+      </div>
+      <div style="display: flex; justify-content: center; margin: 10px 0">
         <!--        <t-button @click="files = []">清空表格</t-button>-->
         <!--        <t-button @click="uploadBatch2()">确认上传</t-button>-->
-      </view>
-      <view style="display: flex; justify-content: center; color: red; font-size: 12px"
-        >注：清空表格并不会删除已上传文件，请谨慎操作</view
-      >
+      </div>
+      <div style="display: flex; justify-content: center; color: red; font-size: 12px">
+        注：清空表格并不会删除已上传文件，请谨慎操作
+      </div>
       <!-- <t-upload v-model="batchFiles" action="/manager/manager/web/file" :headers="{ accessToken: accessToken }"
         ref="uploadBatch" @success="handleuploadBatch" @remove="removeVideo" :files="batchFiles2" multiple
         @validate="repite" :autoUpload="false" :upload-all-files-in-one-request="true"></t-upload>
@@ -1450,6 +1453,7 @@ export default {
 </script>
 
 <script setup lang="tsx">
+import { HelpCircleIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin, UploadProps } from 'tdesign-vue-next';
 import { onMounted, reactive, ref, watch } from 'vue';
 

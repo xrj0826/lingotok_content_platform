@@ -819,6 +819,8 @@ declare namespace API {
     fileName?: string;
     /** 分片数量 */
     chunkSize?: number;
+    /** 文件类型 */
+    contentType?: string;
   };
 
   type MultipartUploadCreateResponse = {
@@ -879,8 +881,8 @@ declare namespace API {
   };
 
   type Phrases = {
-    pcontent?: string;
     pcn?: string;
+    pcontent?: string;
   };
 
   type querySmsSignPageParams = {
@@ -1570,8 +1572,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertStartDate?: string;
     convertEndDate?: string;
+    convertStartDate?: string;
   };
 
   type Sentence = {
@@ -1670,8 +1672,6 @@ declare namespace API {
 
   type sortMenuParams = {
     ids: string[];
-    pageNumber: number;
-    pageSize: number;
   };
 
   type SourceInfo = {
@@ -1778,6 +1778,11 @@ declare namespace API {
 
   type uploadWordByExcelParams = {
     file: string;
+  };
+
+  type uploadWordByJsonParams = {
+    file: string;
+    bookId: string;
   };
 
   type uploadWordRootParams = {

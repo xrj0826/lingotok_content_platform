@@ -61,26 +61,18 @@ export const columns: PrimaryTableCol[] = [
       }
       return (
         <t-space>
-          <t-popconfirm
-            content="确认删除吗"
-            onConfirm={() => handleDelete(row.bookId)}
-          >
-            <t-link
-              variant="text"
-              hover="color"
-              theme="danger"
-            >
-              删除
-            </t-link>
-          </t-popconfirm>
-          <t-link
-            variant="text"
-            hover="color"
+          <t-button
             theme="primary"
             onClick={() => wordBookEdit(row)}
           >
             编辑
-          </t-link>
+          </t-button>
+          <t-popconfirm
+            content="确认删除吗"
+            onConfirm={() => handleDelete(row.bookId)}
+          >
+            <t-button theme="danger">删除</t-button>
+          </t-popconfirm>
         </t-space>
       );
     },
@@ -169,7 +161,7 @@ export const columnsrels: PrimaryTableCol[] = [
               delete1(row, rowIndex, 1);
             }}
           >
-            <t-button>删除</t-button>
+            <t-button theme="danger">删除</t-button>
           </t-popconfirm>
         </t-space>
       );
@@ -194,7 +186,7 @@ export const columnsSen: PrimaryTableCol[] = [
               delete1(row, rowIndex, 2);
             }}
           >
-            <t-button>删除</t-button>
+            <t-button theme="danger">删除</t-button>
           </t-popconfirm>
         </t-space>
       );
@@ -230,7 +222,7 @@ export const columnsMenus: PrimaryTableCol[] = [
               deleteMenus(row);
             }}
           >
-            <t-button>删除</t-button>
+            <t-button theme="danger">删除</t-button>
           </t-popconfirm>
         </t-space>
       );
@@ -254,7 +246,7 @@ export const columnsTran: PrimaryTableCol[] = [
               delete1(row, rowIndex, 3);
             }}
           >
-            <t-button>删除</t-button>
+            <t-button theme="danger">删除</t-button>
           </t-popconfirm>
         </t-space>
       );
@@ -279,7 +271,7 @@ export const columnsPrase: PrimaryTableCol[] = [
               delete1(row, rowIndex, 4);
             }}
           >
-            <t-button>删除</t-button>
+            <t-button theme="danger">删除</t-button>
           </t-popconfirm>
         </t-space>
       );
@@ -305,7 +297,7 @@ export const columnsSyno: PrimaryTableCol[] = [
               delete1(row, rowIndex, 5);
             }}
           >
-            <t-button>删除</t-button>
+            <t-button theme="danger">删除</t-button>
           </t-popconfirm>
         </t-space>
       );
@@ -324,14 +316,14 @@ export const columnsWordSearch: PrimaryTableCol[] = [
     cell: (h, { row, rowIndex }) => {
       return (
         <t-space>
-          <t-popconfirm
+          {/*          <t-popconfirm
             content="确认上传吗"
             onConfirm={() => {
               uploadWord(row);
             }}
           >
             <t-button>上传单词</t-button>
-          </t-popconfirm>
+          </t-popconfirm> */}
           <t-button onClick={() => edit9(row)}>查看详情</t-button>
           <t-button onClick={() => resourceModify1(row)}>资源修改</t-button>
         </t-space>

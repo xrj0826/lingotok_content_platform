@@ -51,8 +51,15 @@
                 文件名：
                 <div
                   style="width: 150px; word-break: break-word; line-height: 20px; display: flex; align-items: center"
+                  @click.stop
                 >
-                  {{ item.name }}
+                  <t-input
+                    v-if="item.status === '等待上传'"
+                    v-model="item.name"
+                  ></t-input>
+                  <span v-else>
+                    {{ item.name }}
+                  </span>
                 </div>
               </div>
               <div class="file-info-item file-size">文件大小：{{ transformByte(item.size) }}</div>
@@ -260,6 +267,7 @@ export default {
           const param = {
             fileName: currentFile.name,
             chunkSize: fileChunks.length,
+            contentType: currentFile.raw.type,
           };
           // 4. 获取上传url
           const uploadIdInfoResult = await createMultipartUpload(param);

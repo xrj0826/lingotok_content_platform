@@ -124,7 +124,7 @@ export async function sortBook(
   });
 }
 
-/** 单词书排序 PUT /manager/book/sortMenu */
+/** 一级目录排序 PUT /manager/book/sortMenu */
 export async function sortMenu(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.sortMenuParams,
@@ -170,6 +170,21 @@ export async function uploadWordByExcel(
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessageObject>('/manager/book/uploadWordByExcel', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** 单词批量上传ByJson 文件格式为.json,按行读取,每行单独为一个单词 POST /manager/book/uploadWordByJson */
+export async function uploadWordByJson(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.uploadWordByJsonParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageObject>('/manager/book/uploadWordByJson', {
     method: 'POST',
     params: {
       ...params,
