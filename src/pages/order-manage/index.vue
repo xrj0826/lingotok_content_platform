@@ -283,14 +283,14 @@
       v-model:visible="visibleNewWord"
       width="1000px"
       theme="info"
-      header="新增单词"
+      header="单词搜索"
       :footer="false"
       @close="newWordClose()"
     >
       <div style="display: flex; justify-content: center; margin-bottom: 20px">
         <t-input
           v-model="searchWord"
-          placeholder="请输入要添加的单词"
+          placeholder="请输入要搜索的单词"
           :style="{ width: '300px' }"
           @enter="wordSearch()"
         ></t-input>

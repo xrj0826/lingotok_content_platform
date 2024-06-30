@@ -682,7 +682,6 @@ const resourceModify = (row) => {
       // resourceImage1.value = JSON.parse(JSON.stringify(res.result.resource.images))
       resourceVideo.value = res.result.resource.videos;
       // resourceVideo1.value = res.result.resource.videos
-      console.log('resourceImage', resourceImage.value);
       resourceAudioRadio.value = res.result.resource.voices;
       if (resourceAudioRadio.value) {
         for (const i in resourceAudioRadio.value) {
