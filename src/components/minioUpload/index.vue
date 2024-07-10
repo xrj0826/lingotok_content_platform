@@ -8,7 +8,7 @@
         ref="upload"
         class="upload-demo"
         :multiple="!single"
-        :limit="single ? 1 : 100"
+        :limit="single ? 1 : 10000"
         :on-remove="handleRemove"
         :on-change="handleFileChange"
         :file-list="uploadFileList"
