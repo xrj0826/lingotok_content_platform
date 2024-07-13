@@ -612,14 +612,6 @@ declare namespace API {
     size?: number;
   };
 
-  type IPageWordRootVO = {
-    total?: number;
-    records?: WordRootVO[];
-    current?: number;
-    pages?: number;
-    size?: number;
-  };
-
   type loginParams = {
     username: string;
     password: string;
@@ -1194,18 +1186,6 @@ declare namespace API {
     result?: IPageSmsTemplate;
   };
 
-  type ResultMessageIPageWordRootVO = {
-    /** 成功标志 */
-    success?: boolean;
-    /** 消息 */
-    message?: string;
-    /** 返回代码 */
-    code?: number;
-    /** 时间戳 */
-    timestamp?: number;
-    result?: IPageWordRootVO;
-  };
-
   type ResultMessageListBookMenu = {
     /** 成功标志 */
     success?: boolean;
@@ -1757,7 +1737,8 @@ declare namespace API {
   };
 
   type upload1Params = {
-    file: string;
+    filename: string;
+    contentType: string;
   };
 
   type upload2Params = {
@@ -1864,11 +1845,6 @@ declare namespace API {
     relatedId?: string;
   };
 
-  type wordRootParams = {
-    search: string;
-    pageVO: PageVO;
-  };
-
   type WordRootTree = {
     /** 语系 */
     language?: string;
@@ -1881,6 +1857,7 @@ declare namespace API {
   type WordRootVO = {
     /** 语系 */
     name?: string;
+    children?: WordRootVO[];
     /** 单词列表 */
     wordDatalist?: WordRootData[];
   };

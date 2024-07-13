@@ -2,32 +2,10 @@
 /* eslint-disable */
 import request from '/@/utils/request/index';
 
-/** 资源文件上传 POST /manager/web/file */
-export async function upload1(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.upload1Params,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResultMessageBoolean>('/manager/web/file', {
-    method: 'POST',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
-}
-
-/** minio分片资源上传 POST /manager/web/minioFile */
-export async function completeMultipartUpload(
-  body: API.CompleteMultipartUploadRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResultMessageBoolean>('/manager/web/minioFile', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
+/** 获取上传凭证 GET /manager/web/sts */
+export async function sts(options?: { [key: string]: any }) {
+  return request<API.ResultMessageObject>('/manager/web/sts', {
+    method: 'GET',
     ...(options || {}),
   });
 }
@@ -57,6 +35,21 @@ export async function voiceResult(
   return request<API.ResultMessageObject>(`/manager/web/voiceResult/${param0}`, {
     method: 'POST',
     params: { ...queryParams },
+    ...(options || {}),
+  });
+}
+
+/** 资源文件上传 POST /manager/web/wordUpload */
+export async function upload1(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.upload1Params,
+  options?: { [key: string]: any },
+) {
+  return request<API.ResultMessageBoolean>('/manager/web/wordUpload', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }

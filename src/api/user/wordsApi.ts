@@ -2,6 +2,14 @@
 /* eslint-disable */
 import request from '/@/utils/request/index';
 
+/** 此处后端没有提供注释 POST /manager/words/deleteResource */
+export async function deleteResource(options?: { [key: string]: any }) {
+  return request<API.ResultMessageObject>('/manager/words/deleteResource', {
+    method: 'POST',
+    ...(options || {}),
+  });
+}
+
 /** 删除单词 DELETE /manager/words/deleteWord */
 export async function deleteWord(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
@@ -113,23 +121,6 @@ export async function upload(
     },
     params: { ...queryParams },
     data: body,
-    ...(options || {}),
-  });
-}
-
-/** 获取词根分页 GET /manager/words/wordRoot */
-export async function wordRoot(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.wordRootParams,
-  options?: { [key: string]: any },
-) {
-  return request<API.ResultMessageIPageWordRootVO>('/manager/words/wordRoot', {
-    method: 'GET',
-    params: {
-      ...params,
-      pageVO: undefined,
-      ...params['pageVO'],
-    },
     ...(options || {}),
   });
 }

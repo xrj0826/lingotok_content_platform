@@ -49,7 +49,7 @@ export async function getStsToken(options?: { [key: string]: any }) {
 }
 
 /** minio合并分片 POST /manager/upload/multipart/complete */
-export async function completeMultipartUpload1(
+export async function completeMultipartUpload(
   body: API.CompleteMultipartUploadRequest,
   options?: { [key: string]: any },
 ) {
