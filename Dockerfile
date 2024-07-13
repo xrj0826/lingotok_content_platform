@@ -5,12 +5,12 @@ WORKDIR /app
 COPY package.json /app/package.json
 # 如果package.json没有进行改变,就不安装了,直接跳过
 RUN npm config set registry https://registry.npmmirror.com
-RUN npm i pnpm --force
-RUN pnpm install
+RUN npm install -g yarn
+RUN yarn install
 # 复制整个项目,进行打包
 COPY . /app
 
-RUN pnpm run build
+RUN yarn run build
 
 # 复制配置文件和项目运行文件,然后开启端口
 FROM nginx
