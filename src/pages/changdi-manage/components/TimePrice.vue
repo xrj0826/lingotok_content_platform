@@ -63,7 +63,7 @@ import { DatePicker, Input, MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { onMounted, reactive, ref } from 'vue';
 
-import { delete7, page3, update3 } from '@/api/user/houtaizhidingteshujiagejiekou';
+// import { delete6, page3, update3 } from '@/api/user/houtaizhidingteshujiagejiekou';
 import { useRenewDataStore } from '@/store/renewData';
 
 import addTimePrice from './addTimePrice.vue';
@@ -121,7 +121,7 @@ const columns: PrimaryTableCol[] = [
           id: context.newRowData.id,
         };
 
-        update3(params);
+        // update3(params);
         MessagePlugin.success('编辑成功');
       },
       // 校验规则，此处同 Form 表单
@@ -153,7 +153,7 @@ const columns: PrimaryTableCol[] = [
           id: context.newRowData.id,
         };
 
-        update3(params);
+        // update3(params);
         MessagePlugin.success('编辑成功');
       },
       // 校验规则，此处同 Form 表单
@@ -192,7 +192,7 @@ const columns: PrimaryTableCol[] = [
             id: editContext.editedRow.id,
           };
 
-          update3(params);
+          // update3(params);
         },
         onEnter: (ctx) => {
           ctx?.e?.preventDefault();
@@ -203,7 +203,7 @@ const columns: PrimaryTableCol[] = [
             id: editContext.editedRow.id,
           };
 
-          update3(params);
+          // update3(params);
         },
       }),
       // 除了点击非自身元素退出编辑态之外，还有哪些事件退出编辑态
@@ -233,7 +233,7 @@ const columns: PrimaryTableCol[] = [
           ordered: row.ordered,
           id: row.id,
         };
-        update3(params);
+        // update3(params);
       };
       return (
         <t-space>
@@ -276,7 +276,7 @@ const queryData = async (paginationInfo?, searchVo?) => {
   try {
     isLoading.value = true;
     // console.log('请求', entityInfo, paginationInfo);
-    const res = await page3({ entity: { venueId: props.editId }, searchVo, page: paginationInfo }); // 在此发送请求
+    // const res = await page3({ entity: { venueId: props.editId }, searchVo, page: paginationInfo }); // 在此发送请求
     // console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -300,7 +300,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await delete7({ ids });
+      // const res = await delete6({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,

@@ -12,7 +12,7 @@ export default [
     meta: {
       title: '词汇书管理页',
       icon: shallowRef(OrderDescendingIcon),
-      orderNo: 3,
+      orderNo: 2,
     },
     children: [
       {

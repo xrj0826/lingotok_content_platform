@@ -27,9 +27,9 @@ export async function save8(body: API.Exercises, options?: { [key: string]: any 
 }
 
 /** 批量删除练习 DELETE /manager/learn/exercises */
-export async function delete6(
+export async function deleteBatch(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete6Params,
+  params: API.deleteBatchParams,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessageBoolean>('/manager/learn/exercises', {
@@ -56,9 +56,9 @@ export async function get8(
 }
 
 /** 删除练习 DELETE /manager/learn/exercises/${param0} */
-export async function delete7(
+export async function delete6(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete7Params,
+  params: API.delete6Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;

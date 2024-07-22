@@ -3,8 +3,8 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { ref } from 'vue';
 
-import { delete9, get9 } from '@/api/user/articles';
-import { delete7, get8, updateSentenceResource } from '@/api/user/exercises';
+import { delete8, get9 } from '@/api/user/articles';
+import { delete6, get8, updateSentenceResource } from '@/api/user/exercises';
 import { delete5, get7 } from '@/api/user/readingMaterials';
 import { delete3 } from '@/api/user/sentence';
 // import { delete21 } from '@/api/user/guanliyuan';
@@ -462,7 +462,7 @@ const deleteReading = (row) => {
   const params = {
     id: row.id,
   };
-  delete9(params).then((res) => {
+  delete8(params).then((res) => {
     MessagePlugin.success('删除成功');
     readingDetail(rowReading.value);
   });
@@ -473,7 +473,7 @@ const deleteEssay = (row) => {
   const params = {
     id: row.id,
   };
-  delete7(params).then((res) => {
+  delete6(params).then((res) => {
     MessagePlugin.success('删除成功');
     essayDetail(rowArticle.value);
   });

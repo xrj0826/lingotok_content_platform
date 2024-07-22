@@ -89,6 +89,15 @@ declare namespace API {
     menus?: Menu[];
   };
 
+  type Announcement = {
+    /** 公告内容 */
+    content?: string;
+    /** 公告图片 */
+    image?: string;
+    /** 公告标题 */
+    title?: string;
+  };
+
   type Articles = {
     /** 所属读物ID */
     readingMaterialId?: string;
@@ -229,10 +238,6 @@ declare namespace API {
     ids: string[];
   };
 
-  type delete10Params = {
-    bookId: string;
-  };
-
   type delete1Params = {
     /** 短信签名id */
     id: string;
@@ -257,21 +262,25 @@ declare namespace API {
   };
 
   type delete6Params = {
-    /** ID集合 */
-    ids: string;
+    id: string;
   };
 
   type delete7Params = {
-    id: string;
-  };
-
-  type delete8Params = {
     /** ID集合 */
     ids: string;
   };
 
-  type delete9Params = {
+  type delete8Params = {
     id: string;
+  };
+
+  type delete9Params = {
+    bookId: string;
+  };
+
+  type deleteBatchParams = {
+    /** ID集合 */
+    ids: string;
   };
 
   type deleteBookMenuParams = {
@@ -491,6 +500,10 @@ declare namespace API {
   };
 
   type get9Params = {
+    id: string;
+  };
+
+  type getAnnouncementDetail1Params = {
     id: string;
   };
 
@@ -873,8 +886,8 @@ declare namespace API {
   };
 
   type Phrases = {
-    pcn?: string;
     pcontent?: string;
+    pcn?: string;
   };
 
   type querySmsSignPageParams = {
@@ -991,6 +1004,18 @@ declare namespace API {
     /** 时间戳 */
     timestamp?: number;
     result?: AdminUser;
+  };
+
+  type ResultMessageAnnouncement = {
+    /** 成功标志 */
+    success?: boolean;
+    /** 消息 */
+    message?: string;
+    /** 返回代码 */
+    code?: number;
+    /** 时间戳 */
+    timestamp?: number;
+    result?: Announcement;
   };
 
   type ResultMessageArticlesVO = {
@@ -1552,8 +1577,8 @@ declare namespace API {
     selecte?: Record<string, any>;
     startDate?: string;
     endDate?: string;
-    convertEndDate?: string;
     convertStartDate?: string;
+    convertEndDate?: string;
   };
 
   type Sentence = {

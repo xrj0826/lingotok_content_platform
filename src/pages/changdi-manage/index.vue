@@ -2,53 +2,33 @@
 <template>
   <div>
     <t-card>
-      <t-space style="margin: 0 20px 20px 0">
-        <add @add="AddFinsh"></add>
-        <!-- <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDelete"
+      <div style="margin-left: 20px">
+        <div style="font-size: 16px; margin-top: 10px; margin-bottom: 10px">请选择封面图片上传</div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-around;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 20px;
+          "
         >
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm> -->
-      </t-space>
-      <!-- <t-select-input
-        placeholder="请输入任意关键词"
-        allow-input
-        clearable
-        style="width: 300px"
-        @input-change="onInputChange"
-      >
-        <template #suffixIcon><search-icon /></template>
-      </t-select-input> -->
-
-      <t-table
-        :row-key="index"
-        :data="data"
-        :columns="columns"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        :pagination="pagination"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :show-sort-column-bg-color="true"
-        :hover="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeys"
-        :disable-data-page="true"
-        @row-click="handleRowClick"
-        @select-change="onSelectChange"
-        @filter-change="onFilterChange"
-        @change="onChange"
-      >
-        <!-- select-on-row-click -->
-
-        <!-- 自定义表头，title值为插槽名称  -->
-        <template #title-slot-name>
-          <div style="display: flex; justify-content: center"><UserCircleIcon style="margin-right: 8px" />申请人</div>
-        </template>
-      </t-table>
+          <t-upload
+            v-model="picture"
+            action="/manager/manager/upload/file"
+            theme="image"
+            :headers="{ accessToken: accessToken }"
+            :max="1"
+            :format-response="formatImgResponse"
+            accept="image/*"
+            @onWaitingUploadFilesChange="console.log('发生变化')"
+            @success="pictureUpload"
+            @remove="removePicture"
+          ></t-upload>
+          <t-button @click="ensure">确认修改</t-button>
+        </div>
+      </div>
     </t-card>
   </div>
 </template>
@@ -63,7 +43,8 @@ export default {
 import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 
-import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
+import { getAnnouncementDetail, getAnnouncementDetail1, updateAnnouncement } from '@/api/user/announcement';
+// import { deleteUsingDELETE, page } from '@/api/user/changdeguanli';
 import { useRenewDataStore } from '@/store/renewData';
 
 import { columns } from './columnData';
@@ -74,19 +55,69 @@ const querySave = reactive({
   order: false,
   venueType: '',
 });
+const formatImgResponse = () => {
+  return {
+    name: 'FileName',
+    response: {
+      result: {
+        url: 'https://encdn.ydwl.tech/微信图片_20230914163130.jpg',
+      },
+    },
+  };
+};
+const accessToken = ref<string | null>();
+
+const pic = ref('');
+const picture = ref([]);
+
+const id = ref('');
+
 // 挂载时调用请求函数
 onMounted(async () => {
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-    sort: 'createTime',
-    order: 'asc',
+  getAnnouncementDetail().then((res) => {
+    console.log('res', res);
+    pic.value = res.result.image;
+    if (pic.value) {
+      picture.value[0] = {
+        response: {
+          result: {
+            url: pic.value,
+          },
+        },
+      };
+    }
+    id.value = res.result.id;
   });
-  store.renewData = queryData; // 挂载时，将请求函数给pinia
-  store.pagination.current = pagination.current; // 分页数据也一起给
-  store.pagination.pageSize = pagination.pageSize;
-  store.querySave = querySave;
+  accessToken.value = localStorage.getItem('accessToken');
 });
+
+const ensure = () => {
+  if (pic.value == '') {
+    MessagePlugin.error('请选择图片');
+    return;
+  }
+  const params = {
+    id: id.value,
+    image: pic.value,
+  };
+  updateAnnouncement(params).then((res) => {
+    console.log('picture', picture.value);
+
+    if (res.code == 200) {
+      MessagePlugin.success('修改成功');
+    } else {
+      MessagePlugin.error('修改失败，请稍后再试');
+    }
+  });
+};
+
+const removePicture = () => {
+  picture.value = [];
+};
+
+const pictureUpload = (value) => {
+  pic.value = value.response.response.result.url;
+};
 
 const index = ref();
 const data = ref([]);
@@ -98,7 +129,7 @@ const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
   try {
     isLoading.value = true;
     console.log('请求', entityInfo, paginationInfo);
-    const res = await page({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
+    // const res = await page({ entity: entityInfo, searchVo, page: paginationInfo }); // 在此发送请求
     console.log('数据已送达', res);
 
     data.value = res.result.records; // 获得表格数据
@@ -138,7 +169,7 @@ const handleMoreDelete = async () => {
     if (ids === '') {
       MessagePlugin.error('未勾选删除项');
     } else {
-      const res = await deleteUsingDELETE({ ids });
+      // const res = await deleteUsingDELETE({ ids });
       console.log('批量删除后', res);
       queryData({
         pageNumber: pagination.current,

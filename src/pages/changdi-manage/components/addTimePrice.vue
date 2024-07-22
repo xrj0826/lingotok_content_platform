@@ -85,7 +85,7 @@ import { customAlphabet } from 'nanoid';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { save3 } from '@/api/user/houtaizhidingteshujiagejiekou';
+// import { save3 } from '@/api/user/houtaizhidingteshujiagejiekou';
 import { useRenewDataStore } from '@/store/renewData';
 // import { useRenewDataStore } from '@/store/renewData';
 
@@ -130,7 +130,7 @@ const add = async ({ validateResult, _ }) => {
       formData.id = nanoid();
       // formData.storeId = '9376';
       formData.venueId = store.storeId;
-      const res = await save3(formData);
+      // const res = await save3(formData);
       console.log('編輯返回', res);
       emit('add', 'emit传来喜报:组件通信成功', res);
 

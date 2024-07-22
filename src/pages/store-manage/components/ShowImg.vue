@@ -170,7 +170,7 @@ const onSelectChange = (value, params) => {
 //     if (ids === '') {
 //       MessagePlugin.error('未勾选删除项');
 //     } else {
-//       const res = await delete7({ ids });
+//       const res = await delete6({ ids });
 //       console.log('批量删除后', res);
 //       queryData({
 //         pageNumber: pagination.current,

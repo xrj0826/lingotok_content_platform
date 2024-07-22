@@ -27,9 +27,9 @@ export async function save9(body: API.Articles, options?: { [key: string]: any }
 }
 
 /** 批量删除文章 DELETE /manager/learn/articles */
-export async function delete8(
+export async function delete7(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete8Params,
+  params: API.delete7Params,
   options?: { [key: string]: any },
 ) {
   return request<API.ResultMessage>('/manager/learn/articles', {
@@ -56,9 +56,9 @@ export async function get9(
 }
 
 /** 删除文章 DELETE /manager/learn/articles/${param0} */
-export async function delete9(
+export async function delete8(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete9Params,
+  params: API.delete8Params,
   options?: { [key: string]: any },
 ) {
   const { id: param0, ...queryParams } = params;

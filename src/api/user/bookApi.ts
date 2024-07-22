@@ -3,9 +3,9 @@
 import request from '/@/utils/request/index';
 
 /** 删除单词书 DELETE /manager/book/${param0} */
-export async function delete10(
+export async function delete9(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.delete10Params,
+  params: API.delete9Params,
   options?: { [key: string]: any },
 ) {
   const { bookId: param0, ...queryParams } = params;

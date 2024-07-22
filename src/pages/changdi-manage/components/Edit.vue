@@ -190,7 +190,7 @@
 import { MessagePlugin } from 'tdesign-vue-next';
 import { reactive, ref } from 'vue';
 
-import { page, update } from '@/api/user/changdeguanli';
+// import { page, update } from '@/api/user/changdeguanli';
 
 const props = defineProps({ editId: Number }); // 为什么这里类型只能用大写，不然会警告?
 
@@ -235,7 +235,7 @@ const handlerEdit = async () => {
   try {
     visible.value = true;
     console.log(props.editId);
-    const res = await page({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
+    // const res = await page({ entity: { id: props.editId }, searchVo: null, page: null }); // 使用分页查询用于获得当前的数据
     const [data] = res.result.records; // 解构赋值records
     // for (const key in formData) {
     //   if (Object.prototype.hasOwnProperty.call(formData, key)) {
@@ -266,7 +266,7 @@ const handlerEdit = async () => {
 // 确定编辑
 const edit = async () => {
   try {
-    const res = await update(formData);
+    // const res = await update(formData);
     console.log('編輯返回', res);
     emit('edit', 'emit传来喜报:组件通信成功', res);
 

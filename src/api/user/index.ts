@@ -2,6 +2,7 @@
 /* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
+import * as announcement from './announcement';
 import * as guanliduanduanxinmobanjiekou from './guanliduanduanxinmobanjiekou';
 import * as guanliduanduanxinqianmingjiekou from './guanliduanduanxinqianmingjiekou';
 import * as guanliduanxingzhengdequguanlijiekou from './guanliduanxingzhengdequguanlijiekou';
@@ -23,6 +24,7 @@ import * as webApi from './webApi';
 import * as file from './file';
 import * as guanliduanjiaosecaidanjiekou from './guanliduanjiaosecaidanjiekou';
 export default {
+  announcement,
   guanliduanduanxinmobanjiekou,
   guanliduanduanxinqianmingjiekou,
   guanliduanxingzhengdequguanlijiekou,
