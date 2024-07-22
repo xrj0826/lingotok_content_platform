@@ -3,7 +3,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { PrimaryTableCol } from 'tdesign-vue-next/es/table/type';
 import { ref } from 'vue';
 
-import { addWord, bookMenuList, delete10, deleteBookMenu, group } from '@/api/user/bookApi';
+import { addWord, bookMenuList, delete9, deleteBookMenu, group } from '@/api/user/bookApi';
 import { getByGroupId, getById } from '@/api/user/wordsApi';
 import { useRenewDataStore } from '@/store/renewData';
 
@@ -342,7 +342,7 @@ const handleDelete = async (id) => {
       bookId: id,
     };
     //
-    const res = await delete10(params);
+    const res = await delete9(params);
     console.log('删除后', res);
     MessagePlugin.success('删除成功');
     store.renewData(
