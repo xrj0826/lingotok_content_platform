@@ -1485,6 +1485,7 @@ export default {
 </script>
 
 <script setup lang="tsx">
+import COS from 'cos-js-sdk-v5';
 import { HelpCircleIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin, UploadProps } from 'tdesign-vue-next';
 import { defineComponent, getCurrentInstance, onMount, onMounted, reactive, ref, watch } from 'vue';
@@ -1563,7 +1564,6 @@ import {
   word,
   wordIndex,
 } from './newFile';
-// import COS from 'cos-js-sdk-v5';
 
 const files = reactive([]);
 const filechange = (e) => {

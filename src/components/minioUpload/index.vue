@@ -1,67 +1,84 @@
 <template>
   <div class="container">
     <div>
-
       <!-- 文件上传 -->
       <!-- <input id="file-selector" type="file" @change="fileChange" /> -->
 
       <!-- 已上传文件列表 -->
       <div>
-
-        <t-table row-key="index" :data="data" :columns="columns" :showHeader="false">
+        <t-table
+          row-key="index"
+          :data="data"
+          :columns="columns"
+          :show-header="false"
+        >
           <template #size>
             <div>{{ formatSize(data[0].size) }}</div>
           </template>
           <template #progress>
-            <div class="progress" v-if="progressInfo.status">
+            <div
+              v-if="progressInfo.status"
+              class="progress"
+            >
               <div class="progress-info">
                 {{ progressInfo.name }}
                 <el-progress :percentage="progressInfo.percent" />
-                <el-button @click="toggleUpload" size="small">
+                <el-button
+                  size="small"
+                  @click="toggleUpload"
+                >
                   {{ progressInfo.status === 'pause' ? '继续上传' : '暂停' }}
                 </el-button>
               </div>
-              <div v-html="progressInfo.text" class="progress-text"></div>
+              <div
+                class="progress-text"
+                v-html="progressInfo.text"
+              ></div>
             </div>
             <div v-else>
               <t-tag theme="success">上传完成</t-tag>
             </div>
           </template>
         </t-table>
-
       </div>
 
       <!-- 上传进度信息 -->
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, defineProps, watch, reactive } from 'vue';
-import { cosUploadUtils } from './cosUploadUtils';
 import { size } from 'lodash';
+import { defineProps, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+
 import { upload1 } from '@/api/user/webApi';
+
+import { cosUploadUtils } from './cosUploadUtils';
 // import upload1 from 'src/api/user/webApi.ts'
-const data = ref([{
-  filename: "", size: "", progress: "", contentType: ""
-}])
+const data = ref([
+  {
+    filename: '',
+    size: '',
+    progress: '',
+    contentType: '',
+  },
+]);
 
 const cos = ref(null); // 腾讯云 cos 操作实例
-const Bucket = "english-1325232490"; // 存储桶名称，由bucketname-appid 组成，appid必须填入，可以在COS控制台查看存储桶名称。 https://console.cloud.tencent.com/cos5/bucket
-const Region = "ap-shanghai"; // 存储桶Region可以在COS控制台指定存储桶的概览页查看 https://console.cloud.tencent.com/cos5/bucket/
+const Bucket = 'english-1325232490'; // 存储桶名称，由bucketname-appid 组成，appid必须填入，可以在COS控制台查看存储桶名称。 https://console.cloud.tencent.com/cos5/bucket
+const Region = 'ap-shanghai'; // 存储桶Region可以在COS控制台指定存储桶的概览页查看 https://console.cloud.tencent.com/cos5/bucket/
 const successList = ref([]);
 const progressInfo = ref({
   percent: 0, // 进度百分比
-  text: "", // 进度信息文本
-  name: "", // 正在上传中的文件名称
-  taskId: "", // 上传任务 id，用于暂停/继续
-  status: "", // 上传状态，用于暂停、继续按钮显示
-  size: "",
+  text: '', // 进度信息文本
+  name: '', // 正在上传中的文件名称
+  taskId: '', // 上传任务 id，用于暂停/继续
+  status: '', // 上传状态，用于暂停、继续按钮显示
+  size: '',
 });
 const props = defineProps({
   file1: Object,
-  cos: Object
+  cos: Object,
 });
 
 const columns = ref([
@@ -69,19 +86,19 @@ const columns = ref([
   { colKey: 'size', title: '文件大小', width: '100' },
   // { colkey: 'contentType', title: '文件类型', width: '100' },
   { colKey: 'progress', title: '上传过程', width: '200' },
-])
+]);
 
 // 开始或暂停 cos 下载任务
 const toggleUpload = () => {
   const { status, taskId } = progressInfo.value;
-  if (status === "uploading") {
+  if (status === 'uploading') {
     // 暂停
     cos.value.pauseTask(taskId);
-    progressInfo.value.status = "pause";
-  } else if (status === "pause") {
+    progressInfo.value.status = 'pause';
+  } else if (status === 'pause') {
     // 继续
     cos.value.restartTask(taskId);
-    progressInfo.value.status = "uploading";
+    progressInfo.value.status = 'uploading';
   }
 };
 
@@ -91,8 +108,8 @@ const fileChange = (file) => {
   // 上传文件
   cos.value.uploadFile(
     {
-      Bucket: Bucket,
-      Region: Region,
+      Bucket,
+      Region,
       Key: file.name,
       Body: file,
       SliceSize: 1024 * 1024, // 大于1mb才进行分块上传
@@ -100,11 +117,11 @@ const fileChange = (file) => {
         progressInfo.value.taskId = tid;
         Object.assign(progressInfo.value, {
           taskId: tid,
-          status: "uploading",
+          status: 'uploading',
         });
       },
       onProgress: (progressData) => {
-        console.log("上传中", JSON.stringify(progressData));
+        console.log('上传中', JSON.stringify(progressData));
         const text = cosUploadUtils.getProgressText(progressData);
         Object.assign(progressInfo.value, {
           percent: Math.floor(progressData.percent * 100),
@@ -118,41 +135,43 @@ const fileChange = (file) => {
       if (!err) {
         const { Location } = data1;
         successList.value.push({
-          name: "https://encdn.ydwl.tech/" + progressInfo.value.name,
+          name: `https://encdn.ydwl.tech/${progressInfo.value.name}`,
           url: Location,
         });
         const params = {
           filename: data.value[0].filename,
-          contentType: data.value[0].contentType
-        }
-        upload1(params).then(() => {
-
-        })
+          contentType: data.value[0].contentType,
+        };
+        upload1(params).then(() => {});
         // 初始化进度信息
         Object.assign(progressInfo.value, {
           percent: 0,
-          text: "",
-          name: "",
-          taskId: "",
-          status: "",
-          url: "",
+          text: '',
+          name: '',
+          taskId: '',
+          status: '',
+          url: '',
         });
       }
-    }
+    },
   );
 };
 
 // 监听 file1 的变化
-watch(() => props.file1, (newVal) => {
-  console.log('new', newVal)
-  // progressInfo.value.size = newVal.size
-  data.value[0].filename = newVal.name
-  data.value[0].size = newVal.size
-  data.value[0].contentType = newVal.type
-  console.log('data', data.value)
-  cos.value = props.cos
-  fileChange(newVal)
-}, { deep: true, immediate: true });
+watch(
+  () => props.file1,
+  (newVal) => {
+    console.log('new', newVal);
+    // progressInfo.value.size = newVal.size
+    data.value[0].filename = newVal.name;
+    data.value[0].size = newVal.size;
+    data.value[0].contentType = newVal.type;
+    console.log('data', data.value);
+    cos.value = props.cos;
+    fileChange(newVal);
+  },
+  { deep: true, immediate: true },
+);
 
 onBeforeUnmount(() => {
   // 取消上传
