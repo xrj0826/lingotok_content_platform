@@ -20,7 +20,6 @@
             theme="image"
             :headers="{ accessToken: accessToken }"
             :max="1"
-            :format-response="formatImgResponse"
             accept="image/*"
             @onWaitingUploadFilesChange="console.log('发生变化')"
             @success="pictureUpload"
@@ -55,16 +54,6 @@ const querySave = reactive({
   order: false,
   venueType: '',
 });
-const formatImgResponse = () => {
-  return {
-    name: 'FileName',
-    response: {
-      result: {
-        url: 'https://encdn.ydwl.tech/微信图片_20230914163130.jpg',
-      },
-    },
-  };
-};
 const accessToken = ref<string | null>();
 
 const pic = ref('');
@@ -79,11 +68,7 @@ onMounted(async () => {
     pic.value = res.result.image;
     if (pic.value) {
       picture.value[0] = {
-        response: {
-          result: {
-            url: pic.value,
-          },
-        },
+        url: pic.value,
       };
     }
     id.value = res.result.id;
@@ -116,7 +101,8 @@ const removePicture = () => {
 };
 
 const pictureUpload = (value) => {
-  pic.value = value.response.response.result.url;
+  console.log('upload', value);
+  pic.value = value.response.result.url;
 };
 
 const index = ref();
