@@ -4,10 +4,7 @@
     <t-card>
       <t-space style="margin: 0 20px 20px 0">
         <add @add="AddFinsh"></add>
-        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDelete"
-        >
+        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDelete">
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
         <!--
@@ -21,243 +18,113 @@
           <template #suffixIcon><search-icon /></template>
 </t-select-input> -->
       </t-space>
-      <t-table
-        :row-key="index"
-        :data="data"
-        :columns="columns"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        :pagination="pagination"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeys"
-        @row-click="handleRowClick"
-        @select-change="onSelectChange"
-        @change="onChange"
-      >
-      </t-table
-    ></t-card>
+      <t-table :row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="small"
+        :pagination="pagination" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
+        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeys"
+        @row-click="handleRowClick" @select-change="onSelectChange" @change="onChange">
+      </t-table></t-card>
 
-    <t-dialog
-      v-model:visible="visible"
-      theme="info"
-      header="更改读物名称"
-      @close="visible = false"
-      @confirm="edit()"
-    >
+    <t-dialog v-model:visible="visible" theme="info" header="更改读物名称" @close="visible = false" @confirm="edit()">
       <t-input v-model="name"></t-input>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleDetail"
-      header="读物详情"
-      width="1200px"
-      :footer="false"
-      @close="visibleDetail = false"
-    >
+    <t-dialog v-model:visible="visibleDetail" header="读物详情" width="1200px" :footer="false"
+      @close="visibleDetail = false">
       <div style="font-size: 16px; margin-bottom: 20px">读物类型：{{ readingDetailContent.name }}</div>
       <div style="display: flex; margin-bottom: 20px">
         <t-button @click="visibleUploadArticle = true">上传文章</t-button>
-        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDeleteReading"
-        >
+        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteReading">
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
       </div>
 
       <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px">文章列表</div>
 
-      <t-table
-        :row-key="index"
-        :data="readingDetailContent.articlesList"
-        :columns="columnsReading"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeysReading"
-        @row-click="handleRowClick"
-        @select-change="onSelectChangeReading"
-      >
+      <t-table :row-key="index" :data="readingDetailContent.articlesList" :columns="columnsReading" table-layout="fixed"
+        :bordered="true" size="small" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
+        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeysReading"
+        @row-click="handleRowClick" @select-change="onSelectChangeReading">
         <template #picture="{ row }">
-          <img
-            :src="row.picture"
-            style="width: 100px; height: 120px"
-          />
+          <img :src="row.picture" style="width: 100px; height: 120px" />
         </template>
       </t-table>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleEassy"
-      header="文章详情"
-      width="1000px"
-      :footer="false"
-      @close="visibleEassy = false"
-    >
+    <t-dialog v-model:visible="visibleEassy" header="文章详情" width="1000px" :footer="false" @close="visibleEassy = false">
       <div style="font-size: 16px; margin-bottom: 20px">文章名称：{{ articlesContent.title }}</div>
       <div style="display: flex; margin-bottom: 20px">
         <t-button @click="visibleUploadExercise = true">上传练习</t-button>
-        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDeleteExercise"
-        >
+        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteExercise">
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
       </div>
       <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px">练习列表</div>
-      <t-table
-        :row-key="index"
-        :data="articlesContent.exercisesList"
-        :columns="columnsEssay"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeysEassy"
-        @row-click="handleRowClick"
-        @select-change="onSelectChangeEassy"
-      >
+      <t-table :row-key="index" :data="articlesContent.exercisesList" :columns="columnsEssay" table-layout="fixed"
+        :bordered="true" size="small" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
+        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeysEassy"
+        @row-click="handleRowClick" @select-change="onSelectChangeEassy">
       </t-table>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleExercise"
-      header="练习详情"
-      width="1400px"
-      :footer="false"
-      @close="visibleExercise = false"
-    >
-      <div
-        v-if="exercises.title"
-        style="font-size: 16px; margin-bottom: 20px"
-      >
+    <t-dialog v-model:visible="visibleExercise" header="练习详情" width="1400px" :footer="false"
+      @close="visibleExercise = false">
+      <div v-if="exercises.title" style="font-size: 16px; margin-bottom: 20px">
         练习名称：{{ exercises.title }}
       </div>
-      <div
-        v-else
-        style="font-size: 16px; margin-bottom: 20px"
-      >
+      <div v-else style="font-size: 16px; margin-bottom: 20px">
         暂无练习名称
       </div>
       <div style="display: flex; margin-bottom: 20px">
         <t-button @click="visibleUploadSen = true">上传句子</t-button>
-        <t-button @click="visibleMerge = true"
-          >句子资源列表({{
-            (exercises.audioList?.length || 0) +
-            (exercises.conetentList?.length || 0) +
-            (exercises.translationList?.length || 0) +
-            (exercises.videoList?.length || 0)
-          }})</t-button
-        >
-        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDeleteSen"
-        >
+        <t-button @click="visibleMerge = true">句子资源列表({{
+          (exercises.audioList?.length || 0) +
+          (exercises.conetentList?.length || 0) +
+          (exercises.translationList?.length || 0) +
+          (exercises.videoList?.length || 0)
+          }})</t-button>
+        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteSen">
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
       </div>
       <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px; color: black">
         句子列表
       </div>
-      <t-table
-        :row-key="index"
-        :data="exercises.sentenceList"
-        :columns="columnsExercise"
-        table-layout="fixed"
-        :bordered="true"
-        size="small"
-        cell-empty-content="-"
-        resizable
-        :loading="isLoading"
-        :hover="true"
-        :show-sort-column-bg-color="true"
-        right-fixed-column="1"
-        :selected-row-keys="selectedRowKeysSen"
-        @row-click="handleRowClick"
-        @select-change="onSelectChangeSen"
-      >
+      <t-table :row-key="index" :data="exercises.sentenceList" :columns="columnsExercise" table-layout="fixed"
+        :bordered="true" size="small" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
+        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeysSen"
+        @row-click="handleRowClick" @select-change="onSelectChangeSen">
         <template #voiceUrl="{ row }">
-          <audio
-            v-if="row.voiceUrl"
-            :autoplay="false"
-            controls="controls"
-            preload="meta"
-            :src="row.voiceUrl"
-          ></audio>
+          <audio v-if="row.voiceUrl" :autoplay="false" controls="controls" preload="meta" :src="row.voiceUrl"></audio>
         </template>
         <template #videoUrl="{ row }">
-          <video
-            v-if="row.videoUrl"
-            ref="videoRef"
-            :src="row.videoUrl"
-            width="200"
-            height="100"
-            :poster="row.videoUrl + '?vframe/jpg/offset/10/w/200/h/100'"
-            preload="none"
-            :autoplay="false"
-            controls
-          ></video>
+          <video v-if="row.videoUrl" ref="videoRef" :src="row.videoUrl" width="200" height="100"
+            :poster="row.videoUrl + '?vframe/jpg/offset/10/w/200/h/100'" preload="none" :autoplay="false"
+            controls></video>
         </template>
       </t-table>
     </t-dialog>
-    <t-dialog
-      v-model:visible="visibleMerge"
-      header="句子资源列表"
-      width="1500px"
-      :footer="false"
-      @close="visibleMerge = false"
-    >
-      <div
-        v-if="exercises.title"
-        style="font-size: 16px; margin-bottom: 20px"
-      >
+    <t-dialog v-model:visible="visibleMerge" header="句子资源列表" width="1500px" :footer="false"
+      @close="visibleMerge = false">
+      <div v-if="exercises.title" style="font-size: 16px; margin-bottom: 20px">
         练习名称：{{ exercises.title }}
       </div>
-      <div
-        v-else
-        style="font-size: 16px; margin-bottom: 20px"
-      >
+      <div v-else style="font-size: 16px; margin-bottom: 20px">
         暂无练习名称
       </div>
       <div style="display: flex; margin-bottom: 20px">
         <div>
-          <t-button
-            :disabled="
-              selectedRowKeysContent?.length > 1 ||
-              selectedRowKeysTrans?.length > 1 ||
-              selectedRowKeysAudio?.length > 1 ||
-              selectedRowKeysVideo?.length > 1
-            "
-            @click="mergeInSentence"
-            >组成句子</t-button
-          >
+          <t-button :disabled="selectedRowKeysContent?.length > 1 ||
+            selectedRowKeysTrans?.length > 1 ||
+            selectedRowKeysAudio?.length > 1 ||
+            selectedRowKeysVideo?.length > 1
+            " @click="mergeInSentence">组成句子</t-button>
           <p style="font-size: 10px; color: gray">每个资源列表最多只能选择一项！</p>
         </div>
         <!--        <div>
           <t-button @click="mergeInSentence">批量组成句子</t-button>
           <p style="font-size: 10px; color: gray">请保证每列勾选的数量一致</p>
         </div>-->
-        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDeleteContent"
-        >
+        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteContent">
           <t-button theme="danger"> 批量删除 </t-button>
         </t-popconfirm>
         <!--        <t-popconfirm
@@ -268,8 +135,7 @@
         </t-popconfirm>-->
       </div>
       <div style="display: grid; grid-template-columns: repeat(2, 47%); gap: 10px">
-        <div
-          style="
+        <div style="
             text-align: center;
             font-size: 16px;
             margin-bottom: 10px;
@@ -277,55 +143,29 @@
             border-radius: 20px;
             padding: 20px 0;
             position: relative;
-          "
-        >
+          ">
           <div style="text-align: center; margin: 0 80px">
             原文资源
             <p>{{ exercises.contentFileName }}</p>
           </div>
           <div style="position: absolute; right: 10px; top: 10px">
-            <t-button
-              :disabled="selectedRowKeysContent?.length != 2"
-              @click="handleMerge('content')"
-              >合并</t-button
-            >
+            <t-button :disabled="selectedRowKeysContent?.length != 2" @click="handleMerge('content')">合并</t-button>
           </div>
-          <t-table
-            v-if="exercises.conetentList"
-            :row-key="id"
-            :data="exercises.conetentList"
-            :columns="columnsContent"
-            drag-sort="row-handler"
-            :sort="{ sortBy: 'rank', descending: false }"
-            table-layout="fixed"
-            size="small"
-            cell-empty-content="-"
-            resizable
-            :loading="isLoading"
-            :hover="true"
-            :show-sort-column-bg-color="true"
-            right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysContent"
-            @drag-sort="(e) => onSortChange(e, 'content')"
-            @row-click="handleRowClick"
-            @select-change="onSelectChangeContent"
-          >
+          <t-table v-if="exercises.conetentList" :row-key="id" :data="exercises.conetentList" :columns="columnsContent"
+            drag-sort="row-handler" :sort="{ sortBy: 'rank', descending: false }" table-layout="fixed" size="small"
+            cell-empty-content="-" resizable :loading="isLoading" :hover="true" :show-sort-column-bg-color="true"
+            right-fixed-column="1" :selected-row-keys="selectedRowKeysContent"
+            @drag-sort="(e) => onSortChange(e, 'content')" @row-click="handleRowClick"
+            @select-change="onSelectChangeContent">
             <template #content="{ row }">
               <div>
-                <t-input
-                  v-model="row.content"
-                  style="min-width: 300px"
-                  clearable
-                  size="small"
-                  borderless
-                  placeholder="请输入内容"
-                ></t-input>
+                <t-input v-model="row.content" style="min-width: 300px" clearable size="small" borderless
+                  placeholder="请输入内容"></t-input>
               </div>
             </template>
           </t-table>
         </div>
-        <div
-          style="
+        <div style="
             text-align: center;
             font-size: 16px;
             margin-bottom: 10px;
@@ -333,56 +173,30 @@
             border-radius: 20px;
             padding: 20px 0;
             position: relative;
-          "
-        >
+          ">
           <div style="text-align: center; margin: 0 80px">
             翻译资源
             <p>{{ exercises.translationFileName }}</p>
           </div>
           <div style="position: absolute; right: 10px; top: 10px">
-            <t-button
-              :disabled="selectedRowKeysTrans?.length != 2"
-              @click="handleMerge('trans')"
-              >合并</t-button
-            >
+            <t-button :disabled="selectedRowKeysTrans?.length != 2" @click="handleMerge('trans')">合并</t-button>
           </div>
-          <t-table
-            v-if="exercises.translationList"
-            :row-key="id"
-            :data="exercises.translationList"
-            :columns="columnsContent"
-            table-layout="fixed"
-            drag-sort="row-handler"
-            size="small"
-            cell-empty-content="-"
-            resizable
-            :loading="isLoading"
-            :hover="true"
-            :show-sort-column-bg-color="true"
-            right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysTrans"
-            @drag-sort="(e) => onSortChange(e, 'trans')"
-            @row-click="handleRowClick"
-            @select-change="onSelectChangeTrans"
-          >
+          <t-table v-if="exercises.translationList" :row-key="id" :data="exercises.translationList"
+            :columns="columnsContent" table-layout="fixed" drag-sort="row-handler" size="small" cell-empty-content="-"
+            resizable :loading="isLoading" :hover="true" :show-sort-column-bg-color="true" right-fixed-column="1"
+            :selected-row-keys="selectedRowKeysTrans" @drag-sort="(e) => onSortChange(e, 'trans')"
+            @row-click="handleRowClick" @select-change="onSelectChangeTrans">
             <template #content="{ row }">
               <div>
-                <t-input
-                  v-model="row.content"
-                  style="min-width: 300px"
-                  clearable
-                  size="small"
-                  borderless
-                  placeholder="请输入内容"
-                ></t-input>
+                <t-input v-model="row.content" style="min-width: 300px" clearable size="small" borderless
+                  placeholder="请输入内容"></t-input>
               </div>
             </template>
           </t-table>
         </div>
       </div>
       <div style="display: grid; grid-template-columns: repeat(2, 47%); gap: 10px">
-        <div
-          style="
+        <div style="
             text-align: center;
             font-size: 16px;
             margin-bottom: 10px;
@@ -390,50 +204,25 @@
             border-radius: 20px;
             padding: 20px 0;
             position: relative;
-          "
-        >
+          ">
           <div style="text-align: center; margin: 0 80px">
             音频资源
             <p>{{ exercises.audioFileName }}</p>
           </div>
           <div style="position: absolute; right: 10px; top: 10px">
-            <t-button
-              :disabled="selectedRowKeysAudio?.length != 2"
-              @click="handleMerge('audio')"
-              >合并</t-button
-            >
+            <t-button :disabled="selectedRowKeysAudio?.length != 2" @click="handleMerge('audio')">合并</t-button>
           </div>
-          <t-table
-            v-if="exercises.audioList"
-            :row-key="id"
-            :data="exercises.audioList"
-            :columns="columnsVideo"
-            drag-sort="row-handler"
-            table-layout="fixed"
-            size="small"
-            cell-empty-content="-"
-            resizable
-            :loading="isLoading"
-            :hover="true"
-            :show-sort-column-bg-color="true"
-            right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysAudio"
-            @drag-sort="(e) => onSortChange(e, 'audio')"
-            @row-click="handleRowClick"
-            @select-change="onSelectChangeAudio"
-          >
+          <t-table v-if="exercises.audioList" :row-key="id" :data="exercises.audioList" :columns="columnsVideo"
+            drag-sort="row-handler" table-layout="fixed" size="small" cell-empty-content="-" resizable
+            :loading="isLoading" :hover="true" :show-sort-column-bg-color="true" right-fixed-column="1"
+            :selected-row-keys="selectedRowKeysAudio" @drag-sort="(e) => onSortChange(e, 'audio')"
+            @row-click="handleRowClick" @select-change="onSelectChangeAudio">
             <template #url="{ row }">
-              <audio
-                :autoplay="false"
-                controls="controls"
-                preload="meta"
-                :src="row.url"
-              ></audio>
+              <audio :autoplay="false" controls="controls" preload="meta" :src="row.url"></audio>
             </template>
           </t-table>
         </div>
-        <div
-          style="
+        <div style="
             text-align: center;
             font-size: 16px;
             margin-bottom: 10px;
@@ -441,71 +230,34 @@
             border-radius: 20px;
             padding: 20px 0;
             position: relative;
-          "
-        >
+          ">
           <div style="text-align: center; margin: 0 80px">
             视频资源
             <p>{{ exercises.videoFileName }}</p>
           </div>
           <div style="position: absolute; right: 10px; top: 10px">
-            <t-button
-              :disabled="selectedRowKeysVideo?.length != 2"
-              @click="handleMerge('video')"
-              >合并</t-button
-            >
+            <t-button :disabled="selectedRowKeysVideo?.length != 2" @click="handleMerge('video')">合并</t-button>
           </div>
-          <t-table
-            v-if="exercises.videoList"
-            :row-key="id"
-            :data="exercises.videoList.slice((current - 1) * pageSize, current * pageSize)"
-            :columns="columnsVideo"
-            drag-sort="row-handler"
-            table-layout="fixed"
-            size="small"
-            cell-empty-content="-"
-            resizable
-            :loading="isLoading"
-            :hover="true"
-            :show-sort-column-bg-color="true"
-            right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysVideo"
-            @drag-sort="(e) => onSortChange(e, 'video')"
-            @row-click="handleRowClick"
-            @select-change="onSelectChangeVideo"
-          >
+          <t-table v-if="exercises.videoList" :row-key="id"
+            :data="exercises.videoList.slice((current - 1) * pageSize, current * pageSize)" :columns="columnsVideo"
+            drag-sort="row-handler" table-layout="fixed" size="small" cell-empty-content="-" resizable
+            :loading="isLoading" :hover="true" :show-sort-column-bg-color="true" right-fixed-column="1"
+            :selected-row-keys="selectedRowKeysVideo" @drag-sort="(e) => onSortChange(e, 'video')"
+            @row-click="handleRowClick" @select-change="onSelectChangeVideo">
             <template #url="{ row }">
-              <video
-                ref="videoRef"
-                :src="row.url"
-                width="200"
-                height="100"
-                :poster="row.url + '?vframe/jpg/offset/10/w/200/h/100'"
-                preload="none"
-                :autoplay="false"
-                controls
-              ></video>
+              <video ref="videoRef" :src="row.url" width="200" height="100"
+                :poster="row.url + '?vframe/jpg/offset/10/w/200/h/100'" preload="none" :autoplay="false"
+                controls></video>
             </template>
           </t-table>
-          <t-pagination
-            v-model="current"
-            v-model:pageSize="pageSize"
-            :total="exercises?.videoList?.length"
-            show-jumper
-            @change="onPageChange"
-            @page-size-change="onPageSizeChange"
-            @current-change="onCurrentChange"
-          />
+          <t-pagination v-model="current" v-model:pageSize="pageSize" :total="exercises?.videoList?.length" show-jumper
+            @change="onPageChange" @page-size-change="onPageSizeChange" @current-change="onCurrentChange" />
         </div>
       </div>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleUploadArticle"
-      header="上传文章"
-      width="1000px"
-      :footer="false"
-      @close="closeArticle()"
-    >
+    <t-dialog v-model:visible="visibleUploadArticle" header="上传文章" width="1000px" :footer="false"
+      @close="closeArticle()">
       <div style="padding-left: 50px">
         <div style="display: flex">
           <div>文章数量</div>
@@ -517,29 +269,18 @@
         <div style="display: flex; margin-top: 20px">
           <div>文章介绍</div>
           <div style="width: 500px; margin-left: 20px">
-            <t-textarea
-              v-model="articleIntroduction"
-              placeholder="请输入文章介绍"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-            />
+            <t-textarea v-model="articleIntroduction" placeholder="请输入文章介绍" name="description"
+              :autosize="{ minRows: 3, maxRows: 10 }" />
           </div>
         </div>
 
         <div style="display: flex; margin-top: 20px">
           <div>文章封面</div>
           <div style="width: 500px; margin-left: 20px">
-            <t-upload
-              v-model="picture"
-              action="/manager/manager/upload/file"
-              theme="file"
-              :headers="{ accessToken: accessToken }"
-              :max="2"
-              accept="image/*"
-              @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="pictureUpload"
-              @remove="removePicture"
-            ></t-upload>
+            <t-upload v-model="picture" action="/manager/manager/upload/file" theme="file"
+              :headers="{ accessToken: accessToken }" :max="2" accept="image/*"
+              @onWaitingUploadFilesChange="console.log('发生变化')" @success="pictureUpload"
+              @remove="removePicture"></t-upload>
           </div>
         </div>
 
@@ -552,21 +293,12 @@
       </div>
 
       <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button
-          size="large"
-          @click="articleUpload()"
-          >确认上传</t-button
-        >
+        <t-button size="large" @click="articleUpload()">确认上传</t-button>
       </div>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleModifyArticle"
-      header="修改文章"
-      width="1000px"
-      :footer="false"
-      @close="closeArticleModify()"
-    >
+    <t-dialog v-model:visible="visibleModifyArticle" header="修改文章" width="1000px" :footer="false"
+      @close="closeArticleModify()">
       <div style="padding-left: 50px">
         <div style="display: flex">
           <div>文章数量</div>
@@ -578,37 +310,23 @@
         <div style="display: flex; margin-top: 20px">
           <div>文章介绍</div>
           <div style="width: 500px; margin-left: 20px">
-            <t-textarea
-              v-model="rowModifyArticle.introduction"
-              placeholder="请输入文章介绍"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-            />
+            <t-textarea v-model="rowModifyArticle.introduction" placeholder="请输入文章介绍" name="description"
+              :autosize="{ minRows: 3, maxRows: 10 }" />
           </div>
         </div>
 
         <div style="display: flex; margin-top: 20px">
           <div>文章封面</div>
-          <img
-            style="width: 150px; height: 200px; margin-left: 20px"
-            :src="rowModifyArticle.picture"
-          />
+          <img style="width: 150px; height: 200px; margin-left: 20px" :src="rowModifyArticle.picture" />
         </div>
 
         <div style="display: flex; margin-top: 20px">
           <div>文章封面</div>
           <div style="width: 500px; margin-left: 20px">
-            <t-upload
-              v-model="pictureModify"
-              action="/manager/manager/upload/file"
-              theme="file"
-              :headers="{ accessToken: accessToken }"
-              :max="2"
-              accept="image/*"
-              @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="pictureModifyUpload"
-              @remove="removePicture"
-            ></t-upload>
+            <t-upload v-model="pictureModify" action="/manager/manager/upload/file" theme="file"
+              :headers="{ accessToken: accessToken }" :max="2" accept="image/*"
+              @onWaitingUploadFilesChange="console.log('发生变化')" @success="pictureModifyUpload"
+              @remove="removePicture"></t-upload>
           </div>
         </div>
 
@@ -621,21 +339,12 @@
       </div>
 
       <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button
-          size="large"
-          @click="articleUploadModify()"
-          >确认修改</t-button
-        >
+        <t-button size="large" @click="articleUploadModify()">确认修改</t-button>
       </div>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleUploadExercise"
-      header="上传练习"
-      width="1000px"
-      :footer="false"
-      @close="closeExerciseUpload()"
-    >
+    <t-dialog v-model:visible="visibleUploadExercise" header="上传练习" width="1000px" :footer="false"
+      @close="closeExerciseUpload()">
       <div style="padding-left: 50px">
         <div style="display: flex">
           <div>练习名称：</div>
@@ -647,11 +356,7 @@
         <div style="display: flex; margin-top: 20px">
           <div>练习难度：</div>
           <div style="margin-left: 20px">
-            <t-radio-group
-              variant="primary-filled"
-              :default-value="defaultValue"
-              @change="radioChange"
-            >
+            <t-radio-group variant="primary-filled" :default-value="defaultValue" @change="radioChange">
               <t-radio-button value="EASY">easy</t-radio-button>
               <t-radio-button value="MIDDLE">middle</t-radio-button>
               <t-radio-button value="HARD">hard</t-radio-button>
@@ -662,56 +367,31 @@
       <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
         <div style="display: flex; width: 500px">
           <div style="width: 130px">原文文档</div>
-          <t-upload
-            v-model="fileList.contentFileName"
-            action="/manager/manager/upload/file"
-            theme="file"
-            :headers="{ accessToken: accessToken }"
-            :max="1"
-            @onWaitingUploadFilesChange="console.log('发生变化')"
+          <t-upload v-model="fileList.contentFileName" action="/manager/manager/upload/file" theme="file"
+            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
             @success="(e) => fileUpload(e, 'contentFileName')"
-            @remove="(e) => removeFile('contentFileName')"
-          ></t-upload>
+            @remove="(e) => removeFile('contentFileName')"></t-upload>
         </div>
         <div style="display: flex; width: 500px">
           <div style="width: 130px">翻译文档</div>
-          <t-upload
-            v-model="fileList.translationFileName"
-            action="/manager/manager/upload/file"
-            theme="file"
-            :headers="{ accessToken: accessToken }"
-            :max="1"
-            @onWaitingUploadFilesChange="console.log('发生变化')"
+          <t-upload v-model="fileList.translationFileName" action="/manager/manager/upload/file" theme="file"
+            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
             @success="(e) => fileUpload(e, 'translationFileName')"
-            @remove="(e) => removeFile('translationFileName')"
-          ></t-upload>
+            @remove="(e) => removeFile('translationFileName')"></t-upload>
         </div>
         <div style="display: flex; width: 500px">
           <div style="width: 130px">音频文件</div>
-          <t-upload
-            v-model="fileList.audioFileName"
-            action="/manager/manager/upload/file"
-            theme="file"
-            :headers="{ accessToken: accessToken }"
-            :max="1"
-            @onWaitingUploadFilesChange="console.log('发生变化')"
-            @success="(e) => fileUpload(e, 'audioFileName')"
-            @remove="(e) => removeFile('audioFileName')"
-          ></t-upload>
+          <t-upload v-model="fileList.audioFileName" action="/manager/manager/upload/file" theme="file"
+            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
+            @success="(e) => fileUpload(e, 'audioFileName')" @remove="(e) => removeFile('audioFileName')"></t-upload>
         </div>
-        <div style="display: flex; width: 500px">
+        <!-- <div style="display: flex; width: 500px">
           <div style="width: 130px">视频字幕文件</div>
-          <t-upload
-            v-model="fileList.videoSubtitleFileName"
-            action="/manager/manager/upload/file"
-            theme="file"
-            :headers="{ accessToken: accessToken }"
-            :max="1"
-            @onWaitingUploadFilesChange="console.log('发生变化')"
+          <t-upload v-model="fileList.videoSubtitleFileName" action="/manager/manager/upload/file" theme="file"
+            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
             @success="(e) => fileUpload(e, 'videoSubtitleFileName')"
-            @remove="(e) => removeFile('videoSubtitleFileName')"
-          ></t-upload>
-        </div>
+            @remove="(e) => removeFile('videoSubtitleFileName')"></t-upload>
+        </div> -->
         <!--        <minio-upload
           v-model:fileName="fileForm.contentFileName"
           :single="true"
@@ -729,13 +409,25 @@
         />-->
         <div style="display: flex; gap: 20px">
           <div>视频文件</div>
-          <!--          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>-->
-          <div>
-            文件名：<t-input
-              v-model="fileForm.videoFileName"
-              placeholder="请输入文件名"
-            ></t-input>
-          </div>
+          <!--          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>--> <input style="margin-left: 53px;"
+            id="file-selector" type="file" multiple="multiple" class="inputFile" @change="filechange" /><img
+            style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
+            src="../../assets/shangchuan.png">
+        </div>
+
+        <!-- 文件上传 -->
+
+
+        <!-- 已上传文件列表 -->
+        <!-- <div v-if="successList.length"> -->
+        <!-- <pre> -->
+        <!-- 已上传： -->
+        <!-- {{ successList }} -->
+        <!-- </pre> -->
+        <!-- </div> -->
+
+        <div v-for="(item, i) in files" :key="i">
+          <minio-upload :cos="cos" :file1="item" mode="word" />
         </div>
         <!--        <minio-upload
           v-model:fileName="fileForm.videoSubtitleFileName"
@@ -744,22 +436,12 @@
         />-->
       </div>
       <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button
-          size="large"
-          @click="exerciseUpload()"
-          >确认上传</t-button
-        >
+        <t-button size="large" @click="exerciseUpload()">确认上传</t-button>
       </div>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visivleModifyExercise"
-      header="修改练习"
-      width="1000px"
-      :footer="false"
-      @opened="setProgress()"
-      @close="closeExerciseModify()"
-    >
+    <t-dialog v-model:visible="visivleModifyExercise" header="修改练习" width="1000px" :footer="false"
+      @opened="setProgress()" @close="closeExerciseModify()">
       <div style="padding-left: 50px">
         <div style="display: flex">
           <div>练习名称：</div>
@@ -771,24 +453,15 @@
         <div style="display: flex; margin-top: 20px">
           <div>练习难度：</div>
           <div style="margin-left: 20px; display: flex">
-            <div
-              :class="modifyEx.difficultyLevel == 'EASY' ? 'choose' : 'unchoose'"
-              @click="levelChange('EASY')"
-            >
+            <div :class="modifyEx.difficultyLevel == 'EASY' ? 'choose' : 'unchoose'" @click="levelChange('EASY')">
               easy
             </div>
-            <div
-              :class="modifyEx.difficultyLevel == 'MIDDLE' ? 'choose' : 'unchoose'"
-              style="margin-left: 10px"
-              @click="levelChange('MIDDLE')"
-            >
+            <div :class="modifyEx.difficultyLevel == 'MIDDLE' ? 'choose' : 'unchoose'" style="margin-left: 10px"
+              @click="levelChange('MIDDLE')">
               middle
             </div>
-            <div
-              :class="modifyEx.difficultyLevel == 'HARD' ? 'choose' : 'unchoose'"
-              style="margin-left: 10px"
-              @click="levelChange('HARD')"
-            >
+            <div :class="modifyEx.difficultyLevel == 'HARD' ? 'choose' : 'unchoose'" style="margin-left: 10px"
+              @click="levelChange('HARD')">
               hard
             </div>
           </div>
@@ -797,116 +470,64 @@
           上传完文件请先点击确认修改保存文件
           <div style="display: flex">
             <div style="width: 130px">原文文档</div>
-            <div
-              v-if="modifyEx.contentFileName"
-              style="width: 200px; margin-right: 20px"
-            >
+            <div v-if="modifyEx.contentFileName" style="width: 200px; margin-right: 20px">
               当前文件：
               {{ modifyEx.contentFileName }}
             </div>
-            <t-upload
-              v-model="fileList.contentFileName"
-              action="/manager/manager/upload/file"
-              theme="file"
-              :headers="{ accessToken: accessToken }"
-              :max="1"
-              @onWaitingUploadFilesChange="console.log('发生变化')"
+            <t-upload v-model="fileList.contentFileName" action="/manager/manager/upload/file" theme="file"
+              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
               @success="(e) => fileUpload(e, 'contentFileName')"
-              @remove="(e) => removeFile('contentFileName')"
-            ></t-upload>
+              @remove="(e) => removeFile('contentFileName')"></t-upload>
           </div>
           <div style="display: flex">
             <div style="width: 130px">翻译文档</div>
-            <div
-              v-if="modifyEx.translationFileName"
-              style="width: 200px; margin-right: 20px"
-            >
+            <div v-if="modifyEx.translationFileName" style="width: 200px; margin-right: 20px">
               当前文件：
               {{ modifyEx.translationFileName }}
             </div>
-            <t-upload
-              v-model="fileList.translationFileName"
-              action="/manager/manager/upload/file"
-              theme="file"
-              :headers="{ accessToken: accessToken }"
-              :max="1"
-              @onWaitingUploadFilesChange="console.log('发生变化')"
+            <t-upload v-model="fileList.translationFileName" action="/manager/manager/upload/file" theme="file"
+              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
               @success="(e) => fileUpload(e, 'translationFileName')"
-              @remove="(e) => removeFile('translationFileName')"
-            ></t-upload>
+              @remove="(e) => removeFile('translationFileName')"></t-upload>
           </div>
           <div style="display: flex">
             <div style="width: 130px">音频文件</div>
-            <div
-              v-if="modifyEx.audioFileName"
-              style="width: 200px; margin-right: 20px"
-            >
+            <div v-if="modifyEx.audioFileName" style="width: 200px; margin-right: 20px">
               当前文件：
               {{ modifyEx.audioFileName }}
             </div>
-            <t-upload
-              v-model="fileList.audioFileName"
-              action="/manager/manager/upload/file"
-              theme="file"
-              :headers="{ accessToken: accessToken }"
-              :max="1"
-              @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="(e) => fileUpload(e, 'audioFileName')"
-              @remove="(e) => removeFile('audioFileName')"
-            ></t-upload>
+            <t-upload v-model="fileList.audioFileName" action="/manager/manager/upload/file" theme="file"
+              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
+              @success="(e) => fileUpload(e, 'audioFileName')" @remove="(e) => removeFile('audioFileName')"></t-upload>
           </div>
           <div style="display: flex">
             <div style="width: 130px">视频字幕文件</div>
-            <div
-              v-if="modifyEx.videoSubtitleFileName"
-              style="width: 200px; margin-right: 20px"
-            >
+            <div v-if="modifyEx.videoSubtitleFileName" style="width: 200px; margin-right: 20px">
               当前文件：
               {{ modifyEx.videoSubtitleFileName }}
             </div>
-            <t-upload
-              v-model="fileList.videoSubtitleFileName"
-              action="/manager/manager/upload/file"
-              theme="file"
-              :headers="{ accessToken: accessToken }"
-              :max="1"
-              @onWaitingUploadFilesChange="console.log('发生变化')"
+            <t-upload v-model="fileList.videoSubtitleFileName" action="/manager/manager/upload/file" theme="file"
+              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
               @success="(e) => fileUpload(e, 'videoSubtitleFileName')"
-              @remove="(e) => removeFile('videoSubtitleFileName')"
-            ></t-upload>
+              @remove="(e) => removeFile('videoSubtitleFileName')"></t-upload>
           </div>
           <div style="display: flex">
             <div style="width: 130px">视频文件</div>
             <!--            <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>-->
             <div>
-              文件路径：<t-input
-                v-model="modifyEx.videoFileName"
-                placeholder="例如：/data/english/T.mp4"
-              ></t-input>
+              文件路径：<t-input v-model="modifyEx.videoFileName" placeholder="例如：/data/english/T.mp4"></t-input>
             </div>
           </div>
         </div>
       </div>
       <div v-if="progressVisible && progressVal">
         {{ progressVal == '100' ? '视频分段完成' : '视频文件分段中' }}
-        <t-progress
-          theme="plump"
-          :color="{ from: '#0052D9', to: '#00A870' }"
-          :percentage="progressVal"
-          :status="'active'"
-        />
+        <t-progress theme="plump" :color="{ from: '#0052D9', to: '#00A870' }" :percentage="progressVal"
+          :status="'active'" />
       </div>
       <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button
-          size="large"
-          @click="cutContentFun()"
-          >文档分段</t-button
-        >
-        <t-button
-          size="large"
-          @click="cutAudioFun()"
-          >音频分段</t-button
-        >
+        <t-button size="large" @click="cutContentFun()">文档分段</t-button>
+        <t-button size="large" @click="cutAudioFun()">音频分段</t-button>
         <t-popconfirm :on-confirm="cutVideoFun">
           <template #content>
             请先选择视频字幕类型
@@ -920,43 +541,25 @@
           <t-button size="large">视频分段</t-button>
         </t-popconfirm>
 
-        <t-button
-          size="large"
-          @click="exerciseUploadModify()"
-          >确认修改</t-button
-        >
+        <t-button size="large" @click="exerciseUploadModify()">确认修改</t-button>
       </div>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleUploadSen"
-      header="上传句子"
-      width="1000px"
-      :footer="false"
-      @close="closeSenUpload()"
-    >
+    <t-dialog v-model:visible="visibleUploadSen" header="上传句子" width="1000px" :footer="false" @close="closeSenUpload()">
       <div style="padding: 20px">
         <div style="display: flex">
           <div>句子内容</div>
           <div style="margin-left: 20px; width: 400px">
-            <t-textarea
-              v-model="senUploadCon"
-              placeholder="请输入句子内容"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-            ></t-textarea>
+            <t-textarea v-model="senUploadCon" placeholder="请输入句子内容" name="description"
+              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
           </div>
         </div>
 
         <div style="margin-top: 20px; display: flex">
           <div>句子翻译</div>
           <div style="margin-left: 20px; width: 400px">
-            <t-textarea
-              v-model="senUploadTran"
-              placeholder="请输入句子翻译"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-            ></t-textarea>
+            <t-textarea v-model="senUploadTran" placeholder="请输入句子翻译" name="description"
+              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
           </div>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 20px">
@@ -965,59 +568,33 @@
       </div>
     </t-dialog>
 
-    <t-dialog
-      v-model:visible="visibleModifySen"
-      header="修改句子"
-      width="1000px"
-      :footer="false"
-      @close="closeSenModify()"
-    >
+    <t-dialog v-model:visible="visibleModifySen" header="修改句子" width="1000px" :footer="false" @close="closeSenModify()">
       <div style="display: flex; flex-direction: column; padding: 20px; gap: 30px">
         <div style="display: flex">
           <div>句子内容</div>
           <div style="margin-left: 20px; width: 400px">
-            <t-textarea
-              v-model="rowModifySen.content"
-              placeholder="请输入句子内容"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-            ></t-textarea>
+            <t-textarea v-model="rowModifySen.content" placeholder="请输入句子内容" name="description"
+              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
           </div>
         </div>
         <div style="display: flex">
           <div>句子翻译</div>
           <div style="margin-left: 20px; width: 400px">
-            <t-textarea
-              v-model="rowModifySen.translation"
-              placeholder="请输入句子翻译"
-              name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-            ></t-textarea>
+            <t-textarea v-model="rowModifySen.translation" placeholder="请输入句子翻译" name="description"
+              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
           </div>
         </div>
         <div style="display: flex; width: 500px">
           <div style="width: 130px">音频文件</div>
-          <t-upload
-            v-model="sentenceFiles.voiceUrl"
-            action="/manager/manager/upload/file"
-            theme="file"
-            :headers="{ accessToken: accessToken }"
-            :max="1"
-            @success="(e) => sentenceFileUpload(e, 'voiceUrl')"
-            @remove="(e) => sentenceRemoveFile('voiceUrl')"
-          ></t-upload>
+          <t-upload v-model="sentenceFiles.voiceUrl" action="/manager/manager/upload/file" theme="file"
+            :headers="{ accessToken: accessToken }" :max="1" @success="(e) => sentenceFileUpload(e, 'voiceUrl')"
+            @remove="(e) => sentenceRemoveFile('voiceUrl')"></t-upload>
         </div>
         <div style="display: flex; width: 500px">
           <div style="width: 130px">视频文件</div>
-          <t-upload
-            v-model="sentenceFiles.videoUrl"
-            action="/manager/manager/upload/file"
-            theme="file"
-            :headers="{ accessToken: accessToken }"
-            :max="1"
-            @success="(e) => sentenceFileUpload(e, 'videoUrl')"
-            @remove="(e) => sentenceRemoveFile('videoUrl')"
-          ></t-upload>
+          <t-upload v-model="sentenceFiles.videoUrl" action="/manager/manager/upload/file" theme="file"
+            :headers="{ accessToken: accessToken }" :max="1" @success="(e) => sentenceFileUpload(e, 'videoUrl')"
+            @remove="(e) => sentenceRemoveFile('videoUrl')"></t-upload>
         </div>
         <div style="display: flex; justify-content: center; margin-top: 20px">
           <t-button @click="senModify()">确认修改</t-button>
@@ -1025,11 +602,7 @@
       </div>
     </t-dialog>
 
-    <t-loading
-      :loading="loading"
-      text="加载中..."
-      fullscreen
-    />
+    <t-loading :loading="loading" text="加载中..." fullscreen />
   </div>
 </template>
 
@@ -1057,6 +630,7 @@ import {
   mergeVideo,
   save8,
   update7,
+  videoResourceHandler,
   voiceASR,
 } from '@/api/user/exercises';
 import { delete4, page, update6 } from '@/api/user/readingMaterials';
@@ -1101,9 +675,11 @@ import {
   visivleModifyExercise,
 } from './columnData';
 import Add from './components/Add.vue';
+import COS from 'cos-js-sdk-v5';
 
 // 挂载时调用请求函数
 onMounted(async () => {
+  getCosInstance();
   accessToken.value = localStorage.getItem('accessToken');
   queryData({
     pageNumber: pagination.current,
@@ -1166,6 +742,48 @@ const onCurrentChange = (index) => {
 const onPageChange = (pageInfo) => {
   console.log(pageInfo);
 };
+
+const filechange = (e) => {
+  files.push(...e.target.files);
+  console.log('files', files);
+};
+
+const cos = ref(null); // 腾讯云 cos 操作实例
+
+const files = reactive([]);
+
+const getCosInstance = () => {
+  console.log('1112454', COS);
+  cos.value = new COS({
+    getAuthorization: (options, callback) => {
+      const url = 'http://111.229.66.85:8866/manager/web/sts'; // 这里替换成您的服务接口地址
+      const xhr = new XMLHttpRequest();
+
+      xhr.open('GET', url, true);
+      xhr.setRequestHeader('accessToken', localStorage.getItem('accessToken'));
+      xhr.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.responseText);
+          console.log('data', data);
+          const credentials = data.result;
+          if (!data || !credentials) return console.error('credentials invalid');
+          callback({
+            TmpSecretId: credentials.tmpSecretId,
+            TmpSecretKey: credentials.tmpSecretKey,
+            XCosSecurityToken: credentials.sessionToken,
+            StartTime: Math.floor(Date.now() / 1000), // 时间戳，单位秒，如：1580000000，建议返回服务器时间作为签名的开始时间，避免用户浏览器本地时间偏差过大导致签名错误
+            ExpiredTime: Math.floor(Date.now() / 1000) + 1800, // 时间戳，单位秒，如：1580000900
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      xhr.send();
+    },
+  });
+};
+
+
 
 // 请求数据
 const queryData = async (paginationInfo?, searchVo?, entityInfo?) => {
@@ -1612,7 +1230,17 @@ const exerciseUploadModify = () => {
 };
 
 const exerciseUpload = () => {
-  loading.value = true;
+  // loading.value = true;
+  // console.log('files', files)
+  for (const i in files) {
+    const params1 = {
+      exerciseId: rowReading.value.id,
+      filename: files[i].name,
+    }
+    videoResourceHandler(params1).then((res) => {
+      console.log('res', res)
+    })
+  }
   const params = {
     articleId: articleId.value,
     title: exerciseTitle.value,
@@ -1763,6 +1391,43 @@ const senModify = () => {
   display: flex;
   justify-content: center;
   border-radius: 12px;
+  cursor: pointer;
+}
+
+.inputFile {
+  /* 隐藏按钮后的文字 */
+  font-size: 0;
+}
+
+/* 修改按钮后的文字颜色 */
+.inputFile[type='file'] {
+  color: gray;
+}
+
+.icon {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-image: url(../../assets/shangchuan.png);
+  /*这里放置图标的绝对路径*/
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0%;
+  left: 0px;
+  z-index: 2;
+}
+
+.inputFile::file-selector-button {
+  width: 116px;
+  height: 2rem;
+  font-size: 16px;
+  color: #000;
+  border-radius: 0.25rem;
+  border: 1px solid #dddddd;
+  padding: 6px 30px;
+  background-color: #fff;
+  box-sizing: border-box;
+  font-family: inherit;
   cursor: pointer;
 }
 </style>

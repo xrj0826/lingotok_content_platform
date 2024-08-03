@@ -1412,19 +1412,6 @@
       <div style="display: flex; justify-content: center; color: red; font-size: 12px">
         注：清空表格并不会删除已上传文件，请谨慎操作
       </div>
-      <!-- <t-upload v-model="batchFiles" action="/manager/manager/web/file" :headers="{ accessToken: accessToken }"
-        ref="uploadBatch" @success="handleuploadBatch" @remove="removeVideo" :files="batchFiles2" multiple
-        @validate="repite" :autoUpload="false" :upload-all-files-in-one-request="true"></t-upload>
-      <t-button @click="uploadBatch1">确定上传</t-button> -->
-      <!--      <upload-pan-->
-      <!--        ref="upload"-->
-      <!--        :single="true"-->
-      <!--        style="margin-top: 20px"-->
-      <!--        dir="liberty"-->
-      <!--        @input="inputSuccess"-->
-      <!--      />-->
-      <!-- <div> -->
-      <!-- <h3>前端JS调用腾讯COS接口实现大文件断点续传</h3> -->
 
       <!-- 文件上传 -->
       <input
@@ -1454,26 +1441,6 @@
         />
       </div>
 
-      <!-- </div> -->
-
-      <!--      <t-upload
-        ref="uploadBatchFiles"
-        v-model="files"
-        action="/manager/manager/web/file"
-        theme="file-flow"
-        :headers="{ accessToken: accessToken }"
-        multiple
-        :disabled="disabled"
-        :abridge-name="ABRIDGE_NAME"
-        :auto-upload="false"
-        :max="100"
-        :show-thumbnail="false"
-        :allow-upload-duplicate-file="true"
-        :is-batch-upload="false"
-        :upload-all-files-in-one-request="false"
-        :format-response="formatResponse"
-      ></t-upload>-->
-      <!-- <t-base-table row-key="index" :data="data" :columns="columns"></t-base-table> -->
     </t-dialog>
   </div>
 </template>

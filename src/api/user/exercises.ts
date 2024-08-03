@@ -203,6 +203,25 @@ export async function updateSentenceResource(
   });
 }
 
+/** 视频资源文件上传 POST /manager/learn/exercises/videoResourceHandler/${param0} */
+export async function videoResourceHandler(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.videoResourceHandlerParams,
+  options?: { [key: string]: any },
+) {
+  const { exerciseId: param0, ...queryParams } = params;
+  return request<API.ResultMessageObject>(
+    `/manager/learn/exercises/videoResourceHandler/${param0}`,
+    {
+      method: 'POST',
+      params: {
+        ...queryParams,
+      },
+      ...(options || {}),
+    },
+  );
+}
+
 /** 腾讯云音频识别 PUT /manager/learn/exercises/voice/${param0} */
 export async function voiceASR(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)

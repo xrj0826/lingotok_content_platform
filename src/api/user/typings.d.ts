@@ -586,43 +586,43 @@ declare namespace API {
   };
 
   type IPageAdminUserVO = {
+    size?: number;
     total?: number;
     records?: AdminUserVO[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageBook = {
+    size?: number;
     total?: number;
     records?: Book[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageMemberVO = {
+    size?: number;
     total?: number;
     records?: MemberVO[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageSmsSign = {
+    size?: number;
     total?: number;
     records?: SmsSign[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type IPageSmsTemplate = {
+    size?: number;
     total?: number;
     records?: SmsTemplate[];
     current?: number;
     pages?: number;
-    size?: number;
   };
 
   type loginParams = {
@@ -1592,6 +1592,8 @@ declare namespace API {
     voiceUrl?: string;
     /** videoUrl */
     videoUrl?: string;
+    /** 序号 */
+    rank?: string;
   };
 
   type SentenceResource = {
@@ -1627,6 +1629,8 @@ declare namespace API {
     voiceUrl?: string;
     /** videoUrl */
     videoUrl?: string;
+    /** 序号 */
+    rank?: string;
     /** 是否收藏 */
     isCollect?: boolean;
   };
@@ -1809,6 +1813,11 @@ declare namespace API {
     userId?: string;
     /** 角色唯一id */
     roleId?: string;
+  };
+
+  type videoResourceHandlerParams = {
+    exerciseId: string;
+    filename: string;
   };
 
   type voiceASRParams = {
