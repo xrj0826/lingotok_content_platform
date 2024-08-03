@@ -500,23 +500,27 @@
               :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
               @success="(e) => fileUpload(e, 'audioFileName')" @remove="(e) => removeFile('audioFileName')"></t-upload>
           </div>
-          <div style="display: flex">
-            <div style="width: 130px">视频字幕文件</div>
-            <div v-if="modifyEx.videoSubtitleFileName" style="width: 200px; margin-right: 20px">
-              当前文件：
-              {{ modifyEx.videoSubtitleFileName }}
-            </div>
-            <t-upload v-model="fileList.videoSubtitleFileName" action="/manager/manager/upload/file" theme="file"
-              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="(e) => fileUpload(e, 'videoSubtitleFileName')"
-              @remove="(e) => removeFile('videoSubtitleFileName')"></t-upload>
+          <div style="display: flex; gap: 20px">
+            <div>视频文件</div>
+            <!--          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>--> <input style="margin-left: 53px;"
+              id="file-selector" type="file" multiple="multiple" class="inputFile" @change="filechange" /><img
+              style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
+              src="../../assets/shangchuan.png">
           </div>
-          <div style="display: flex">
-            <div style="width: 130px">视频文件</div>
-            <!--            <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>-->
-            <div>
-              文件路径：<t-input v-model="modifyEx.videoFileName" placeholder="例如：/data/english/T.mp4"></t-input>
-            </div>
+
+          <!-- 文件上传 -->
+
+
+          <!-- 已上传文件列表 -->
+          <!-- <div v-if="successList.length"> -->
+          <!-- <pre> -->
+          <!-- 已上传： -->
+          <!-- {{ successList }} -->
+          <!-- </pre> -->
+          <!-- </div> -->
+
+          <div v-for="(item, i) in files" :key="i">
+            <minio-upload :cos="cos" :file1="item" mode="word" />
           </div>
         </div>
       </div>
@@ -744,13 +748,13 @@ const onPageChange = (pageInfo) => {
 };
 
 const filechange = (e) => {
-  files.push(...e.target.files);
+  files.value.push(...e.target.files);
   console.log('files', files);
 };
 
 const cos = ref(null); // 腾讯云 cos 操作实例
 
-const files = reactive([]);
+const files = ref([]);
 
 const getCosInstance = () => {
   console.log('1112454', COS);
@@ -1212,7 +1216,6 @@ const fileList = ref({
 });
 const exerciseUploadModify = () => {
   loading.value = true;
-
   const omitNull = (obj) => {
     Object.keys(obj)
       .filter((k) => obj[k] === '')
@@ -1226,16 +1229,17 @@ const exerciseUploadModify = () => {
     // closeExerxciseUpload()
     // closeExerciseModify();
     MessagePlugin.success('练习修改成功');
+    files.value = []
   });
 };
 
 const exerciseUpload = () => {
   // loading.value = true;
   // console.log('files', files)
-  for (const i in files) {
+  for (const i in files.value) {
     const params1 = {
       exerciseId: rowReading.value.id,
-      filename: files[i].name,
+      filename: files.value[i].name,
     }
     videoResourceHandler(params1).then((res) => {
       console.log('res', res)
@@ -1258,6 +1262,7 @@ const exerciseUpload = () => {
         voiceASR({ exerciseId: modifyEx.value.id });
       }
       closeExerciseUpload();
+      files.value = []
     }
   });
 };
