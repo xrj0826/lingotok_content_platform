@@ -365,7 +365,7 @@
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
-        <div style="display: flex; width: 500px">
+        <!-- <div style="display: flex; width: 500px">
           <div style="width: 130px">原文文档</div>
           <t-upload v-model="fileList.contentFileName" action="/manager/manager/upload/file" theme="file"
             :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
@@ -384,7 +384,7 @@
           <t-upload v-model="fileList.audioFileName" action="/manager/manager/upload/file" theme="file"
             :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
             @success="(e) => fileUpload(e, 'audioFileName')" @remove="(e) => removeFile('audioFileName')"></t-upload>
-        </div>
+        </div> -->
         <!-- <div style="display: flex; width: 500px">
           <div style="width: 130px">视频字幕文件</div>
           <t-upload v-model="fileList.videoSubtitleFileName" action="/manager/manager/upload/file" theme="file"
@@ -407,13 +407,13 @@
           :single="true"
           title="音频文件"
         />-->
-        <div style="display: flex; gap: 20px">
+        <!-- <div style="display: flex; gap: 20px">
           <div>视频文件</div>
-          <!--          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>--> <input style="margin-left: 53px;"
+        <input style="margin-left: 53px;"
             id="file-selector" type="file" multiple="multiple" class="inputFile" @change="filechange" /><img
             style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
             src="../../assets/shangchuan.png">
-        </div>
+        </div> -->
 
         <!-- 文件上传 -->
 
@@ -426,9 +426,9 @@
         <!-- </pre> -->
         <!-- </div> -->
 
-        <div v-for="(item, i) in files" :key="i">
-          <minio-upload :cos="cos" :file1="item" mode="word" />
-        </div>
+        <!-- <div v-for="(item, i) in files" :key="i">
+          <minio-upload :exerciseId="0" :isUpload="false" :cos="cos" :file1="item" mode="word" />
+        </div> -->
         <!--        <minio-upload
           v-model:fileName="fileForm.videoSubtitleFileName"
           :single="true"
@@ -508,19 +508,8 @@
               src="../../assets/shangchuan.png">
           </div>
 
-          <!-- 文件上传 -->
-
-
-          <!-- 已上传文件列表 -->
-          <!-- <div v-if="successList.length"> -->
-          <!-- <pre> -->
-          <!-- 已上传： -->
-          <!-- {{ successList }} -->
-          <!-- </pre> -->
-          <!-- </div> -->
-
           <div v-for="(item, i) in files" :key="i">
-            <minio-upload :cos="cos" :file1="item" mode="word" />
+            <minio-upload :exerciseId="rowExercise.id" :isUpload="false" :cos="cos" :file1="item" mode="word" />
           </div>
         </div>
       </div>
@@ -1233,18 +1222,10 @@ const exerciseUploadModify = () => {
   });
 };
 
+
 const exerciseUpload = () => {
   // loading.value = true;
   // console.log('files', files)
-  for (const i in files.value) {
-    const params1 = {
-      exerciseId: rowReading.value.id,
-      filename: files.value[i].name,
-    }
-    videoResourceHandler(params1).then((res) => {
-      console.log('res', res)
-    })
-  }
   const params = {
     articleId: articleId.value,
     title: exerciseTitle.value,

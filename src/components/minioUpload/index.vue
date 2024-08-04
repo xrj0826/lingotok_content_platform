@@ -6,34 +6,20 @@
 
       <!-- 已上传文件列表 -->
       <div>
-        <t-table
-          row-key="index"
-          :data="data"
-          :columns="columns"
-          :show-header="false"
-        >
+        <t-table row-key="index" :data="data" :columns="columns" :show-header="false">
           <template #size>
             <div>{{ formatSize(data[0].size) }}</div>
           </template>
           <template #progress>
-            <div
-              v-if="progressInfo.status"
-              class="progress"
-            >
+            <div v-if="progressInfo.status" class="progress">
               <div class="progress-info">
                 {{ progressInfo.name }}
                 <el-progress :percentage="progressInfo.percent" />
-                <el-button
-                  size="small"
-                  @click="toggleUpload"
-                >
+                <el-button size="small" @click="toggleUpload">
                   {{ progressInfo.status === 'pause' ? '继续上传' : '暂停' }}
                 </el-button>
               </div>
-              <div
-                class="progress-text"
-                v-html="progressInfo.text"
-              ></div>
+              <div class="progress-text" v-html="progressInfo.text"></div>
             </div>
             <div v-else>
               <t-tag theme="success">上传完成</t-tag>
@@ -52,6 +38,9 @@ import { size } from 'lodash';
 import { defineProps, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 
 import { upload1 } from '@/api/user/webApi';
+import {
+  videoResourceHandler,
+} from '@/api/user/exercises';
 
 import { cosUploadUtils } from './cosUploadUtils';
 // import upload1 from 'src/api/user/webApi.ts'
@@ -79,6 +68,8 @@ const progressInfo = ref({
 const props = defineProps({
   file1: Object,
   cos: Object,
+  isUpload: Boolean,
+  exerciseId: String,
 });
 
 const columns = ref([
@@ -138,11 +129,20 @@ const fileChange = (file) => {
           name: `https://encdn.ydwl.tech/${progressInfo.value.name}`,
           url: Location,
         });
-        const params = {
-          filename: data.value[0].filename,
-          contentType: data.value[0].contentType,
-        };
-        upload1(params).then(() => {});
+        if (props.isUpload) {
+          const params = {
+            filename: data.value[0].filename,
+            contentType: data.value[0].contentType,
+          };
+          upload1(params).then(() => { });
+        }
+        if (!props.isUpload) {
+          const params = {
+            filename: data.value[0].filename,
+            exerciseId: props.exerciseId,
+          };
+          videoResourceHandler(params).then(() => { });
+        }
         // 初始化进度信息
         Object.assign(progressInfo.value, {
           percent: 0,
