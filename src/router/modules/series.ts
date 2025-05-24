@@ -1,26 +1,26 @@
-import { BooksIcon, UsergroupIcon } from 'tdesign-icons-vue-next';
+import { BooksIcon } from 'tdesign-icons-vue-next';
 import { shallowRef } from 'vue';
 
 import Layout from '@/layouts/index.vue';
 
 export default [
   {
-    path: '/admin',
-    name: 'admin',
+    path: '/series',
+    name: 'series',
     component: Layout,
-    redirect: '/admin/base',
+    redirect: '/series/seriesManage',
     meta: {
-      title: '读物管理',
+      title: '视频合集管理',
       icon: shallowRef(BooksIcon),
       orderNo: 1,
     },
     children: [
       {
-        path: 'base',
-        name: 'AdminManage',
+        path: 'seriesManage',
+        name: 'SeriesManage',
         component: () => import('@/pages/admin-manange/index.vue'),
-        meta: { title: '读物管理', hidden: true },
+        meta: { title: '视频合集列表', hidden: true },
       },
     ],
   },
-];
+]; 

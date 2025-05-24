@@ -1,5 +1,5 @@
 import uniq from 'lodash/uniq';
-import { createRouter, createWebHistory, RouteRecordRaw, useRoute } from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const env = import.meta.env.MODE || 'development';
 
@@ -15,13 +15,14 @@ const defaultRouterList: Array<RouteRecordRaw> = [
     path: '/login',
     name: 'login',
     component: () => import('@/pages/login/index.vue'),
+    meta: { title: '登录', hidden: true },
   },
   {
     path: '/',
-    // redirect: '/dashboard/base',
-    redirect: '/admin/base',
+    redirect: '/series/seriesManage',
   },
 ];
+
 // 存放固定路由
 export const homepageRouterList: Array<RouteRecordRaw> = mapModuleRouterList(homepageModules);
 export const fixedRouterList: Array<RouteRecordRaw> = mapModuleRouterList(fixedModules);
@@ -59,8 +60,9 @@ export const getRoutesExpanded = () => {
   return uniq(expandedRoutes);
 };
 
+// 获取当前激活的路由路径
 export const getActive = (maxLevel = 3): string => {
-  const route = useRoute();
+  const route = router.currentRoute.value;
   if (!route.path) {
     return '';
   }
@@ -81,6 +83,26 @@ const router = createRouter({
       behavior: 'smooth',
     };
   },
+});
+
+// 添加路由守卫
+router.beforeEach((to, from, next) => {
+  // 只在开发环境下打印路由信息
+  if (import.meta.env.DEV) {
+    console.log('路由守卫触发:', { to, from });
+  }
+
+  // 检查是否是访问 series/seriesManage 页面
+  if (to.path.includes('/series/seriesManage')) {
+    // 检查本地存储中是否存在 username
+    const username = localStorage.getItem('username');
+    if (!username) {
+      // 如果没有 username，重定向到登录页面
+      next('/login');
+      return;
+    }
+  }
+  next();
 });
 
 export default router;

@@ -1,5 +1,5 @@
 {
-  "name": "ITAEMTdeisngTemplate",
+  "name": "video-manager",
   "version": "0.7.7",
   "description": "后端管理系统模板",
   "scripts": {
@@ -36,6 +36,7 @@
     "dayjs": "^1.11.8",
     "echarts": "^5.4.2",
     "element-ui": "^2.15.14",
+    "esdk-obs-browserjs": "^3.24.3",
     "lodash": "^4.17.21",
     "minio": "^7.0.32",
     "nanoid": "^5.0.1",

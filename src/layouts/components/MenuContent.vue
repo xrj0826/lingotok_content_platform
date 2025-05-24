@@ -1,43 +1,20 @@
 <template>
   <div>
-    <template
-      v-for="item in list"
-      :key="item.path"
-    >
+    <template v-for="item in list" :key="item.path">
       <template v-if="!item.children || !item.children.length || item.meta?.single">
-        <t-menu-item
-          v-if="getHref(item)"
-          :name="item.path"
-          :value="getPath(item)"
-          @click="openHref(getHref(item)[0])"
-        >
+        <t-menu-item v-if="getHref(item)" :name="item.path" :value="getPath(item)" @click="openHref(getHref(item)[0])">
           <template #icon>
-            <component
-              :is="menuIcon(item)"
-              class="t-icon"
-            ></component>
+            <component :is="menuIcon(item)" class="t-icon"></component>
           </template>
           {{ item.title }}
         </t-menu-item>
-        <t-menu-item
-          v-else
-          style="overflow: visible"
-          width="200px"
-          :name="item.path"
-          :value="getPath(item)"
-          :to="item.path"
-        >
+        <t-menu-item v-else style="overflow: visible" width="200px" :name="item.path" :value="getPath(item)"
+          :to="item.path">
           <template #icon>
-            <component
-              :is="menuIcon(item)"
-              class="t-icon"
-            ></component>
+            <component :is="menuIcon(item)" class="t-icon"></component>
           </template>
           <div style="padding: 2px 0; padding-right: 20px">
-            <t-badge
-              v-if="item.title === '在线接入'"
-              :count="unreadCount"
-            >
+            <t-badge v-if="item.title === '在线接入'" :count="unreadCount">
               <div>
                 {{ item.title }}
               </div>
@@ -48,22 +25,11 @@
           </div>
         </t-menu-item>
       </template>
-      <t-submenu
-        v-else
-        :name="item.path"
-        :value="item.path"
-        :title="item.title"
-      >
+      <t-submenu v-else :name="item.path" :value="item.path" :title="item.title">
         <template #icon>
-          <component
-            :is="menuIcon(item)"
-            class="t-icon"
-          ></component>
+          <component :is="menuIcon(item)" class="t-icon"></component>
         </template>
-        <menu-content
-          v-if="item.children"
-          :nav-data="item.children"
-        />
+        <menu-content v-if="item.children" :nav-data="item.children" />
       </t-submenu>
     </template>
   </div>
@@ -133,14 +99,18 @@ const getHref = (item: MenuRoute) => {
 const getPath = (item: ListItemType) => {
   const activeLevel = active.value.split('/').length;
   const pathLevel = item.path.split('/').length;
+
+  // 如果当前路径是该菜单项的子路径，返回当前路径
   if (activeLevel > pathLevel && active.value.startsWith(item.path)) {
     return active.value;
   }
 
+  // 如果当前路径完全匹配该菜单项，返回当前路径
   if (active.value === item.path) {
     return active.value;
   }
 
+  // 如果是单独的路由，返回重定向路径，否则返回原路径
   return item.meta?.single ? item.redirect : item.path;
 };
 

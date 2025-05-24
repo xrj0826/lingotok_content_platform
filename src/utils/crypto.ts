@@ -12,3 +12,17 @@ export function decrypt(encryptedPhoneNumber: string | CryptoJS.lib.CipherParams
   });
   return decrypted.toString(CryptoJS.enc.Utf8);
 }
+
+export function generateSignature(apiName: string, timestamp: number): string {
+  const message = `${apiName}${timestamp}lingotok`;
+  return CryptoJS.SHA256(message).toString();
+}
+
+export function generateRequestParams(apiName: string) {
+  const timestamp = Date.now();
+  const signature = generateSignature(apiName, timestamp);
+  return {
+    Timestamp: timestamp,
+    Signature: signature
+  };
+}

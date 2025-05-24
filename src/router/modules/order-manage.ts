@@ -5,21 +5,21 @@ import Layout from '@/layouts/index.vue';
 
 export default [
   {
-    path: '/order',
-    name: 'order',
+    path: '/video',
+    name: 'video',
     component: Layout,
-    redirect: '/order/orderManage',
+    redirect: '/video/videoManage',
     meta: {
-      title: '词汇书管理页',
+      title: '视频管理',
       icon: shallowRef(OrderDescendingIcon),
       orderNo: 2,
     },
     children: [
       {
-        path: 'orderManage',
-        name: 'OrderManage',
+        path: 'videoManage',
+        name: 'VideoManage',
         component: () => import('@/pages/order-manage/index.vue'),
-        meta: { title: '词汇书管理', hidden: true },
+        meta: { title: '视频管理', hidden: true },
       },
     ],
   },

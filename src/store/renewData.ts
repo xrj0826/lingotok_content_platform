@@ -15,6 +15,11 @@ const pagination = reactive({
   total: undefined,
 });
 
+// 添加搜索参数的存储
+const searchParams = reactive({
+  seriesName: '',
+});
+
 export const useRenewDataStore = defineStore('renewData', {
   state: () => ({
     renewData,
@@ -23,12 +28,11 @@ export const useRenewDataStore = defineStore('renewData', {
     storeIdArr,
     imgNum,
     querySave,
+    searchParams, // 添加到state中
   }),
-  actions: () => ({
-    // async getStroeName(storeId) {
-    //   const res = await get2(storeId);
-    //   storeName.value = res.result.storeName;
-    //   return storeName.value;
-    // },
-  }),
+  actions: {
+    setSearchParams(params) {
+      this.searchParams = { ...this.searchParams, ...params };
+    },
+  },
 });

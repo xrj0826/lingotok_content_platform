@@ -1,33 +1,22 @@
 <template>
   <div :class="sideNavCls">
-    <t-menu
-      :class="menuCls"
-      :theme="theme"
-      :value="active"
-      :collapsed="collapsed"
-      :default-expanded="defaultExpanded"
-    >
+    <t-menu :class="menuCls" :theme="theme" :value="active" :collapsed="collapsed" :default-expanded="defaultExpanded">
       <!--      <template #logo>-->
       <!--        <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">-->
       <!--          <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />-->
       <!--          <div style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: 10px ">智能球馆</div>-->
       <!--        </span>-->
       <!--      </template>-->
-      <span
-        :class="`${prefix}-side-nav-logo-wrapper`"
-        @click="goHome"
-      >
-        <component
+      <span :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">
+        <!-- <component
           :is="getLogo()"
           style="transform: translateX(-30px)"
           :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`"
-        />
-        <div
-          v-if="!collapsed"
-          style="font-size: 24px; font-weight: 700; line-height: 50px; margin-left: -40px; margin-right: 16px"
-        >
+        /> -->
+        <div v-if="!collapsed"
+          style="font-size: 24px; font-weight: 700; line-height: 50px; margin-left: -20px; margin-right: 16px">
           <!-- 高校体育管理系统 -->
-          单词管理系统
+          内容管理系统
         </div>
       </span>
       <!--      <div style="display: flex; ">-->
@@ -35,7 +24,7 @@
       <!--      </div>-->
       <menu-content :nav-data="menu" />
       <template #operations>
-        <span class="version-container"> {{ !collapsed ? '英语单词小程序管理系统' : '' }} </span>
+        <span class="version-container"> {{ !collapsed ? '内容管理平台' : '' }} </span>
       </template>
     </t-menu>
     <div :class="`${prefix}-side-nav-placeholder${collapsed ? '-hidden' : ''}`"></div>
@@ -141,7 +130,7 @@ onMounted(() => {
 });
 
 const goHome = () => {
-  router.push('/user/setting');
+  router.push('/');
 };
 
 const getLogo = () => {

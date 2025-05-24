@@ -1,347 +1,6 @@
 <!-- 客服管理 -->
 <template>
   <div>
-    <t-card>
-      <t-space style="margin: 0 20px 20px 0">
-        <add @add="AddFinsh"></add>
-        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDelete">
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
-        <!--
-        <t-select-input
-          placeholder="请输入任意关键词"
-          allow-input
-          clearable
-          style="width: 300px"
-          @input-change="onInputChange"
-        >
-          <template #suffixIcon><search-icon /></template>
-</t-select-input> -->
-      </t-space>
-      <t-table :row-key="index" :data="data" :columns="columns" table-layout="fixed" :bordered="true" size="small"
-        :pagination="pagination" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
-        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeys"
-        @row-click="handleRowClick" @select-change="onSelectChange" @change="onChange">
-      </t-table></t-card>
-
-    <t-dialog v-model:visible="visible" theme="info" header="更改读物名称" @close="visible = false" @confirm="edit()">
-      <t-input v-model="name"></t-input>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleDetail" header="读物详情" width="1200px" :footer="false"
-      @close="visibleDetail = false">
-      <div style="font-size: 16px; margin-bottom: 20px">读物类型：{{ readingDetailContent.name }}</div>
-      <div style="display: flex; margin-bottom: 20px">
-        <t-button @click="visibleUploadArticle = true">上传文章</t-button>
-        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteReading">
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
-      </div>
-
-      <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px">文章列表</div>
-
-      <t-table :row-key="index" :data="readingDetailContent.articlesList" :columns="columnsReading" table-layout="fixed"
-        :bordered="true" size="small" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
-        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeysReading"
-        @row-click="handleRowClick" @select-change="onSelectChangeReading">
-        <template #picture="{ row }">
-          <img :src="row.picture" style="width: 100px; height: 120px" />
-        </template>
-      </t-table>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleEassy" header="文章详情" width="1000px" :footer="false" @close="visibleEassy = false">
-      <div style="font-size: 16px; margin-bottom: 20px">文章名称：{{ articlesContent.title }}</div>
-      <div style="display: flex; margin-bottom: 20px">
-        <t-button @click="visibleUploadExercise = true">上传练习</t-button>
-        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteExercise">
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
-      </div>
-      <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px">练习列表</div>
-      <t-table :row-key="index" :data="articlesContent.exercisesList" :columns="columnsEssay" table-layout="fixed"
-        :bordered="true" size="small" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
-        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeysEassy"
-        @row-click="handleRowClick" @select-change="onSelectChangeEassy">
-      </t-table>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleExercise" header="练习详情" width="1400px" :footer="false"
-      @close="visibleExercise = false">
-      <div v-if="exercises.title" style="font-size: 16px; margin-bottom: 20px">
-        练习名称：{{ exercises.title }}
-      </div>
-      <div v-else style="font-size: 16px; margin-bottom: 20px">
-        暂无练习名称
-      </div>
-      <div style="display: flex; margin-bottom: 20px">
-        <t-button @click="visibleUploadSen = true">上传句子</t-button>
-        <t-button @click="visibleMerge = true">句子资源列表({{
-          (exercises.audioList?.length || 0) +
-          (exercises.conetentList?.length || 0) +
-          (exercises.translationList?.length || 0) +
-          (exercises.videoList?.length || 0)
-          }})</t-button>
-        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteSen">
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
-      </div>
-      <div style="display: flex; justify-content: center; font-size: 16px; margin-bottom: 10px; color: black">
-        句子列表
-      </div>
-      <t-table :row-key="index" :data="exercises.sentenceList" :columns="columnsExercise" table-layout="fixed"
-        :bordered="true" size="small" cell-empty-content="-" resizable :loading="isLoading" :hover="true"
-        :show-sort-column-bg-color="true" right-fixed-column="1" :selected-row-keys="selectedRowKeysSen"
-        @row-click="handleRowClick" @select-change="onSelectChangeSen">
-        <template #voiceUrl="{ row }">
-          <audio v-if="row.voiceUrl" :autoplay="false" controls="controls" preload="meta" :src="row.voiceUrl"></audio>
-        </template>
-        <template #videoUrl="{ row }">
-          <video v-if="row.videoUrl" ref="videoRef" :src="row.videoUrl" width="200" height="100"
-            :poster="row.videoUrl + '?vframe/jpg/offset/10/w/200/h/100'" preload="none" :autoplay="false"
-            controls></video>
-        </template>
-      </t-table>
-    </t-dialog>
-    <t-dialog v-model:visible="visibleMerge" header="句子资源列表" width="1500px" :footer="false"
-      @close="visibleMerge = false">
-      <div v-if="exercises.title" style="font-size: 16px; margin-bottom: 20px">
-        练习名称：{{ exercises.title }}
-      </div>
-      <div v-else style="font-size: 16px; margin-bottom: 20px">
-        暂无练习名称
-      </div>
-      <div style="display: flex; margin-bottom: 20px">
-        <div>
-          <t-button :disabled="selectedRowKeysContent?.length > 1 ||
-            selectedRowKeysTrans?.length > 1 ||
-            selectedRowKeysAudio?.length > 1 ||
-            selectedRowKeysVideo?.length > 1
-            " @click="mergeInSentence">组成句子</t-button>
-          <p style="font-size: 10px; color: gray">每个资源列表最多只能选择一项！</p>
-        </div>
-        <!--        <div>
-          <t-button @click="mergeInSentence">批量组成句子</t-button>
-          <p style="font-size: 10px; color: gray">请保证每列勾选的数量一致</p>
-        </div>-->
-        <t-popconfirm content="确认删除吗" :on-confirm="handleMoreDeleteContent">
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>
-        <!--        <t-popconfirm
-          content="确认删除吗"
-          :on-confirm="handleMoreDeleteMerge"
-        >
-          <t-button theme="danger"> 批量删除 </t-button>
-        </t-popconfirm>-->
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(2, 47%); gap: 10px">
-        <div style="
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #dddddd;
-            border-radius: 20px;
-            padding: 20px 0;
-            position: relative;
-          ">
-          <div style="text-align: center; margin: 0 80px">
-            原文资源
-            <p>{{ exercises.contentFileName }}</p>
-          </div>
-          <div style="position: absolute; right: 10px; top: 10px">
-            <t-button :disabled="selectedRowKeysContent?.length != 2" @click="handleMerge('content')">合并</t-button>
-          </div>
-          <t-table v-if="exercises.conetentList" :row-key="id" :data="exercises.conetentList" :columns="columnsContent"
-            drag-sort="row-handler" :sort="{ sortBy: 'rank', descending: false }" table-layout="fixed" size="small"
-            cell-empty-content="-" resizable :loading="isLoading" :hover="true" :show-sort-column-bg-color="true"
-            right-fixed-column="1" :selected-row-keys="selectedRowKeysContent"
-            @drag-sort="(e) => onSortChange(e, 'content')" @row-click="handleRowClick"
-            @select-change="onSelectChangeContent">
-            <template #content="{ row }">
-              <div>
-                <t-input v-model="row.content" style="min-width: 300px" clearable size="small" borderless
-                  placeholder="请输入内容"></t-input>
-              </div>
-            </template>
-          </t-table>
-        </div>
-        <div style="
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #dddddd;
-            border-radius: 20px;
-            padding: 20px 0;
-            position: relative;
-          ">
-          <div style="text-align: center; margin: 0 80px">
-            翻译资源
-            <p>{{ exercises.translationFileName }}</p>
-          </div>
-          <div style="position: absolute; right: 10px; top: 10px">
-            <t-button :disabled="selectedRowKeysTrans?.length != 2" @click="handleMerge('trans')">合并</t-button>
-          </div>
-          <t-table v-if="exercises.translationList" :row-key="id" :data="exercises.translationList"
-            :columns="columnsContent" table-layout="fixed" drag-sort="row-handler" size="small" cell-empty-content="-"
-            resizable :loading="isLoading" :hover="true" :show-sort-column-bg-color="true" right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysTrans" @drag-sort="(e) => onSortChange(e, 'trans')"
-            @row-click="handleRowClick" @select-change="onSelectChangeTrans">
-            <template #content="{ row }">
-              <div>
-                <t-input v-model="row.content" style="min-width: 300px" clearable size="small" borderless
-                  placeholder="请输入内容"></t-input>
-              </div>
-            </template>
-          </t-table>
-        </div>
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(2, 47%); gap: 10px">
-        <div style="
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #dddddd;
-            border-radius: 20px;
-            padding: 20px 0;
-            position: relative;
-          ">
-          <div style="text-align: center; margin: 0 80px">
-            音频资源
-            <p>{{ exercises.audioFileName }}</p>
-          </div>
-          <div style="position: absolute; right: 10px; top: 10px">
-            <t-button :disabled="selectedRowKeysAudio?.length != 2" @click="handleMerge('audio')">合并</t-button>
-          </div>
-          <t-table v-if="exercises.audioList" :row-key="id" :data="exercises.audioList" :columns="columnsVideo"
-            drag-sort="row-handler" table-layout="fixed" size="small" cell-empty-content="-" resizable
-            :loading="isLoading" :hover="true" :show-sort-column-bg-color="true" right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysAudio" @drag-sort="(e) => onSortChange(e, 'audio')"
-            @row-click="handleRowClick" @select-change="onSelectChangeAudio">
-            <template #url="{ row }">
-              <audio :autoplay="false" controls="controls" preload="meta" :src="row.url"></audio>
-            </template>
-          </t-table>
-        </div>
-        <div style="
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #dddddd;
-            border-radius: 20px;
-            padding: 20px 0;
-            position: relative;
-          ">
-          <div style="text-align: center; margin: 0 80px">
-            视频资源
-            <p>{{ exercises.videoFileName }}</p>
-          </div>
-          <div style="position: absolute; right: 10px; top: 10px">
-            <t-button :disabled="selectedRowKeysVideo?.length != 2" @click="handleMerge('video')">合并</t-button>
-          </div>
-          <t-table v-if="exercises.videoList" :row-key="id"
-            :data="exercises.videoList.slice((current - 1) * pageSize, current * pageSize)" :columns="columnsVideo"
-            drag-sort="row-handler" table-layout="fixed" size="small" cell-empty-content="-" resizable
-            :loading="isLoading" :hover="true" :show-sort-column-bg-color="true" right-fixed-column="1"
-            :selected-row-keys="selectedRowKeysVideo" @drag-sort="(e) => onSortChange(e, 'video')"
-            @row-click="handleRowClick" @select-change="onSelectChangeVideo">
-            <template #url="{ row }">
-              <video ref="videoRef" :src="row.url" width="200" height="100"
-                :poster="row.url + '?vframe/jpg/offset/10/w/200/h/100'" preload="none" :autoplay="false"
-                controls></video>
-            </template>
-          </t-table>
-          <t-pagination v-model="current" v-model:pageSize="pageSize" :total="exercises?.videoList?.length" show-jumper
-            @change="onPageChange" @page-size-change="onPageSizeChange" @current-change="onCurrentChange" />
-        </div>
-      </div>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleUploadArticle" header="上传文章" width="1000px" :footer="false"
-      @close="closeArticle()">
-      <div style="padding-left: 50px">
-        <div style="display: flex">
-          <div>文章数量</div>
-          <div style="width: 100px; margin-left: 20px">
-            <t-input v-model="articleCount" />
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章介绍</div>
-          <div style="width: 500px; margin-left: 20px">
-            <t-textarea v-model="articleIntroduction" placeholder="请输入文章介绍" name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }" />
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章封面</div>
-          <div style="width: 500px; margin-left: 20px">
-            <t-upload v-model="picture" action="/manager/manager/upload/file" theme="file"
-              :headers="{ accessToken: accessToken }" :max="2" accept="image/*"
-              @onWaitingUploadFilesChange="console.log('发生变化')" @success="pictureUpload"
-              @remove="removePicture"></t-upload>
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章标题</div>
-          <div style="width: 300px; margin-left: 20px">
-            <t-input v-model="articleTitle" />
-          </div>
-        </div>
-      </div>
-
-      <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button size="large" @click="articleUpload()">确认上传</t-button>
-      </div>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleModifyArticle" header="修改文章" width="1000px" :footer="false"
-      @close="closeArticleModify()">
-      <div style="padding-left: 50px">
-        <div style="display: flex">
-          <div>文章数量</div>
-          <div style="width: 100px; margin-left: 20px">
-            <t-input v-model="rowModifyArticle.articleCount" />
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章介绍</div>
-          <div style="width: 500px; margin-left: 20px">
-            <t-textarea v-model="rowModifyArticle.introduction" placeholder="请输入文章介绍" name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }" />
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章封面</div>
-          <img style="width: 150px; height: 200px; margin-left: 20px" :src="rowModifyArticle.picture" />
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章封面</div>
-          <div style="width: 500px; margin-left: 20px">
-            <t-upload v-model="pictureModify" action="/manager/manager/upload/file" theme="file"
-              :headers="{ accessToken: accessToken }" :max="2" accept="image/*"
-              @onWaitingUploadFilesChange="console.log('发生变化')" @success="pictureModifyUpload"
-              @remove="removePicture"></t-upload>
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>文章标题</div>
-          <div style="width: 300px; margin-left: 20px">
-            <t-input v-model="rowModifyArticle.title" />
-          </div>
-        </div>
-      </div>
-
-      <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button size="large" @click="articleUploadModify()">确认修改</t-button>
-      </div>
-    </t-dialog>
 
     <t-dialog v-model:visible="visibleUploadExercise" header="上传练习" width="1000px" :footer="false"
       @close="closeExerciseUpload()">
@@ -416,7 +75,13 @@
         </div> -->
 
         <!-- 文件上传 -->
-
+        <div style="display: flex">
+          <div style="width: 130px">合集封面</div>
+          <div style="width: 500px; margin-left: 20px">
+            <HuaweiOBSUpload accept="image/jpeg,image/png" buttonText="上传封面" tips="建议尺寸：800x600，支持jpg、png格式"
+              folder="series_cover" @success="handleCoverUploadSuccess" @error="handleCoverUploadError" />
+          </div>
+        </div>
 
         <!-- 已上传文件列表 -->
         <!-- <div v-if="successList.length"> -->
@@ -502,9 +167,9 @@
           </div>
           <div style="display: flex; gap: 20px">
             <div>视频文件</div>
-            <!--          <div>文件路径：<t-input placeholder="请输入文件路径"></t-input></div>--> <input style="margin-left: 53px;"
-              id="file-selector" type="file" multiple="multiple" class="inputFile" @change="filechange" /><img
-              style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
+            <input style="margin-left: 53px;" id="file-selector" type="file" :multiple="true" class="inputFile"
+              @change="filechange" />
+            <img style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
               src="../../assets/shangchuan.png">
           </div>
 
@@ -514,7 +179,7 @@
         </div>
       </div>
       <div v-if="progressVisible && progressVal">
-        {{ progressVal == '100' ? '视频分段完成' : '视频文件分段中' }}
+        {{ progressVal === 100 ? '视频分段完成' : '视频文件分段中' }}
         <t-progress theme="plump" :color="{ from: '#0052D9', to: '#00A870' }" :percentage="progressVal"
           :status="'active'" />
       </div>
@@ -596,6 +261,20 @@
     </t-dialog>
 
     <t-loading :loading="loading" text="加载中..." fullscreen />
+
+    <!-- 系列合集表格 -->
+    <t-card class="row-container" :bordered="false">
+      <t-space direction="vertical" style="width: 100%">
+        <div style="display: flex;">
+          <div style="margin-right: 10px;margin-top: 5px;">合集名称</div>
+          <t-input v-model="search" placeholder="搜索合集名称（可选）" style="width: 240px" @enter="onSearch" clearable />
+        </div>
+
+        <t-table row-key="id" :data="seriesNameList" :columns="seriesNameColumns" :bordered="true" size="small"
+          :loading="isLoading" :hover="true" :pagination="pagination" @page-change="onPageChange">
+        </t-table>
+      </t-space>
+    </t-card>
   </div>
 </template>
 
@@ -605,10 +284,14 @@ export default {
 };
 </script>
 <script setup lang="tsx">
-// import { SearchIcon } from 'tdesign-icons-vue-next';
+import { ChevronDownIcon, BrowseIcon, UploadIcon } from 'tdesign-icons-vue-next';
 import { number } from 'echarts';
-import { MessagePlugin } from 'tdesign-vue-next';
+import { MessagePlugin, SuccessContext, UploadFailContext, UploadFile } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
+import { Tag as TTag, ImageViewer as TImageViewer } from 'tdesign-vue-next';
+import { useRouter } from 'vue-router';
 
 import { delete8, save9, update8 } from '@/api/user/articles';
 import {
@@ -669,19 +352,10 @@ import {
 } from './columnData';
 import Add from './components/Add.vue';
 import COS from 'cos-js-sdk-v5';
+import { getAllSeriesName } from '@/api/video';
+import HuaweiOBSUpload from '@/components/HuaweiOBSUpload/index.vue';
+import { usePermissionStore } from '@/store';
 
-// 挂载时调用请求函数
-onMounted(async () => {
-  getCosInstance();
-  accessToken.value = localStorage.getItem('accessToken');
-  queryData({
-    pageNumber: pagination.current,
-    pageSize: pagination.pageSize,
-  });
-  store.renewData = queryData; // 挂载时，将请求函数给pinia
-  store.pagination.current = pagination.current; // 分页数据也一起给
-  store.pagination.pageSize = pagination.pageSize;
-});
 const querySave = reactive({
   sort: '',
   order: null,
@@ -732,18 +406,22 @@ const onCurrentChange = (index) => {
   current.value = index;
 };
 
-const onPageChange = (pageInfo) => {
-  console.log(pageInfo);
+const onPageChange = (pageInfo: { current: number; pageSize: number }) => {
+  pagination.current = pageInfo.current;
+  pagination.pageSize = pageInfo.pageSize;
+  fetchSeriesData();
 };
 
-const filechange = (e) => {
-  files.value.push(...e.target.files);
-  console.log('files', files);
+const filechange = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  if (target.files) {
+    files.value.push(...Array.from(target.files));
+  }
 };
 
 const cos = ref(null); // 腾讯云 cos 操作实例
 
-const files = ref([]);
+const files = ref<File[]>([]);
 
 const getCosInstance = () => {
   console.log('1112454', COS);
@@ -1094,19 +772,9 @@ const edit = async () => {
 const pagination = reactive({
   current: 1,
   pageSize: 10,
-  total: 10,
+  total: 0,
   showJumper: true,
-  onChange: (pageInfo) => {
-    pagination.current = pageInfo.current;
-    pagination.pageSize = pageInfo.pageSize;
-    store.pagination.current = pagination.current; // 分页数据也一起给
-    store.pagination.pageSize = pagination.pageSize;
-    queryData({
-      pageNumber: pagination.current,
-      pageSize: pagination.pageSize,
-    }); // 分页数据改变时调用请求函数
-    console.log('pagination.onChange', pageInfo);
-  },
+  pageSizeOptions: [10, 20, 50]
 });
 const sentenceFiles = ref({ voiceUrl: [], videoUrl: [] });
 
@@ -1273,7 +941,7 @@ const cutVideoFun = () => {
 };
 const progressInterval = ref(null);
 const progressVisible = ref(false);
-const progressVal = ref(0);
+const progressVal = ref<number>(0);
 const setProgress = () => {
   getProgressMethods(modifyEx.value.id);
   progressInterval.value = setInterval(() => {
@@ -1286,13 +954,12 @@ const getProgressMethods = (exerciseId) => {
     if (res.result && res.success) {
       const nums = res.result.split('/');
       progressVal.value = Number(Number((Number(nums[0]) / Number(nums[1])) * 100).toFixed(2));
-      if (progressVal.value == '100') {
+      if (progressVal.value === 100) {
         clearInterval(progressInterval.value);
         progressInterval.value = null;
         MessagePlugin.success('视频分段完成');
       }
     } else {
-      // MessagePlugin.error('视频分段失败');
       progressVisible.value = false;
       clearInterval(progressInterval.value);
       progressInterval.value = null;
@@ -1326,7 +993,7 @@ const closeSenModify = () => {
   visibleModifySen.value = false;
 };
 
-const levelChange = (level) => {
+const levelChange = (level: 'EASY' | 'MIDDLE' | 'HARD') => {
   modifyEx.value.difficultyLevel = level;
 };
 
@@ -1354,8 +1021,652 @@ const senModify = () => {
     closeSenModify();
   });
 };
-</script>
 
+const seriesNameList = ref([]);
+const levelOptions = [
+  { content: 'easy', value: 'easy' },
+  { content: 'medium', value: 'medium' },
+  { content: 'hard', value: 'hard' },
+];
+
+const handleLevelClick = (data: { value: string }, row: any) => {
+  row.level = data.value;
+  MessagePlugin.success(`已切换为【${data.value}】`);
+};
+
+// 行级Popconfirm显示状态和待更新level
+const popconfirmVisibleMap = reactive({}); // { [id]: boolean }
+const pendingLevelMap = reactive({}); // { [id]: string }
+
+// 过滤掉所有以 _ 开头的字段
+function filterInternalProps(obj) {
+  const result = {};
+  for (const key in obj) {
+    if (!key.startsWith('_')) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
+
+async function updateSeriesLevel(row, newLevel) {
+  // 生成header
+  function generateSignature(timestamp) {
+    const apiName = 'update_series';
+    const signStr = `${apiName}${timestamp}lingotok`;
+    return CryptoJS.SHA256(signStr).toString();
+  }
+  function getRequestHeaders() {
+    const timestamp = Date.now().toString();
+    return {
+      Timestamp: timestamp,
+      Signature: generateSignature(timestamp)
+    };
+  }
+  const headers = getRequestHeaders();
+  // 构造请求体，过滤掉内部状态属性
+  const username = localStorage.getItem('username') || '';
+  const filteredRow = filterInternalProps(row);
+  const payload = { ...filteredRow, level: newLevel, username };
+
+  try {
+    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+    if (res.data && res.data.code === 200) {
+      row.level = newLevel;
+      MessagePlugin.success('修改成功');
+    } else {
+      MessagePlugin.error(res.data?.message || '修改失败');
+    }
+  } catch (e) {
+    MessagePlugin.error('网络错误，修改失败');
+  }
+}
+
+// 新增：删除标签后自动请求接口更新
+async function updateSeriesInterest(row, newInterestList) {
+  function generateSignature(timestamp) {
+    const apiName = 'update_series';
+    const signStr = `${apiName}${timestamp}lingotok`;
+    return CryptoJS.SHA256(signStr).toString();
+  }
+  function getRequestHeaders() {
+    const timestamp = Date.now().toString();
+    return {
+      Timestamp: timestamp,
+      Signature: generateSignature(timestamp)
+    };
+  }
+  const headers = getRequestHeaders();
+  const username = localStorage.getItem('username') || '';
+  const filteredRow = filterInternalProps(row);
+  const payload = { ...filteredRow, interest_list: newInterestList, username };
+
+  try {
+    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+    if (res.data && res.data.code === 200) {
+      row.interest_list = newInterestList;
+      MessagePlugin.success('兴趣标签已更新');
+    } else {
+      MessagePlugin.error(res.data?.message || '兴趣标签更新失败');
+    }
+  } catch (e) {
+    MessagePlugin.error('网络错误，兴趣标签更新失败');
+  }
+}
+
+const coverPreviewVisibleMap = reactive<Record<string | number, boolean>>({});
+const coverEditDialogMap = reactive<Record<string | number, boolean>>({});
+const coverUploadFileMap = reactive<Record<string | number, any[]>>({});
+const coverUploadUrlMap = reactive<Record<string | number, string>>({});
+const obsKeyMap = reactive<Record<string | number, string>>({});
+
+// 初始化文件列表的方法
+const initializeFileList = (id: string | number) => {
+  if (!coverPreviewVisibleMap[id]) coverPreviewVisibleMap[id] = false;
+  if (!coverEditDialogMap[id]) coverEditDialogMap[id] = false;
+  if (!coverUploadFileMap[id]) coverUploadFileMap[id] = [];
+  if (!coverUploadUrlMap[id]) coverUploadUrlMap[id] = '';
+  if (!obsKeyMap[id]) obsKeyMap[id] = '';
+};
+
+const seriesNameColumns = [
+  {
+    colKey: 'id',
+    title: '合集ID',
+    align: 'center',
+    width: 250,
+    cell: (h, { row }) => (
+      <t-link theme="primary" hover="underline" onClick={() => handleSeriesClick(row)}>
+        {row.id}
+      </t-link>
+    )
+  },
+  {
+    colKey: 'name',
+    title: '合集名称',
+    align: 'center',
+    cell: (val, context) => {
+      const row = context?.row || context?.data || val?.row || val;
+      const id = row?.id;
+      // 本地编辑状态
+      if (!row) return '-';
+      // 本地输入框内容
+      if (!row._editName) row._editName = row.name;
+      // 控制Popconfirm显隐
+      if (typeof row._editPopVisible === 'undefined') row._editPopVisible = false;
+      // 修改名称方法
+      const handleUpdateName = async () => {
+        if (!row._editName || row._editName === row.name) {
+          row._editPopVisible = false;
+          return;
+        }
+        // 调用接口
+        try {
+          // 生成header
+          function generateSignature(timestamp) {
+            const apiName = 'update_series';
+            const signStr = `${apiName}${timestamp}lingotok`;
+            return CryptoJS.SHA256(signStr).toString();
+          }
+          function getRequestHeaders() {
+            const timestamp = Date.now().toString();
+            return {
+              Timestamp: timestamp,
+              Signature: generateSignature(timestamp)
+            };
+          }
+          const headers = getRequestHeaders();
+          const username = localStorage.getItem('username') || '';
+          const payload = { ...filterInternalProps(row), name: row._editName, username };
+          const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+          if (res.data && res.data.code === 200) {
+            row.name = row._editName;
+            MessagePlugin.success('名称修改成功');
+          } else {
+            MessagePlugin.error(res.data?.message || '名称修改失败');
+          }
+        } catch (e) {
+          MessagePlugin.error('网络错误，名称修改失败');
+        }
+        row._editPopVisible = false;
+      };
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+          <t-input
+            v-model={row._editName}
+            size="small"
+            style={{
+              width: `${Math.max(120, Math.min((row._editName?.length || 4) * 16 + 32, 400))}px`,
+              minWidth: '120px',
+              maxWidth: '400px'
+            }}
+          />
+          <t-popconfirm
+            visible={row._editPopVisible}
+            content="确认修改吗"
+            onConfirm={handleUpdateName}
+            onCancel={() => { row._editPopVisible = false; }}
+          >
+            <t-button size="small" onClick={() => { row._editPopVisible = true; }}>修改</t-button>
+          </t-popconfirm>
+        </div>
+      );
+    }
+  },
+  {
+    colKey: 'cover',
+    title: '合集封面',
+    align: 'center',
+    cell: (h: any, { row }: { row: any }) => {
+      if (!row?.id) return '-';
+
+      const handleUploadSuccess = async ({ url }) => {
+        try {
+          const username = localStorage.getItem('username') || '';
+          const payload = {
+            ...filterInternalProps(row),
+            cover: url,
+            username
+          };
+          const timestamp = Date.now().toString();
+          const headers = {
+            Timestamp: timestamp,
+            Signature: CryptoJS.SHA256(`update_series${timestamp}lingotok`).toString()
+          };
+          const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+          if (res.data?.code === 200) {
+            row.cover = url;
+            MessagePlugin.success('封面修改成功');
+            coverEditDialogMap[row.id] = false;
+          } else {
+            MessagePlugin.error(res.data?.message || '修改失败');
+          }
+        } catch (e) {
+          MessagePlugin.error('网络错误，修改失败');
+        }
+      };
+
+      const handleUploadError = (error) => {
+        MessagePlugin.error('上传失败：' + error.message);
+      };
+
+      return (
+        <div class="cover-column-container">
+          {row.cover && row.cover.trim() ? (
+            <div>
+              <div class="image-preview" onClick={() => coverPreviewVisibleMap[row.id] = true}>
+                <img src={row.cover} alt="cover" style="width: 80px; height: 80px; object-fit: cover;" />
+              </div>
+              <t-image-viewer
+                visible={coverPreviewVisibleMap[row.id]}
+                images={[row.cover]}
+                onClose={() => coverPreviewVisibleMap[row.id] = false}
+              />
+            </div>
+          ) : (
+            <div class="image-preview empty-preview" style="cursor: default;">
+              <div style="text-align: center; color: #999;">
+                <div style="margin-top: 4px; font-size: 12px;">暂无封面</div>
+              </div>
+            </div>
+          )}
+
+          <t-button theme="primary" size="small" onClick={() => coverEditDialogMap[row.id] = true}>
+            {row.cover && row.cover.trim() ? '修改封面' : '上传封面'}
+          </t-button>
+
+          <t-dialog
+            visible={coverEditDialogMap[row.id]}
+            header="修改合集封面"
+            onClose={() => coverEditDialogMap[row.id] = false}
+          >
+            <div style="padding: 20px">
+              <HuaweiOBSUpload
+                accept="image/jpeg,image/png"
+                buttonText="上传封面"
+                tips="建议尺寸：800x600，支持jpg、png格式"
+                folder="series_cover"
+                onSuccess={handleUploadSuccess}
+                onError={handleUploadError}
+              />
+            </div>
+          </t-dialog>
+        </div>
+      );
+    }
+  },
+  {
+    colKey: 'level',
+    title: '合集Level',
+    align: 'center',
+    cell: (val, context) => {
+      const row = context?.row || context?.data || val?.row || val;
+      const id = row?.id;
+      // level颜色映射
+      const levelColorMap = {
+        easy: 'success',
+        medium: 'warning',
+        hard: 'danger',
+      };
+      return (
+        <div class="tdesign-demo-dropdown" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%' }}>
+          <TTag theme={levelColorMap[row.level] || 'default'}>{row && typeof row.level !== 'undefined' ? row.level : '-'}</TTag>
+          <t-dropdown
+            options={levelOptions}
+            onClick={data => {
+              if (row && id) {
+                pendingLevelMap[id] = data.value;
+                popconfirmVisibleMap[id] = true;
+              }
+            }}
+          >
+            <t-button variant="text" size="small">
+              <span class="tdesign-demo-dropdown__text">
+                <ChevronDownIcon size="16" />
+              </span>
+            </t-button>
+          </t-dropdown>
+          <t-popconfirm
+            visible={!!popconfirmVisibleMap[id]}
+            content="确认修改吗"
+            onConfirm={async () => {
+              await updateSeriesLevel(row, pendingLevelMap[id]);
+              popconfirmVisibleMap[id] = false;
+              pendingLevelMap[id] = undefined;
+            }}
+            onCancel={() => {
+              popconfirmVisibleMap[id] = false;
+              pendingLevelMap[id] = undefined;
+            }}
+          >
+            {/* 这里不渲染按钮，仅用于气泡确认 */}
+            <span></span>
+          </t-popconfirm>
+        </div>
+      );
+    }
+  },
+  {
+    colKey: 'interest_list',
+    title: '合集Interest列表',
+    align: 'center',
+    cell: (val, context) => {
+      const row = context?.row || context?.data || val?.row || val;
+      let interests = row?.interest_list;
+      if (typeof interests === 'string') {
+        try { interests = JSON.parse(interests); } catch { }
+      }
+      if (!Array.isArray(interests)) interests = [];
+      const id = row?.id;
+      // 删除标签弹窗
+      const handleDeleteTag = (idx) => {
+        interestDeletePopMap[id] = idx;
+      };
+      const confirmDeleteTag = async () => {
+        const idx = interestDeletePopMap[id];
+        const newList = interests.slice();
+        newList.splice(idx, 1);
+        await updateSeriesInterest(row, newList);
+        interestDeletePopMap[id] = undefined;
+      };
+      // 添加标签弹窗
+      const handleAddTag = (tag) => {
+        interestAddPopMap[id] = tag;
+      };
+      const confirmAddTag = async () => {
+        const tag = interestAddPopMap[id];
+        let interestsArr = row?.interest_list;
+        if (typeof interestsArr === 'string') {
+          try { interestsArr = JSON.parse(interestsArr); } catch { interestsArr = []; }
+        }
+        if (!Array.isArray(interestsArr)) interestsArr = [];
+        if (interestsArr.includes(tag)) {
+          interestAddPopMap[id] = undefined;
+          return;
+        }
+        const newList = [...interestsArr, tag];
+        await updateSeriesInterest(row, newList);
+        interestAddPopMap[id] = undefined;
+      };
+      // 固定兴趣标签英文名
+      const INTEREST_OPTIONS = [
+        'food_drink', 'beauty_style', 'music', 'fitness_health', 'vlogs', 'comedy', 'sports', 'entertainment_culture', 'science_education', 'family', 'motivation_advice', 'dance', 'travel', 'gaming', 'pets', 'automotive_vehicle', 'diy', 'art', 'anime_comics', 'life_hacks', 'outdoors', 'oddly_satisfy'
+      ];
+      const availableOptions = INTEREST_OPTIONS.filter(
+        (item) => !interests.includes(item)
+      ).map(item => ({ content: item, value: item }));
+      return (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', justifyContent: 'center', alignItems: 'center' }}>
+          {interests.length === 0 ? '-' : interests.map((item, idx) => (
+            <t-popconfirm
+              key={idx}
+              visible={interestDeletePopMap[id] === idx}
+              content="确认修改吗"
+              onConfirm={confirmDeleteTag}
+              onCancel={() => { interestDeletePopMap[id] = undefined; }}
+            >
+              <TTag theme="primary" closable onClose={() => handleDeleteTag(idx)}>{item}</TTag>
+            </t-popconfirm>
+          ))}
+          <t-popconfirm
+            visible={!!interestAddPopMap[id]}
+            content="确认修改吗"
+            onConfirm={confirmAddTag}
+            onCancel={() => { interestAddPopMap[id] = undefined; }}
+          >
+            <t-dropdown
+              options={availableOptions}
+              trigger="click"
+              popupProps={{
+                visible: !!addTagDropdownVisibleMap[id],
+                onVisibleChange: (v) => { addTagDropdownVisibleMap[id] = v }
+              }}
+              onClick={data => handleAddTag(data.value)}
+              disabled={availableOptions.length === 0}
+            >
+              <t-button variant="text" size="small" style="padding:0 4px; margin-left:4px; color:#0052d9; border:1px dashed #0052d9; min-width:32px; height:24px; line-height:22px;">+添加</t-button>
+            </t-dropdown>
+          </t-popconfirm>
+        </div>
+      );
+    }
+  }
+];
+
+const search = ref('');
+
+// 生成签名
+function generateSignature(timestamp: string): string {
+  const apiName = 'search_series';
+  const signStr = `${apiName}${timestamp}lingotok`;
+  return CryptoJS.SHA256(signStr).toString();
+}
+
+// 获取请求头参数
+function getRequestHeaders(): { Timestamp: string; Signature: string } {
+  const timestamp = Date.now().toString();
+  return {
+    Timestamp: timestamp,
+    Signature: generateSignature(timestamp)
+  };
+}
+
+async function fetchSeriesData() {
+  isLoading.value = true;
+  try {
+    const headers = getRequestHeaders();
+    const offset = (pagination.current - 1) * pagination.pageSize;
+    const postData: { offset: number; limit: number; series_name?: string } = {
+      offset,
+      limit: pagination.pageSize
+    };
+    if (search.value && search.value.trim() !== '') {
+      postData.series_name = search.value;
+    }
+    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/search_series', postData, {
+      headers
+    });
+    if (res.data?.code === 200) {
+      seriesNameList.value = Array.isArray(res.data.data.series_list) ? res.data.data.series_list : [];
+      pagination.total = res.data.data.total || 0;
+    } else {
+      seriesNameList.value = [];
+      pagination.total = 0;
+      MessagePlugin.error('获取数据失败');
+    }
+  } catch (error) {
+    console.error('获取系列名称失败:', error);
+    seriesNameList.value = [];
+    pagination.total = 0;
+    MessagePlugin.error('获取数据失败');
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+const onSearch = () => {
+  pagination.current = 1;
+  fetchSeriesData();
+};
+
+const allInterestOptions = ref([]);
+const addTagDropdownVisibleMap = reactive({}); // { [id]: boolean }
+const interestDeletePopMap = reactive({}); // { [rowId]: index }
+const interestAddPopMap = reactive({});    // { [rowId]: tag }
+
+onMounted(async () => {
+  fetchSeriesData();
+  // 获取所有可选标签
+  try {
+    if (res && res.code === 200 && Array.isArray(res.data.series_name_list)) {
+      allInterestOptions.value = res.data.series_name_list;
+    } else {
+      allInterestOptions.value = [];
+    }
+  } catch (e) {
+    allInterestOptions.value = [];
+  }
+});
+
+// 过滤掉所有以 _ 开头的字段
+function filterRowForApi(row) {
+  const result = {};
+  for (const key in row) {
+    if (!key.startsWith('_')) {
+      result[key] = row[key];
+    }
+  }
+  return result;
+}
+
+// 添加 OBS 配置
+const OBS_CONFIG = {
+  AK: 'UI29JOFHTKQRBVVQ06TT',
+  SK: 'vaMNt6dy5cJvXDlkzoWVNx3M8O0H5aIkneZSMZom',
+  SERVER: 'https://obs.me-east-1.myhuaweicloud.com',
+  BUCKET: 'lingotok',
+  FOLDER: 'series_cover'
+};
+
+// 生成 OBS 上传策略和签名
+const getObsPolicy = (filename: string) => {
+  const key = `${OBS_CONFIG.FOLDER}/${Date.now()}_${filename}`;
+  const expiration = new Date();
+  expiration.setHours(expiration.getHours() + 1);
+
+  const policyObj = {
+    expiration: expiration.toISOString(),
+    conditions: [
+      { bucket: OBS_CONFIG.BUCKET },
+      ['eq', '$key', key],
+      { 'x-obs-acl': 'public-read' },
+      ['content-length-range', 0, 5 * 1024 * 1024]
+    ]
+  };
+
+  const policy = btoa(JSON.stringify(policyObj));
+  const signature = CryptoJS.HmacSHA1(policy, OBS_CONFIG.SK).toString(CryptoJS.enc.Base64);
+
+  return {
+    key,
+    policy,
+    signature,
+    accessKey: OBS_CONFIG.AK
+  };
+};
+
+// 上传配置
+const uploadConfig = reactive({
+  action: OBS_CONFIG.SERVER,
+  headers: { 'x-obs-acl': 'public-read' },
+  name: 'file',
+  key: '',
+  accept: 'image/*',
+  format: ['jpg', 'jpeg', 'png', 'gif'],
+  sizeLimit: 2 * 1024 * 1024,
+  data: (file: File) => {
+    if (!file) return {};
+    const { key, policy, signature, accessKey } = getObsPolicy(file.name);
+    uploadConfig.key = key;
+    return {
+      key,
+      'x-obs-acl': 'public-read',
+      policy,
+      AccessKeyId: accessKey,
+      signature
+    };
+  },
+  formatResponse: (res: any, context: { file: UploadFile }) => {
+    if (typeof res === 'string') {
+      try {
+        res = JSON.parse(res);
+      } catch (e) {
+        if (res === '') {
+          return {
+            error: null,
+            url: `https://${OBS_CONFIG.BUCKET}.${OBS_CONFIG.SERVER.split('//')[1]}/${uploadConfig.key}`
+          };
+        }
+        return { error: '响应格式错误' };
+      }
+    }
+    return res;
+  }
+} as any); // 使用 as any 临时解决类型问题
+
+// 文件校验函数
+const validateUploadFile = async (file: File): Promise<boolean> => {
+  if (!file) return false;
+
+  // 检查文件类型
+  if (!file.type.startsWith('image/')) {
+    MessagePlugin.error('只能上传图片文件');
+    return false;
+  }
+
+  // 检查文件大小 (2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    MessagePlugin.error('图片大小不能超过 2MB');
+    return false;
+  }
+
+  return true;
+};
+
+// 上传成功处理函数
+const handleUploadSuccess = (context: SuccessContext) => {
+  const res = context.response;
+  if (res.error) {
+    MessagePlugin.error(res.error);
+    return;
+  }
+
+  if (res.url) {
+    MessagePlugin.success('上传成功');
+  } else {
+    console.error('Invalid upload response:', res);
+    MessagePlugin.error('上传响应格式不正确');
+  }
+};
+
+// 上传失败处理函数
+const handleUploadError = (context: UploadFailContext) => {
+  console.error('Upload error:', context);
+  MessagePlugin.error('上传失败');
+};
+
+// 处理封面上传成功
+const handleCoverUploadSuccess = ({ url, file }) => {
+  picture.value = url;
+  MessagePlugin.success('封面上传成功');
+};
+
+// 处理封面上传失败
+const handleCoverUploadError = (error) => {
+  MessagePlugin.error('封面上传失败：' + error.message);
+};
+
+// 处理合集点击
+const router = useRouter();
+const handleSeriesClick = (row) => {
+  // 将搜索参数存储到store中
+  store.setSearchParams({
+    seriesName: row.name
+  });
+
+  // 使用完整的路由路径进行跳转
+  router.push({
+    path: '/video/videoManage',
+    query: {
+      seriesName: row.name
+    }
+  }).catch(err => {
+    console.error('路由跳转失败:', err);
+    // 如果路由跳转失败,尝试刷新页面
+    window.location.href = '/video/videoManage?seriesName=' + encodeURIComponent(row.name);
+  });
+};
+</script>
 <style lang="less" scoped>
 .choose {
   width: 68px;
@@ -1415,5 +1726,95 @@ const senModify = () => {
   box-sizing: border-box;
   font-family: inherit;
   cursor: pointer;
+}
+
+.tdesign-demo-dropdown {
+  &__text {
+    display: inline-flex;
+    align-items: center;
+
+    .t-icon {
+      margin-left: 8px;
+    }
+  }
+}
+
+.tdesign-demo-image-viewer__ui-image {
+  width: 160px;
+  height: 160px;
+  display: inline-flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--td-radius-small);
+  overflow: hidden;
+}
+
+.tdesign-demo-image-viewer__ui-image--hover {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: var(--td-text-color-anti);
+  line-height: 22px;
+  transition: 0.2s;
+}
+
+.tdesign-demo-image-viewer__ui-image:hover .tdesign-demo-image-viewer__ui-image--hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.tdesign-demo-image-viewer__ui-image--img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  cursor: pointer;
+  position: absolute;
+}
+
+.tdesign-demo-image-viewer__base {
+  width: 160px;
+  height: 160px;
+  margin: 10px;
+  border: 4px solid var(--td-bg-color-secondarycontainer);
+  border-radius: var(--td-radius-medium);
+}
+
+.cover-column-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-preview {
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid #E7E7E7;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-preview {
+  background-color: #f5f5f5;
+  color: #999;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
