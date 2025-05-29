@@ -265,9 +265,14 @@
     <!-- 系列合集表格 -->
     <t-card class="row-container" :bordered="false">
       <t-space direction="vertical" style="width: 100%">
-        <div style="display: flex;">
-          <div style="margin-right: 10px;margin-top: 5px;">合集名称</div>
-          <t-input v-model="search" placeholder="搜索合集名称（可选）" style="width: 240px" @enter="onSearch" clearable />
+        <div style="display: flex; align-items: center;">
+          <div style="margin-right: 10px;">合集名称</div>
+          <div style="display: flex; gap: 8px;">
+            <t-input v-model="search" placeholder="搜索合集名称（可选）" style="width: 240px" clearable :onEnter="onSearch" />
+            <t-button theme="primary" @click="onSearch">
+              搜索
+            </t-button>
+          </div>
         </div>
 
         <t-table row-key="id" :data="seriesNameList" :columns="seriesNameColumns" :bordered="true" size="small"
@@ -1070,7 +1075,7 @@ async function updateSeriesLevel(row, newLevel) {
   const payload = { ...filteredRow, level: newLevel, username };
 
   try {
-    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/update_series', payload, { headers });
     if (res.data && res.data.code === 200) {
       row.level = newLevel;
       MessagePlugin.success('修改成功');
@@ -1102,7 +1107,7 @@ async function updateSeriesInterest(row, newInterestList) {
   const payload = { ...filteredRow, interest_list: newInterestList, username };
 
   try {
-    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/update_series', payload, { headers });
     if (res.data && res.data.code === 200) {
       row.interest_list = newInterestList;
       MessagePlugin.success('兴趣标签已更新');
@@ -1178,7 +1183,7 @@ const seriesNameColumns = [
           const headers = getRequestHeaders();
           const username = localStorage.getItem('username') || '';
           const payload = { ...filterInternalProps(row), name: row._editName, username };
-          const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+          const res = await axios.post('https://api.lingotok.ai/api/v1/video/update_series', payload, { headers });
           if (res.data && res.data.code === 200) {
             row.name = row._editName;
             MessagePlugin.success('名称修改成功');
@@ -1233,7 +1238,7 @@ const seriesNameColumns = [
             Timestamp: timestamp,
             Signature: CryptoJS.SHA256(`update_series${timestamp}lingotok`).toString()
           };
-          const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/update_series', payload, { headers });
+          const res = await axios.post('https://api.lingotok.ai/api/v1/video/update_series', payload, { headers });
           if (res.data?.code === 200) {
             row.cover = url;
             MessagePlugin.success('封面修改成功');
@@ -1463,7 +1468,7 @@ async function fetchSeriesData() {
     if (search.value && search.value.trim() !== '') {
       postData.series_name = search.value;
     }
-    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/search_series', postData, {
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/search_series', postData, {
       headers
     });
     if (res.data?.code === 200) {

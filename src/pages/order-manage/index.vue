@@ -74,8 +74,10 @@
           <!-- 左侧视频预览和字幕编辑区域 -->
           <div class="video-preview-section">
             <div class="video-player-box">
-              <div v-if="currentVideo.video?.video_play_url" class="video-container">
-                <video ref="videoPlayer" class="video-player" :src="currentVideo.video.video_play_url"
+              <div v-if="currentVideo.video?.video_trans_code_play_url || currentVideo.video?.video_play_url"
+                class="video-container">
+                <video ref="videoPlayer" class="video-player"
+                  :src="currentVideo.video?.video_trans_code_play_url || currentVideo.video?.video_play_url"
                   :poster="currentVideo.video?.video_cover_url" controls preload="metadata">
                   您的浏览器不支持 HTML5 视频播放
                 </video>
@@ -97,24 +99,30 @@
                   @click="handleSubtitleSelect(subtitle)">
                   {{ getSubtitleLanguageName(subtitle.language) }}
                 </t-button>
+                <t-button v-if="hasDraftButton" variant="outline" :theme="isDraftMode ? 'primary' : 'default'"
+                  @click="handleDraftSubtitleSelect">
+                  中文草稿字幕
+                </t-button>
               </div>
 
               <!-- 字幕编辑区域 -->
-              <div v-if="currentSubtitle" class="subtitle-editor">
+              <div v-if="currentSubtitle || isDraftMode" class="subtitle-editor">
                 <div class="subtitle-header">
-                  <span>{{ getSubtitleLanguageName(currentSubtitle.language) }}内容</span>
+                  <span>{{ isDraftMode ? '中文草稿字幕' : getSubtitleLanguageName(currentSubtitle.language) }}内容</span>
                   <div class="subtitle-actions">
-                    <t-button v-if="currentSubtitle.language === 'zh'" theme="primary" size="small"
-                      @click="handleSaveSubtitle" :loading="uploading">
+                    <t-button v-if="isDraftMode" theme="primary" size="small" @click="handleSaveSubtitle"
+                      :loading="uploading">
                       保存
                     </t-button>
                   </div>
                 </div>
                 <t-loading :loading="subtitleLoading">
                   <t-textarea v-model="subtitleContent"
-                    :placeholder="`请输入${getSubtitleLanguageName(currentSubtitle.language)}内容`"
-                    :autosize="{ minRows: 10, maxRows: 20 }" :readonly="currentSubtitle.language !== 'zh'" />
+                    :placeholder="`请输入${isDraftMode ? '中文草稿字幕' : getSubtitleLanguageName(currentSubtitle.language)}内容`"
+                    :autosize="{ minRows: 10, maxRows: 20 }"
+                    :readonly="currentSubtitle?.language !== 'zh' && !isDraftMode" />
                 </t-loading>
+
               </div>
               <div v-else class="subtitle-placeholder">
                 请选择要编辑的字幕
@@ -158,13 +166,7 @@
                   </t-radio-group>
                 </div>
               </div>
-              <div class="detail-item">
-                <span class="label">合集名称:</span>
-                <div class="value">
-                  <t-select v-model="editingSeriesName" placeholder="选择合集名称" style="width: 300px"
-                    :options="seriesNameOptions" clearable filterable />
-                </div>
-              </div>
+
               <div class="detail-item" style="justify-content: flex-end;">
                 <t-button theme="primary" size="small" @click="handleUpdateVideoInfo" :loading="updating">
                   保存修改
@@ -226,6 +228,32 @@
               <div class="detail-item">
                 <span class="label">合集Interest:</span>
                 <span class="value">{{ currentVideo.video?.series?.interest_list?.join(', ') || '-' }}</span>
+              </div>
+
+
+              <div class="detail-item" style="justify-content: flex-end;">
+                <t-button theme="primary" size="small" @click="handleUpdateVideoInfo" :loading="updating">
+                  保存修改
+                </t-button>
+              </div>
+
+
+
+            </div>
+            <div class="info-group">
+              <div v-if="isDraftMode">
+                <div class="info-item">
+                  <span class="info-label">修改人：</span>
+                  <span class="info-value">{{ currentVideo.video?.draft_subtitle_user || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">修改时间：</span>
+                  <span class="info-value">{{ formatDate(currentVideo.video?.draft_subtitle_time) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">行数：</span>
+                  <span class="info-value">{{ subtitleRows }}</span>
+                </div>
               </div>
             </div>
 
@@ -311,11 +339,36 @@ const columns = [
     ellipsis: true
   },
   {
-    colKey: 'series',
+    colKey: 'series.name',
     title: '合集名称',
     width: 200,
+    ellipsis: true
+  },
+  {
+    colKey: 'series_level',
+    title: '合集Level',
+    width: 120,
     cell: ({ row }) => {
-      return row?.series?.name || '-';
+      const level = row?.series?.level;
+      if (!level || level === '<UNSET>') return <t-tag theme="default">未设置</t-tag>;
+
+      const themeMap = {
+        easy: 'success',
+        medium: 'warning',
+        hard: 'danger'
+      };
+
+      return <t-tag theme={themeMap[level.toLowerCase()] || 'default'}>{level}</t-tag>;
+    }
+  },
+  {
+    colKey: 'series_interest',
+    title: '合集Interest列表',
+    width: 200,
+    cell: ({ row }) => {
+      const interests = row?.series?.interest_list;
+      if (!interests || !Array.isArray(interests) || interests.length === 0) return '-';
+      return interests.join('; ');
     }
   },
   {
@@ -431,7 +484,7 @@ async function fetchVideoList() {
       ...(selectedInterests.value.length > 0 && { series_interest_list: selectedInterests.value })
     };
 
-    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/search_video', postData, {
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/search_video', postData, {
       headers
     });
 
@@ -481,7 +534,7 @@ const handleTableStatusChange = async (value: SwitchValue, row) => {
     // 调用更新接口
     const headers = getRequestHeaders('update_video_info');
     const response = await axios.post(
-      'https://testapi.lingotok.ai/api/v1/video/update_video_info',
+      'https://api.lingotok.ai/api/v1/video/update_video_info',
       updateParams,
       { headers }
     );
@@ -523,7 +576,7 @@ const showVideoDetail = async (row) => {
   try {
     detailLoading.value = true;
     const headers = getRequestHeaders('get_video');
-    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/get_video',
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/get_video',
       { video_id: row.video_id },
       { headers }
     );
@@ -588,116 +641,75 @@ const currentSubtitle = ref(null);
 const subtitleContent = ref('');
 const subtitleLoading = ref(false);
 const uploading = ref(false);
+const isDraftMode = ref(false);
+const subtitleRows = ref(0);
+
+// 计算字幕行数
+const countSubtitleRows = (content: string) => {
+  if (!content) return 0;
+  // 按换行符分割并过滤空行
+  return content.split('\n').filter(line => line.trim()).length;
+};
 
 // 选择字幕
 const handleSubtitleSelect = async (subtitle) => {
   try {
+    isDraftMode.value = false;
     currentSubtitle.value = subtitle;
     subtitleLoading.value = true;
 
     // 获取字幕内容
     const response = await axios.get(subtitle.subtitle_play_url);
     subtitleContent.value = response.data;
+    subtitleRows.value = countSubtitleRows(response.data);
   } catch (error) {
     console.error('获取字幕内容失败:', error);
     MessagePlugin.error('获取字幕内容失败');
     subtitleContent.value = '';
+    subtitleRows.value = 0;
   } finally {
     subtitleLoading.value = false;
   }
 };
 
-// 组件状态
-const uploadFile = ref<UploadFile[]>([]);
-const uploadRef = ref<any>(null);
-
-// 自定义上传方法
-const customUpload = async (files: UploadFile | UploadFile[]): Promise<RequestMethodResponse> => {
-  const file = Array.isArray(files) ? files[0].raw : files.raw;
-  if (!file) {
-    throw new Error('文件不存在');
-  }
-
-  const date = new Date().getTime();
-  const username = localStorage.getItem('username') || 'unknown';
-  const videoId = currentVideo.value?.video?.video_id;
-  const fileName = `draft_subtitle/draft_subtitle_${videoId}_${username}_${date}.srt`;
-
+// 处理草稿字幕选择
+const handleDraftSubtitleSelect = async () => {
   try {
-    // 创建 ObsClient 实例
-    const obsClient = new ObsClient({
-      access_key_id: 'UI29JOFHTKQRBVVQ06TT',
-      secret_access_key: 'vaMNt6dy5cJvXDlkzoWVNx3M8O0H5aIkneZSMZom',
-      server: 'https://obs.me-east-1.myhuaweicloud.com',
-      timeout: 60,
-    });
+    isDraftMode.value = true;
+    currentSubtitle.value = null;
+    subtitleLoading.value = true;
 
-    const result = await obsClient.putObject({
-      Bucket: 'lingotok',
-      Key: fileName,
-      SourceFile: file,
-    });
-
-    if (result.CommonMsg.Status === 200) {
-      const fileUrl = `https://lingotok.obs.me-east-1.myhuaweicloud.com/${fileName}`;
-
-      // 更新当前字幕的URL
-      const updatedSubtitleList = currentVideo.value.video.subtitle_list.map(subtitle => {
-        if (subtitle.language === currentSubtitle.value.language) {
-          return {
-            ...subtitle,
-            subtitle_play_url: fileUrl
-          };
-        }
-        return subtitle;
-      });
-
-      // 准备更新视频信息的参数
-      const updateParams = {
-        video_id: videoId,
-        subtitle_list: updatedSubtitleList,
-        username: username
-      };
-
-      // 调用更新接口
-      const headers = getRequestHeaders('update_video_info');
-      const response = await axios.post(
-        'https://testapi.lingotok.ai/api/v1/video/update_video_info',
-        updateParams,
-        { headers }
-      );
-
-      if (response.data?.code === 200) {
-        MessagePlugin.success('字幕保存成功');
-        // 更新当前视频信息
-        currentVideo.value.video.subtitle_list = updatedSubtitleList;
-        return { status: 'success', response: { url: fileUrl } };
-      } else {
-        throw new Error(response.data?.message || '更新失败');
-      }
+    // 如果有草稿字幕URL，则获取草稿字幕内容
+    if (currentVideo.value?.video?.draft_subtitle_url) {
+      const response = await axios.get(currentVideo.value.video.draft_subtitle_url);
+      subtitleContent.value = response.data;
     } else {
-      throw new Error('文件上传失败');
+      // 如果没有草稿字幕，则使用中文字幕内容
+      const zhSubtitle = currentVideo.value?.video?.subtitle_list?.find(s => s.language === 'zh');
+      if (zhSubtitle) {
+        const response = await axios.get(zhSubtitle.subtitle_play_url);
+        subtitleContent.value = response.data;
+      } else {
+        subtitleContent.value = '';
+      }
     }
+
+    // 计算行数
+    subtitleRows.value = countSubtitleRows(subtitleContent.value);
   } catch (error) {
-    console.error('上传失败:', error);
-    return {
-      status: 'fail',
-      error: error instanceof Error ? error.message : '上传失败',
-      response: { error: error instanceof Error ? error.message : '上传失败' }
-    };
+    console.error('获取草稿字幕内容失败:', error);
+    MessagePlugin.error('获取草稿字幕内容失败');
+    subtitleContent.value = '';
+    subtitleRows.value = 0;
+  } finally {
+    subtitleLoading.value = false;
   }
 };
 
 // 保存字幕
 const handleSaveSubtitle = async () => {
-  if (!currentSubtitle.value || !subtitleContent.value) {
-    MessagePlugin.warning('请先选择字幕并输入内容');
-    return;
-  }
-
-  // 只允许修改中文字幕
-  if (currentSubtitle.value.language !== 'zh') {
-    MessagePlugin.warning('只能修改中文字幕');
+  if (!currentVideo.value?.video?.video_id) {
+    MessagePlugin.warning('视频ID不存在');
     return;
   }
 
@@ -739,11 +751,15 @@ const handleSaveSubtitle = async () => {
       const fileUrl = `https://lingotok.obs.me-east-1.myhuaweicloud.com/${obsFileName}`;
       console.log('文件上传成功，URL:', fileUrl);
 
+      // 计算字幕行数
+      const rows = countSubtitleRows(subtitleContent.value);
+
       // 准备更新字幕信息的参数
       const updateParams = {
         video_id: videoId,
         username: username,
-        draft_subtitle_url: fileUrl
+        draft_subtitle_url: fileUrl,
+        draft_subtitle_rows: rows
       };
 
       console.log('准备更新字幕信息:', updateParams);
@@ -753,7 +769,7 @@ const handleSaveSubtitle = async () => {
       console.log('请求头:', headers);
 
       const response = await axios.post(
-        'https://testapi.lingotok.ai/api/v1/video/upload_video_draft_subtitle',
+        'https://api.lingotok.ai/api/v1/video/upload_video_draft_subtitle',
         updateParams,
         { headers }
       );
@@ -762,8 +778,12 @@ const handleSaveSubtitle = async () => {
 
       if (response.data?.code === 200) {
         MessagePlugin.success('字幕保存成功');
-        // 更新当前字幕的URL
-        currentSubtitle.value.subtitle_play_url = fileUrl;
+        // 更新当前字幕的URL和行数
+        currentVideo.value.video.draft_subtitle_url = fileUrl;
+        currentVideo.value.video.draft_subtitle_rows = rows;
+        currentVideo.value.video.draft_subtitle_user = username;
+        currentVideo.value.video.draft_subtitle_time = Math.floor(Date.now() / 1000);
+        subtitleRows.value = rows;
       } else {
         throw new Error(response.data?.message || '更新失败');
       }
@@ -796,6 +816,8 @@ watch(showDetailDialog, (newVal) => {
     }
     currentSubtitle.value = null;
     subtitleContent.value = '';
+    isDraftMode.value = false;
+    subtitleRows.value = 0;
   }
 });
 
@@ -864,7 +886,7 @@ const handleUpdateVideoInfo = async () => {
     // 调用更新接口
     const headers = getRequestHeaders('update_video_info');
     const response = await axios.post(
-      'https://testapi.lingotok.ai/api/v1/video/update_video_info',
+      'https://api.lingotok.ai/api/v1/video/update_video_info',
       updateParams,
       { headers }
     );
@@ -921,7 +943,7 @@ async function fetchSeriesName() {
       Signature: signature
     };
 
-    const res = await axios.post('https://testapi.lingotok.ai/api/v1/video/get_all_series_name', {}, {
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/get_all_series_name', {}, {
       headers
     });
 
@@ -940,6 +962,20 @@ async function fetchSeriesName() {
 const onSeriesNameChange = () => {
   onSearch();
 };
+
+// 添加中文草稿字幕按钮
+const hasDraftButton = ref(false);
+
+watch(() => currentVideo.value, (newVideo) => {
+  if (newVideo?.video) {
+    // 检查是否有中文字幕
+    const hasZhSubtitle = newVideo.video.subtitle_list?.some(s => s.language === 'zh');
+    // 只有在有中文字幕的情况下才显示草稿按钮
+    hasDraftButton.value = hasZhSubtitle;
+  } else {
+    hasDraftButton.value = false;
+  }
+}, { immediate: true });
 </script>
 
 <style scoped>
@@ -1108,5 +1144,33 @@ const onSeriesNameChange = () => {
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.subtitle-info {
+  margin-top: 16px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  color: #666;
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.info-value {
+  color: #333;
 }
 </style>

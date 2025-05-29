@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { generateRequestParams } from '@/utils/crypto';
 
-const API_BASE_URL = 'https://testapi.lingotok.ai';
+const API_BASE_URL = 'https://api.lingotok.ai';
 
 export async function getAllSeriesName() {
   const apiName = 'get_all_series_name';
