@@ -1,49 +1,28 @@
 <template>
   <div>
-    <template v-for="item in list" :key="item.path">
-      <template v-if="!item.children || !item.children.length || item.meta?.single">
-        <t-menu-item v-if="getHref(item)" :name="item.path" :value="getPath(item)" @click="openHref(getHref(item)[0])">
-          <template #icon>
-            <component :is="menuIcon(item)" class="t-icon"></component>
-          </template>
-          {{ item.title }}
-        </t-menu-item>
-        <t-menu-item v-else style="overflow: visible" width="200px" :name="item.path" :value="getPath(item)"
-          :to="item.path">
-          <template #icon>
-            <component :is="menuIcon(item)" class="t-icon"></component>
-          </template>
-          <div style="padding: 2px 0; padding-right: 20px">
-            <t-badge v-if="item.title === '在线接入'" :count="unreadCount">
-              <div>
-                {{ item.title }}
-              </div>
-            </t-badge>
-            <div v-else>
-              {{ item.title }}
-            </div>
-          </div>
-        </t-menu-item>
-      </template>
-      <t-submenu v-else :name="item.path" :value="item.path" :title="item.title">
+    <template v-for="item in visibleMenuItems" :key="item.path">
+      <t-menu-item style="overflow: visible" width="200px" :name="item.path" :value="item.path" :to="item.path">
         <template #icon>
           <component :is="menuIcon(item)" class="t-icon"></component>
         </template>
-        <menu-content v-if="item.children" :nav-data="item.children" />
-      </t-submenu>
+        <div style="padding: 2px 0; padding-right: 20px">
+          {{ item.meta?.title }}
+        </div>
+      </t-menu-item>
     </template>
   </div>
 </template>
-<script setup lang="tsx">
-// import TIM from 'tim-js-sdk';
-import type { PropType } from 'vue';
-import { computed, onMounted, ref } from 'vue';
 
-import { getUserSignature } from '@/api/common/imUser';
-import { getActive } from '@/router';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import type { PropType } from 'vue';
 import type { MenuRoute } from '@/types/interface';
 
-type ListItemType = MenuRoute & { icon?: string };
+// 扩展 MenuRoute 类型
+interface ListItemType extends MenuRoute {
+  icon?: string | { render: () => void };
+}
 
 const props = defineProps({
   navData: {
@@ -51,119 +30,27 @@ const props = defineProps({
     default: () => [],
   },
 });
-const active = computed(() => getActive());
 
-const list = computed(() => {
-  const { navData } = props;
-  return getMenuList(navData);
+const route = useRoute();
+
+// 监听用户名变化
+const username = ref(localStorage.getItem('username'));
+watch(() => localStorage.getItem('username'), (newUsername) => {
+  username.value = newUsername;
+});
+
+// 过滤掉需要隐藏的菜单项
+const visibleMenuItems = computed(() => {
+  return props.navData.filter(item => !item.meta?.hidden);
 });
 
 const menuIcon = (item: ListItemType) => {
-  if (typeof item.icon === 'string') return <t-icon name={item.icon} />;
-  const RenderIcon = item.icon;
-  return RenderIcon;
-};
-
-const getMenuList = (list: MenuRoute[], basePath?: string): ListItemType[] => {
-  if (!list || list.length === 0) {
-    return [];
+  if (!item.icon) {
+    return '';
   }
-  // 如果meta中有orderNo则按照从小到大排序
-  list.sort((a, b) => {
-    return (a.meta?.orderNo || 0) - (b.meta?.orderNo || 0);
-  });
-  return list
-    .map((item) => {
-      const path = basePath && !item.path.includes(basePath) ? `${basePath}/${item.path}` : item.path;
-
-      return {
-        path,
-        title: item.meta?.title,
-        icon: item.meta?.icon,
-        children: getMenuList(item.children, path),
-        meta: item.meta,
-        redirect: item.redirect,
-      };
-    })
-    .filter((item) => item.meta && item.meta.hidden !== true);
-};
-
-const getHref = (item: MenuRoute) => {
-  const { frameSrc, frameBlank } = item.meta;
-  if (frameSrc && frameBlank) {
-    return frameSrc.match(/(http|https):\/\/([\w.]+\/?)\S*/);
+  if (typeof item.icon === 'string') {
+    return item.icon.includes('/') ? 'icon-logo' : `icon-${item.icon}`;
   }
-  return null;
+  return item.icon.render();
 };
-
-const getPath = (item: ListItemType) => {
-  const activeLevel = active.value.split('/').length;
-  const pathLevel = item.path.split('/').length;
-
-  // 如果当前路径是该菜单项的子路径，返回当前路径
-  if (activeLevel > pathLevel && active.value.startsWith(item.path)) {
-    return active.value;
-  }
-
-  // 如果当前路径完全匹配该菜单项，返回当前路径
-  if (active.value === item.path) {
-    return active.value;
-  }
-
-  // 如果是单独的路由，返回重定向路径，否则返回原路径
-  return item.meta?.single ? item.redirect : item.path;
-};
-
-const openHref = (url: string) => {
-  window.open(url);
-};
-/* const chatId = ref(`SERVICES${localStorage.getItem('userId')}`);
-const options = {
-  SDKAppID: Number(SDK_APPID), // 接入时需要将0替换为您的云通信应用的 SDKAppID，类型为 Number
-}; */
-// const chat = TIM.create(options);
-const usersig = ref('');
-
-const getUserSig = async () => {
-  const data = {
-    userId: chatId.value,
-  };
-  await getUserSignature(data).then(async (res) => {
-    usersig.value = res.result;
-    // await chatLogin();
-  });
-};
-/* const chatLogin = async () => {
-  chat
-    .login({ userID: chatId.value, userSig: usersig.value })
-    .then(function (imResponse) {
-      console.log('登录成功', imResponse.data); // 登录成功
-      chat.on(TIM.EVENT.SDK_READY, getMark);
-      if (imResponse.data.repeatLogin === true) {
-        getMark();
-        // 标识账号已登录，本次登录操作为重复登录。
-        console.log(imResponse.data.errorInfo);
-      }
-    })
-    .catch(function (imError) {
-      console.warn('login error:', imError); // 登录失败的相关信息
-    });
-};
-const unreadCount = ref('0');
-const getMark = () => {
-  const totalUnreadCount = chat.getTotalUnreadMessageCount();
-  const onTotalUnreadMessageCountUpdated = function (event) {
-    unreadCount.value = event.data;
-    console.log('未读变化', event.data); // 当前单聊和群聊会话的未读总数
-  };
-  chat.on(TIM.EVENT.TOTAL_UNREAD_MESSAGE_COUNT_UPDATED, onTotalUnreadMessageCountUpdated);
-  unreadCount.value = String(totalUnreadCount);
-  console.log('未读总数', totalUnreadCount);
-}; */
-onMounted(() => {
-  // window.reLogin = () => {
-  //   getUserSig();
-  // };
-  // getUserSig();
-});
 </script>

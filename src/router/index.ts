@@ -1,5 +1,6 @@
 import uniq from 'lodash/uniq';
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import notice from './modules/notice';
 
 const env = import.meta.env.MODE || 'development';
 
@@ -11,12 +12,6 @@ const fixedModules = import.meta.glob('./modules/**/!(homepage).ts', { eager: tr
 
 // 其他固定路由
 const defaultRouterList: Array<RouteRecordRaw> = [
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/pages/login/index.vue'),
-    meta: { title: '登录', hidden: true },
-  },
   {
     path: '/',
     redirect: '/series/seriesManage',
@@ -66,11 +61,7 @@ export const getActive = (maxLevel = 3): string => {
   if (!route.path) {
     return '';
   }
-  return route.path
-    .split('/')
-    .filter((_item: string, index: number) => index <= maxLevel && index > 0)
-    .map((item: string) => `/${item}`)
-    .join('');
+  return route.path;  // 直接返回完整路径
 };
 
 const router = createRouter({
@@ -83,26 +74,6 @@ const router = createRouter({
       behavior: 'smooth',
     };
   },
-});
-
-// 添加路由守卫
-router.beforeEach((to, from, next) => {
-  // 只在开发环境下打印路由信息
-  if (import.meta.env.DEV) {
-    console.log('路由守卫触发:', { to, from });
-  }
-
-  // 检查是否是访问 series/seriesManage 页面
-  if (to.path.includes('/series/seriesManage')) {
-    // 检查本地存储中是否存在 username
-    const username = localStorage.getItem('username');
-    if (!username) {
-      // 如果没有 username，重定向到登录页面
-      next('/login');
-      return;
-    }
-  }
-  next();
 });
 
 export default router;

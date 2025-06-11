@@ -5,10 +5,9 @@ import Layout from '@/layouts/index.vue';
 
 export default [
   {
-    path: '/video',
+    path: '/video/videoManage',
     name: 'video',
     component: Layout,
-    redirect: '/video/videoManage',
     meta: {
       title: '视频管理',
       icon: shallowRef(OrderDescendingIcon),
@@ -16,11 +15,9 @@ export default [
     },
     children: [
       {
-        path: 'videoManage',
-        name: 'VideoManage',
+        path: '',
         component: () => import('@/pages/order-manage/index.vue'),
-        meta: { title: '视频管理', hidden: true },
-      },
-    ],
+      }
+    ]
   },
 ];

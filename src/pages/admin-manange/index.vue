@@ -2,264 +2,6 @@
 <template>
   <div>
 
-    <t-dialog v-model:visible="visibleUploadExercise" header="上传练习" width="1000px" :footer="false"
-      @close="closeExerciseUpload()">
-      <div style="padding-left: 50px">
-        <div style="display: flex">
-          <div>练习名称：</div>
-          <div style="width: 100px; margin-left: 20px">
-            <t-input v-model="exerciseTitle" />
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>练习难度：</div>
-          <div style="margin-left: 20px">
-            <t-radio-group variant="primary-filled" :default-value="defaultValue" @change="radioChange">
-              <t-radio-button value="EASY">easy</t-radio-button>
-              <t-radio-button value="MIDDLE">middle</t-radio-button>
-              <t-radio-button value="HARD">hard</t-radio-button>
-            </t-radio-group>
-          </div>
-        </div>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
-        <!-- <div style="display: flex; width: 500px">
-          <div style="width: 130px">原文文档</div>
-          <t-upload v-model="fileList.contentFileName" action="/manager/manager/upload/file" theme="file"
-            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-            @success="(e) => fileUpload(e, 'contentFileName')"
-            @remove="(e) => removeFile('contentFileName')"></t-upload>
-        </div>
-        <div style="display: flex; width: 500px">
-          <div style="width: 130px">翻译文档</div>
-          <t-upload v-model="fileList.translationFileName" action="/manager/manager/upload/file" theme="file"
-            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-            @success="(e) => fileUpload(e, 'translationFileName')"
-            @remove="(e) => removeFile('translationFileName')"></t-upload>
-        </div>
-        <div style="display: flex; width: 500px">
-          <div style="width: 130px">音频文件</div>
-          <t-upload v-model="fileList.audioFileName" action="/manager/manager/upload/file" theme="file"
-            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-            @success="(e) => fileUpload(e, 'audioFileName')" @remove="(e) => removeFile('audioFileName')"></t-upload>
-        </div> -->
-        <!-- <div style="display: flex; width: 500px">
-          <div style="width: 130px">视频字幕文件</div>
-          <t-upload v-model="fileList.videoSubtitleFileName" action="/manager/manager/upload/file" theme="file"
-            :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-            @success="(e) => fileUpload(e, 'videoSubtitleFileName')"
-            @remove="(e) => removeFile('videoSubtitleFileName')"></t-upload>
-        </div> -->
-        <!--        <minio-upload
-          v-model:fileName="fileForm.contentFileName"
-          :single="true"
-          title="原文文档"
-        />
-        <minio-upload
-          v-model:fileName="fileForm.translationFileName"
-          :single="true"
-          title="原文翻译文档"
-        />
-        <minio-upload
-          v-model:fileName="fileForm.audioFileName"
-          :single="true"
-          title="音频文件"
-        />-->
-        <!-- <div style="display: flex; gap: 20px">
-          <div>视频文件</div>
-        <input style="margin-left: 53px;"
-            id="file-selector" type="file" multiple="multiple" class="inputFile" @change="filechange" /><img
-            style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
-            src="../../assets/shangchuan.png">
-        </div> -->
-
-        <!-- 文件上传 -->
-        <div style="display: flex">
-          <div style="width: 130px">合集封面</div>
-          <div style="width: 500px; margin-left: 20px">
-            <HuaweiOBSUpload accept="image/jpeg,image/png" buttonText="上传封面" tips="建议尺寸：800x600，支持jpg、png格式"
-              folder="series_cover" @success="handleCoverUploadSuccess" @error="handleCoverUploadError" />
-          </div>
-        </div>
-
-        <!-- 已上传文件列表 -->
-        <!-- <div v-if="successList.length"> -->
-        <!-- <pre> -->
-        <!-- 已上传： -->
-        <!-- {{ successList }} -->
-        <!-- </pre> -->
-        <!-- </div> -->
-
-        <!-- <div v-for="(item, i) in files" :key="i">
-          <minio-upload :exerciseId="0" :isUpload="false" :cos="cos" :file1="item" mode="word" />
-        </div> -->
-        <!--        <minio-upload
-          v-model:fileName="fileForm.videoSubtitleFileName"
-          :single="true"
-          title="视频字幕文件"
-        />-->
-      </div>
-      <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button size="large" @click="exerciseUpload()">确认上传</t-button>
-      </div>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visivleModifyExercise" header="修改练习" width="1000px" :footer="false"
-      @opened="setProgress()" @close="closeExerciseModify()">
-      <div style="padding-left: 50px">
-        <div style="display: flex">
-          <div>练习名称：</div>
-          <div style="width: 400px; margin-left: 20px">
-            <t-input v-model="modifyEx.title" />
-          </div>
-        </div>
-
-        <div style="display: flex; margin-top: 20px">
-          <div>练习难度：</div>
-          <div style="margin-left: 20px; display: flex">
-            <div :class="modifyEx.difficultyLevel == 'EASY' ? 'choose' : 'unchoose'" @click="levelChange('EASY')">
-              easy
-            </div>
-            <div :class="modifyEx.difficultyLevel == 'MIDDLE' ? 'choose' : 'unchoose'" style="margin-left: 10px"
-              @click="levelChange('MIDDLE')">
-              middle
-            </div>
-            <div :class="modifyEx.difficultyLevel == 'HARD' ? 'choose' : 'unchoose'" style="margin-left: 10px"
-              @click="levelChange('HARD')">
-              hard
-            </div>
-          </div>
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 20px; margin: 20px">
-          上传完文件请先点击确认修改保存文件
-          <div style="display: flex">
-            <div style="width: 130px">原文文档</div>
-            <div v-if="modifyEx.contentFileName" style="width: 200px; margin-right: 20px">
-              当前文件：
-              {{ modifyEx.contentFileName }}
-            </div>
-            <t-upload v-model="fileList.contentFileName" action="/manager/manager/upload/file" theme="file"
-              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="(e) => fileUpload(e, 'contentFileName')"
-              @remove="(e) => removeFile('contentFileName')"></t-upload>
-          </div>
-          <div style="display: flex">
-            <div style="width: 130px">翻译文档</div>
-            <div v-if="modifyEx.translationFileName" style="width: 200px; margin-right: 20px">
-              当前文件：
-              {{ modifyEx.translationFileName }}
-            </div>
-            <t-upload v-model="fileList.translationFileName" action="/manager/manager/upload/file" theme="file"
-              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="(e) => fileUpload(e, 'translationFileName')"
-              @remove="(e) => removeFile('translationFileName')"></t-upload>
-          </div>
-          <div style="display: flex">
-            <div style="width: 130px">音频文件</div>
-            <div v-if="modifyEx.audioFileName" style="width: 200px; margin-right: 20px">
-              当前文件：
-              {{ modifyEx.audioFileName }}
-            </div>
-            <t-upload v-model="fileList.audioFileName" action="/manager/manager/upload/file" theme="file"
-              :headers="{ accessToken: accessToken }" :max="1" @onWaitingUploadFilesChange="console.log('发生变化')"
-              @success="(e) => fileUpload(e, 'audioFileName')" @remove="(e) => removeFile('audioFileName')"></t-upload>
-          </div>
-          <div style="display: flex; gap: 20px">
-            <div>视频文件</div>
-            <input style="margin-left: 53px;" id="file-selector" type="file" :multiple="true" class="inputFile"
-              @change="filechange" />
-            <img style="width: 18px;height: 18px;position: absolute;margin-top: 8px;margin-left: 140px;"
-              src="../../assets/shangchuan.png">
-          </div>
-
-          <div v-for="(item, i) in files" :key="i">
-            <minio-upload :exerciseId="rowExercise.id" :isUpload="false" :cos="cos" :file1="item" mode="word" />
-          </div>
-        </div>
-      </div>
-      <div v-if="progressVisible && progressVal">
-        {{ progressVal === 100 ? '视频分段完成' : '视频文件分段中' }}
-        <t-progress theme="plump" :color="{ from: '#0052D9', to: '#00A870' }" :percentage="progressVal"
-          :status="'active'" />
-      </div>
-      <div style="display: flex; justify-content: center; margin-top: 20px">
-        <t-button size="large" @click="cutContentFun()">文档分段</t-button>
-        <t-button size="large" @click="cutAudioFun()">音频分段</t-button>
-        <t-popconfirm :on-confirm="cutVideoFun">
-          <template #content>
-            请先选择视频字幕类型
-            <t-card>
-              <t-radio-group v-model="type">
-                <t-radio-button :value="1">类型1：Dialogue +时间戳</t-radio-button>
-                <t-radio-button :value="2">类型2：单独时间戳</t-radio-button>
-              </t-radio-group>
-            </t-card>
-          </template>
-          <t-button size="large">视频分段</t-button>
-        </t-popconfirm>
-
-        <t-button size="large" @click="exerciseUploadModify()">确认修改</t-button>
-      </div>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleUploadSen" header="上传句子" width="1000px" :footer="false" @close="closeSenUpload()">
-      <div style="padding: 20px">
-        <div style="display: flex">
-          <div>句子内容</div>
-          <div style="margin-left: 20px; width: 400px">
-            <t-textarea v-model="senUploadCon" placeholder="请输入句子内容" name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
-          </div>
-        </div>
-
-        <div style="margin-top: 20px; display: flex">
-          <div>句子翻译</div>
-          <div style="margin-left: 20px; width: 400px">
-            <t-textarea v-model="senUploadTran" placeholder="请输入句子翻译" name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
-          </div>
-        </div>
-        <div style="display: flex; justify-content: center; margin-top: 20px">
-          <t-button @click="senUpload()">确认上传</t-button>
-        </div>
-      </div>
-    </t-dialog>
-
-    <t-dialog v-model:visible="visibleModifySen" header="修改句子" width="1000px" :footer="false" @close="closeSenModify()">
-      <div style="display: flex; flex-direction: column; padding: 20px; gap: 30px">
-        <div style="display: flex">
-          <div>句子内容</div>
-          <div style="margin-left: 20px; width: 400px">
-            <t-textarea v-model="rowModifySen.content" placeholder="请输入句子内容" name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
-          </div>
-        </div>
-        <div style="display: flex">
-          <div>句子翻译</div>
-          <div style="margin-left: 20px; width: 400px">
-            <t-textarea v-model="rowModifySen.translation" placeholder="请输入句子翻译" name="description"
-              :autosize="{ minRows: 3, maxRows: 10 }"></t-textarea>
-          </div>
-        </div>
-        <div style="display: flex; width: 500px">
-          <div style="width: 130px">音频文件</div>
-          <t-upload v-model="sentenceFiles.voiceUrl" action="/manager/manager/upload/file" theme="file"
-            :headers="{ accessToken: accessToken }" :max="1" @success="(e) => sentenceFileUpload(e, 'voiceUrl')"
-            @remove="(e) => sentenceRemoveFile('voiceUrl')"></t-upload>
-        </div>
-        <div style="display: flex; width: 500px">
-          <div style="width: 130px">视频文件</div>
-          <t-upload v-model="sentenceFiles.videoUrl" action="/manager/manager/upload/file" theme="file"
-            :headers="{ accessToken: accessToken }" :max="1" @success="(e) => sentenceFileUpload(e, 'videoUrl')"
-            @remove="(e) => sentenceRemoveFile('videoUrl')"></t-upload>
-        </div>
-        <div style="display: flex; justify-content: center; margin-top: 20px">
-          <t-button @click="senModify()">确认修改</t-button>
-        </div>
-      </div>
-    </t-dialog>
-
     <t-loading :loading="loading" text="加载中..." fullscreen />
 
     <!-- 系列合集表格 -->
@@ -272,6 +14,9 @@
             <t-button theme="primary" @click="onSearch">
               搜索
             </t-button>
+            <t-button theme="primary" @click="showCreateSeriesDialog">
+              创建合集
+            </t-button>
           </div>
         </div>
 
@@ -280,6 +25,33 @@
         </t-table>
       </t-space>
     </t-card>
+
+    <t-dialog v-model:visible="createSeriesVisible" header="创建合集"
+      :confirm-btn="{ content: '确定', loading: createSeriesLoading }" :cancel-btn="{ content: '取消' }"
+      @confirm="handleCreateSeries" @close="closeCreateSeriesDialog" width="800px" :style="{ maxHeight: 'none' }">
+      <t-form ref="createSeriesFormRef" :data="createSeriesForm" :rules="createSeriesRules" @submit="handleCreateSeries"
+        :label-width="120">
+        <t-form-item label="合集名称" name="name">
+          <t-input v-model="createSeriesForm.name" placeholder="请输入合集名称" />
+        </t-form-item>
+        <t-form-item label="合集Level" name="level">
+          <t-radio-group v-model="createSeriesForm.level">
+            <t-radio value="easy">Easy</t-radio>
+            <t-radio value="medium">Medium</t-radio>
+            <t-radio value="hard">Hard</t-radio>
+          </t-radio-group>
+        </t-form-item>
+        <t-form-item label="合集Interest" name="interest_list">
+          <t-checkbox-group v-model="createSeriesForm.interest_list">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 8px 0;">
+              <t-checkbox v-for="interest in interestOptions" :key="interest" :value="interest">
+                {{ interest }}
+              </t-checkbox>
+            </div>
+          </t-checkbox-group>
+        </t-form-item>
+      </t-form>
+    </t-dialog>
   </div>
 </template>
 
@@ -291,7 +63,7 @@ export default {
 <script setup lang="tsx">
 import { ChevronDownIcon, BrowseIcon, UploadIcon } from 'tdesign-icons-vue-next';
 import { number } from 'echarts';
-import { MessagePlugin, SuccessContext, UploadFailContext, UploadFile } from 'tdesign-vue-next';
+import { MessagePlugin, SuccessContext, UploadFailContext, UploadFile, Radio as TRadio, RadioGroup as TRadioGroup, Checkbox as TCheckbox, CheckboxGroup as TCheckboxGroup } from 'tdesign-vue-next';
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
@@ -1134,6 +906,43 @@ const initializeFileList = (id: string | number) => {
   if (!obsKeyMap[id]) obsKeyMap[id] = '';
 };
 
+// 更新合集状态
+const updateSeriesStatus = async (row, newStatus) => {
+  try {
+    // 设置本地loading状态
+    row._statusLoading = true;
+
+    // 生成请求头
+    const timestamp = Date.now().toString();
+    const headers = {
+      Timestamp: timestamp,
+      Signature: CryptoJS.SHA256(`update_series${timestamp}lingotok`).toString()
+    };
+
+    // 构造请求体，过滤掉内部状态属性
+    const username = localStorage.getItem('username') || '';
+    const filteredRow = filterInternalProps(row);
+    const payload = {
+      ...filteredRow,
+      status: newStatus ? 'online' : 'offline',
+      username
+    };
+
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/update_series', payload, { headers });
+
+    if (res.data?.code === 200) {
+      row.status = newStatus ? 'online' : 'offline';
+      MessagePlugin.success('修改成功');
+    } else {
+      MessagePlugin.error(res.data?.message || '修改失败');
+    }
+  } catch (e) {
+    MessagePlugin.error('网络错误，修改失败');
+  } finally {
+    row._statusLoading = false;
+  }
+};
+
 const seriesNameColumns = [
   {
     colKey: 'id',
@@ -1393,13 +1202,11 @@ const seriesNameColumns = [
         await updateSeriesInterest(row, newList);
         interestAddPopMap[id] = undefined;
       };
-      // 固定兴趣标签英文名
-      const INTEREST_OPTIONS = [
-        'food_drink', 'beauty_style', 'music', 'fitness_health', 'vlogs', 'comedy', 'sports', 'entertainment_culture', 'science_education', 'family', 'motivation_advice', 'dance', 'travel', 'gaming', 'pets', 'automotive_vehicle', 'diy', 'art', 'anime_comics', 'life_hacks', 'outdoors', 'oddly_satisfy'
-      ];
-      const availableOptions = INTEREST_OPTIONS.filter(
+
+      const availableOptions = interestOptions.value.filter(
         (item) => !interests.includes(item)
       ).map(item => ({ content: item, value: item }));
+
       return (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', justifyContent: 'center', alignItems: 'center' }}>
           {interests.length === 0 ? '-' : interests.map((item, idx) => (
@@ -1431,6 +1238,34 @@ const seriesNameColumns = [
             >
               <t-button variant="text" size="small" style="padding:0 4px; margin-left:4px; color:#0052d9; border:1px dashed #0052d9; min-width:32px; height:24px; line-height:22px;">+添加</t-button>
             </t-dropdown>
+          </t-popconfirm>
+        </div>
+      );
+    }
+  },
+  {
+    colKey: 'status',
+    title: '合集状态',
+    align: 'center',
+    width: 120,
+    cell: (h, { row }) => {
+      // 确保有默认值
+      if (!row.status) {
+        row.status = 'offline';
+      }
+
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <t-popconfirm
+            content={`确认${row.status === 'online' ? '下架' : '上架'}该合集吗？`}
+            onConfirm={() => updateSeriesStatus(row, row.status !== 'online')}
+          >
+            <t-switch
+              loading={!!row._statusLoading}
+              modelValue={row.status === 'online'}
+              onChange={() => { }}
+              label={row.status === 'online' ? '已上架' : '已下架'}
+            />
           </t-popconfirm>
         </div>
       );
@@ -1671,6 +1506,109 @@ const handleSeriesClick = (row) => {
     window.location.href = '/video/videoManage?seriesName=' + encodeURIComponent(row.name);
   });
 };
+
+// 创建合集相关
+const createSeriesVisible = ref(false);
+const createSeriesLoading = ref(false);
+const createSeriesForm = reactive({
+  name: '',
+  level: 'easy',
+  interest_list: [] as string[]
+});
+
+// 表单ref
+const createSeriesFormRef = ref();
+
+const createSeriesRules = {
+  name: [{ required: true, message: '请输入合集名称', type: 'error' }],
+  level: [{ required: true, message: '请选择合集Level', type: 'error' }],
+  interest_list: [{ required: true, message: '请选择至少一个Interest', type: 'error', validator: (val) => val && val.length > 0 }]
+};
+
+// Interest选项列表
+const interestOptions = ref([]);
+
+// 获取所有Interest选项
+const fetchAllInterests = async () => {
+  try {
+    // 生成请求头
+    const timestamp = Date.now().toString();
+    const headers = {
+      Timestamp: timestamp,
+      Signature: CryptoJS.SHA256(`get_all_interest${timestamp}lingotok`).toString()
+    };
+
+    // 发送请求，不需要请求体
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/get_all_interest', null, { headers });
+
+    if (res.data?.code === 200 && Array.isArray(res.data.data?.interest_list)) {
+      interestOptions.value = res.data.data.interest_list;
+    } else {
+      MessagePlugin.error('获取Interest列表失败');
+    }
+  } catch (e) {
+    MessagePlugin.error('网络错误，获取Interest列表失败');
+    console.error('获取Interest列表失败:', e);
+  }
+};
+
+// 在组件挂载时获取Interest列表
+onMounted(() => {
+  fetchAllInterests();
+  fetchSeriesData();
+});
+
+const showCreateSeriesDialog = () => {
+  createSeriesVisible.value = true;
+};
+
+const closeCreateSeriesDialog = () => {
+  createSeriesVisible.value = false;
+  // 重置表单
+  createSeriesForm.name = '';
+  createSeriesForm.level = 'easy';
+  createSeriesForm.interest_list = [];
+  // 清除验证状态
+  createSeriesFormRef.value?.reset();
+};
+
+const handleCreateSeries = async () => {
+  try {
+    // 表单验证
+    const validateResult = await createSeriesFormRef.value?.validate();
+    if (validateResult !== true) {
+      return;
+    }
+
+    createSeriesLoading.value = true;
+
+    // 生成请求头
+    const timestamp = Date.now().toString();
+    const headers = {
+      Timestamp: timestamp,
+      Signature: CryptoJS.SHA256(`create_series${timestamp}lingotok`).toString()
+    };
+
+    // 发送创建请求
+    const res = await axios.post('https://api.lingotok.ai/api/v1/video/create_series', {
+      name: createSeriesForm.name,
+      level: createSeriesForm.level,
+      interest_list: createSeriesForm.interest_list
+    }, { headers });
+
+    if (res.data?.code === 200) {
+      MessagePlugin.success('创建成功');
+      closeCreateSeriesDialog();
+      fetchSeriesData(); // 刷新列表
+    } else {
+      MessagePlugin.error(res.data?.message || '创建失败');
+    }
+  } catch (e) {
+    MessagePlugin.error('网络错误，创建失败');
+  } finally {
+    createSeriesLoading.value = false;
+  }
+};
 </script>
 <style lang="less" scoped>
 .choose {
@@ -1821,5 +1759,14 @@ const handleSeriesClick = (row) => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+:deep(.t-dialog) {
+  max-height: none !important;
+
+  .t-dialog__body {
+    max-height: none !important;
+    overflow: visible !important;
+  }
 }
 </style>

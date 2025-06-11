@@ -1,6 +1,6 @@
 <template>
   <div :class="sideNavCls">
-    <t-menu :class="menuCls" :theme="theme" :value="active" :collapsed="collapsed" :default-expanded="defaultExpanded">
+    <t-menu :class="menuCls" :theme="theme" :value="currentPath" :collapsed="collapsed" :default-value="currentPath">
       <!--      <template #logo>-->
       <!--        <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">-->
       <!--          <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />-->
@@ -34,8 +34,8 @@
 <script setup lang="ts">
 import union from 'lodash/union';
 import type { PropType } from 'vue';
-import { computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
 import AssetLogoFull from '@/assets/assets-logo-full.svg?component';
 import AssetLogo from '@/assets/assets-t-logo.svg?component';
@@ -79,16 +79,29 @@ const props = defineProps({
   },
 });
 
+const router = useRouter();
+const route = useRoute();
+const settingStore = useSettingStore();
+
 const collapsed = computed(() => useSettingStore().isSidebarCompact);
 
-const active = computed(() => getActive());
+const currentPath = computed(() => route.path);
 
 const defaultExpanded = computed(() => {
-  const path = getActive();
+  const path = currentPath.value;
   const parentPath = path.substring(0, path.lastIndexOf('/'));
   const expanded = getRoutesExpanded();
   return union(expanded, parentPath === '' ? [] : [parentPath]);
 });
+
+// 监听路由变化，确保菜单选中状态更新
+watch(
+  () => route.path,
+  () => {
+    // 强制更新active值
+    currentPath.value;
+  }
+);
 
 const sideNavCls = computed(() => {
   const { isCompact } = props;
@@ -111,9 +124,6 @@ const menuCls = computed(() => {
     },
   ];
 });
-
-const router = useRouter();
-const settingStore = useSettingStore();
 
 const autoCollapsed = () => {
   const isCompact = window.innerWidth <= MIN_POINT;

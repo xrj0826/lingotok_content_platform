@@ -4,6 +4,10 @@
     <t-loading :loading="detailLoading" fullscreen overlay />
     <t-card class="row-container" :bordered="false">
       <t-space direction="vertical" style="width: 100%">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+          <t-button theme="primary" @click="showUploadDialog">添加视频</t-button>
+        </div>
+
         <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px;">
           <div style="display: flex; align-items: center;">
             <div style="margin-right: 10px;">视频ID</div>
@@ -166,7 +170,13 @@
                   </t-radio-group>
                 </div>
               </div>
-
+              <div class="detail-item">
+                <span class="label">视频备注:</span>
+                <div class="value">
+                  <t-textarea v-model="editingComment" placeholder="请输入视频备注" :maxlength="500"
+                    :autosize="{ minRows: 3, maxRows: 5 }" />
+                </div>
+              </div>
               <div class="detail-item" style="justify-content: flex-end;">
                 <t-button theme="primary" size="small" @click="handleUpdateVideoInfo" :loading="updating">
                   保存修改
@@ -267,6 +277,65 @@
         </div>
       </template>
     </t-dialog>
+
+    <!-- 上传视频弹窗 -->
+    <t-dialog v-model:visible="uploadDialogVisible" header="上传视频" :confirm-btn="{ content: '确认上传', loading: uploading }"
+      :cancel-btn="{ content: '取消' }" @confirm="handleUploadConfirm" @close="closeUploadDialog" width="1000px">
+      <t-form ref="uploadFormRef" :data="uploadForm" :rules="ruleValidate">
+        <t-form-item label="选择合集" name="series_name">
+          <t-select v-model="uploadForm.series_name" placeholder="请选择合集" :options="seriesNameOptions" />
+        </t-form-item>
+        <t-form-item label="上传视频">
+          <huawei-o-b-s-upload ref="obsUploadRef" accept="video/*" :max-size="1024 * 1024 * 1024" :multiple="true"
+            :max-files="10" folder="videos" @success="handleUploadSuccess" @error="handleUploadFail">
+            <t-button theme="primary">
+              <upload-icon />选择视频
+            </t-button>
+            <template #tip>
+              <p class="tip">支持视频格式：MP4、AVI等，单个文件不超过1GB</p>
+            </template>
+          </huawei-o-b-s-upload>
+        </t-form-item>
+      </t-form>
+
+      <!-- 已上传视频列表 -->
+      <div style="margin-top: 16px;">
+        <div class="section-title">已上传视频列表</div>
+        <t-table :data="uploadedVideoList" :columns="uploadedVideoColumns" :bordered="true" size="small"
+          style="margin-top: 8px;">
+          <template #url-cell="{ row }">
+            <t-link v-if="row.url" :href="row.url" target="_blank" theme="primary" hover="underline">
+              {{ row.url }}
+            </t-link>
+            <span v-else>-</span>
+          </template>
+          <template #operation-cell="{ row }">
+            <t-button theme="danger" variant="text" @click="handleRemoveVideo(row)">
+              删除
+            </t-button>
+          </template>
+        </t-table>
+      </div>
+    </t-dialog>
+
+    <!-- 确认上传弹窗 -->
+    <t-dialog v-model:visible="confirmUploadVisible" header="确认上传" :confirm-btn="{ content: '确认', loading: uploading }"
+      :cancel-btn="{ content: '取消' }" @confirm="handleFinalUpload" @close="confirmUploadVisible = false">
+      <p>确认将以下视频上传到合集"{{ uploadForm.series_name }}"？</p>
+      <t-table :data="uploadedVideoList" :columns="uploadedVideoColumns" size="small" :bordered="true">
+        <template #url-cell="{ row }">
+          <t-link v-if="row.url" :href="row.url" target="_blank" theme="primary" hover="underline">
+            {{ row.url }}
+          </t-link>
+          <span v-else>-</span>
+        </template>
+        <template #operation-cell="{ row }">
+          <t-button theme="danger" variant="text" @click="handleRemoveVideo(row)">
+            删除
+          </t-button>
+        </template>
+      </t-table>
+    </t-dialog>
   </div>
 </template>
 
@@ -280,6 +349,7 @@ import HuaweiOBSUpload from '@/components/HuaweiOBSUpload/index.vue';
 import ObsClient from 'esdk-obs-browserjs';
 import type { UploadFile, RequestMethodResponse, SwitchValue } from 'tdesign-vue-next';
 import { useRenewDataStore } from '@/store/renewData';
+import { UploadIcon } from 'tdesign-icons-vue-next';
 
 // 基础数据
 const route = useRoute();
@@ -380,10 +450,10 @@ const columns = [
 
 // Interest选项
 const interestOptions = [
-  'food_drink', 'beauty_style', 'music', 'fitness_health', 'vlogs', 'comedy',
-  'sports', 'entertainment_culture', 'science_education', 'family',
-  'motivation_advice', 'dance', 'travel', 'gaming', 'pets', 'automotive_vehicle',
-  'diy', 'art', 'anime_comics', 'life_hacks', 'outdoors', 'oddly_satisfy'
+  // 'food_drink', 'beauty_style', 'music', 'fitness_health', 'vlogs', 'comedy',
+  // 'sports', 'entertainment_culture', 'science_education', 'family',
+  // 'motivation_advice', 'dance', 'travel', 'gaming', 'pets', 'automotive_vehicle',
+  // 'diy', 'art', 'anime_comics', 'life_hacks', 'outdoors', 'oddly_satisfy'
 ];
 
 // 计算可选的Interest选项（排除已选择的）
@@ -448,6 +518,7 @@ function getRequestHeaders(apiName: string = 'search_video'): { Timestamp: strin
   const timestamp = Date.now().toString();
   let signature = '';
 
+  // 根据不同的API生成对应的签名
   switch (apiName) {
     case 'get_video':
       signature = generateVideoDetailSignature(timestamp);
@@ -457,6 +528,9 @@ function getRequestHeaders(apiName: string = 'search_video'): { Timestamp: strin
       break;
     case 'upload_video_draft_subtitle':
       signature = generateUploadSubtitleSignature(timestamp);
+      break;
+    case 'upload_video':
+      signature = CryptoJS.SHA256(`upload_video${timestamp}lingotok`).toString();
       break;
     default:
       signature = generateSignature(timestamp);
@@ -584,6 +658,9 @@ const showVideoDetail = async (row) => {
     if (res.data?.code === 200) {
       currentVideo.value = res.data.data;
       showDetailDialog.value = true;
+      // 初始化编辑状态
+      editingStatus.value = row.video_status || 'offline';
+      editingComment.value = row.comment || '';
     } else {
       MessagePlugin.error('获取视频详情失败');
     }
@@ -848,6 +925,7 @@ const editingStatus = ref<VideoStatus>('offline');
 const updating = ref<boolean>(false);
 const editingCustomize = ref<string>('');
 const editingSeriesName = ref<string>('');
+const editingComment = ref('');
 
 // 监听当前视频变化，初始化编辑值
 watch(() => currentVideo.value, (newVideo) => {
@@ -856,6 +934,7 @@ watch(() => currentVideo.value, (newVideo) => {
     editingStatus.value = (newVideo.video.video_status as VideoStatus) || 'offline';
     editingCustomize.value = newVideo.video.customize || '';
     editingSeriesName.value = newVideo.video.series?.name || '';
+    editingComment.value = newVideo.video.comment || '';  // 初始化视频备注
   }
 }, { immediate: true });
 
@@ -878,7 +957,8 @@ const handleUpdateVideoInfo = async () => {
       title: editingTitle.value,
       status: editingStatus.value,
       customize: editingCustomize.value,
-      series_name: editingSeriesName.value
+      series_name: editingSeriesName.value,
+      comment: editingComment.value
     };
 
     console.log('准备更新视频信息:', updateParams);
@@ -904,6 +984,7 @@ const handleUpdateVideoInfo = async () => {
       } else {
         currentVideo.value.video.series = { name: editingSeriesName.value };
       }
+      currentVideo.value.video.comment = editingComment.value;
       // 刷新列表
       fetchVideoList();
     } else {
@@ -976,6 +1057,202 @@ watch(() => currentVideo.value, (newVideo) => {
     hasDraftButton.value = false;
   }
 }, { immediate: true });
+
+// 上传相关
+const uploadDialogVisible = ref(false);
+const uploadForm = reactive({
+  series_name: '',
+});
+const uploadFormRef = ref(null);
+const obsUploadRef = ref(null);
+const uploadedVideoList = ref<any[]>([]);
+const confirmUploadVisible = ref(false);
+
+// 上传规则
+const ruleValidate = {
+  series_name: [
+    {
+      required: true,
+      message: '请输入系列名称',
+      type: 'error' as const
+    }
+  ]
+};
+
+// 已上传视频列表列配置
+const uploadedVideoColumns = [
+  {
+    colKey: 'name',
+    title: '视频名称',
+    width: 250,
+    ellipsis: true
+  },
+  {
+    colKey: 'url',
+    title: '视频地址',
+    width: 450,
+    ellipsis: true,
+    cell: 'url-cell'
+  },
+  {
+    colKey: 'uploadTime',
+    title: '上传时间',
+    width: 180
+  },
+  {
+    colKey: 'operation',
+    title: '操作',
+    width: 80,
+    cell: 'operation-cell'
+  }
+];
+
+// 显示上传对话框
+const showUploadDialog = () => {
+  uploadDialogVisible.value = true;
+  uploadForm.series_name = '';
+  uploadedVideoList.value = [];
+};
+
+// 关闭上传对话框
+const closeUploadDialog = () => {
+  uploadDialogVisible.value = false;
+  uploadForm.series_name = '';
+  uploadedVideoList.value = [];
+};
+
+// 处理上传成功
+const handleUploadSuccess = (file: any, response: any) => {
+  console.log('上传成功回调:', file, response);
+
+  // 获取视频URL
+  let videoUrl = '';
+  if (Array.isArray(response) && response[0]?.url) {
+    videoUrl = response[0].url;
+  } else if (Array.isArray(file.response) && file.response[0]?.url) {
+    videoUrl = file.response[0].url;
+  } else if (typeof response === 'string') {
+    videoUrl = response;
+  }
+
+  console.log('提取的视频URL:', videoUrl);
+
+  if (!videoUrl) {
+    console.error('无法获取视频URL:', file, response);
+    MessagePlugin.warning('无法获取视频URL，请检查上传是否成功');
+    return;
+  }
+
+  // 将新上传的视频添加到列表中
+  const newVideo = {
+    name: file.name || '未命名',
+    url: videoUrl,
+    uploadTime: new Date().toLocaleString()
+  };
+  console.log('新视频对象:', newVideo);
+
+  // 确保 uploadedVideoList 是响应式数组
+  if (!uploadedVideoList.value) {
+    uploadedVideoList.value = [];
+  }
+
+  // 使用数组方法触发响应式更新
+  uploadedVideoList.value = [...uploadedVideoList.value, newVideo];
+  console.log('更新后的上传列表:', uploadedVideoList.value);
+};
+
+// 处理删除视频
+const handleRemoveVideo = (video: any) => {
+  if (!video || !uploadedVideoList.value) return;
+
+  const index = uploadedVideoList.value.findIndex(v => v.name === video.name && v.url === video.url);
+  if (index > -1) {
+    // 从上传列表中移除
+    uploadedVideoList.value.splice(index, 1);
+
+    // 同步更新上传组件的文件列表
+    if (obsUploadRef.value) {
+      obsUploadRef.value.removeFile(video.name);
+    }
+  }
+};
+
+// 处理上传失败
+const handleUploadFail = (options: any) => {
+  console.error('文件上传失败:', options);
+  MessagePlugin.error(`文件上传失败：${options.response?.error || options.error || '未知错误'}`);
+};
+
+// 处理最终上传确认
+const handleUploadConfirm = async () => {
+  const valid = await uploadFormRef.value?.validate();
+  if (!valid) return;
+
+  if (!uploadedVideoList.value || uploadedVideoList.value.length === 0) {
+    MessagePlugin.warning('请先上传视频文件');
+    return;
+  }
+
+  // 显示确认对话框
+  confirmUploadVisible.value = true;
+};
+
+// 处理最终提交
+const handleFinalUpload = async () => {
+  if (!uploadForm.series_name || uploadedVideoList.value.length === 0) {
+    MessagePlugin.warning('请选择合集并上传视频');
+    return;
+  }
+
+  try {
+    uploading.value = true;
+    const username = localStorage.getItem('username') || 'unknown';
+
+    // 生成时间戳和签名
+    const timestamp = Date.now().toString();
+    const signature = CryptoJS.SHA256(`upload_video${timestamp}lingotok`).toString();
+    const headers = {
+      Timestamp: timestamp,
+      Signature: signature
+    };
+
+    // 准备上传参数，只包含未删除的视频
+    const uploadParams = {
+      series_name: uploadForm.series_name,
+      upload_video_map: uploadedVideoList.value.reduce((acc, video) => {
+        // 只添加未被删除的视频
+        if (video && video.url) {
+          acc[video.name] = video.url;
+        }
+        return acc;
+      }, {})
+    };
+
+    console.log('提交的参数:', uploadParams);
+    console.log('请求头:', headers);
+
+    // 调用上传接口
+    const response = await axios.post(
+      'https://api.lingotok.ai/api/v1/video/upload_video',
+      uploadParams,
+      { headers }
+    );
+
+    if (response.data?.code === 200) {
+      MessagePlugin.success('上传成功');
+      closeUploadDialog();
+      confirmUploadVisible.value = false;
+      fetchVideoList();
+    } else {
+      throw new Error(response.data?.message || '上传失败');
+    }
+  } catch (error) {
+    console.error('上传失败:', error);
+    MessagePlugin.error('上传失败：' + (error.message || '未知错误'));
+  } finally {
+    uploading.value = false;
+  }
+};
 </script>
 
 <style scoped>
@@ -1172,5 +1449,19 @@ watch(() => currentVideo.value, (newVideo) => {
 
 .info-value {
   color: #333;
+}
+
+.tip {
+  color: var(--td-text-color-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.section-title {
+  font-size: 14px;
+  color: var(--td-text-color-primary);
+  font-weight: 500;
+  margin-bottom: 8px;
 }
 </style>

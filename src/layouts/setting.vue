@@ -32,7 +32,6 @@
                 <color-container :value="dynamicColor" />
               </t-radio-button>
             </t-popup>
-
           </div>
         </t-radio-group>
 
@@ -40,7 +39,7 @@
         <t-radio-group v-model="formData.layout">
           <div v-for="(item, index) in LAYOUT_OPTION" :key="index" class="setting-layout-drawer">
             <t-radio-button :key="index" :value="item">
-              <thumbnail :src="getThumbnailUrl(item)" />
+              <span class="layout-text">{{ item === 'side' ? '侧边布局' : item === 'top' ? '顶部布局' : '混合布局' }}</span>
             </t-radio-button>
           </div>
         </t-radio-group>
@@ -327,5 +326,10 @@ watchEffect(() => {
       margin-right: 0;
     }
   }
+}
+
+.layout-text {
+  padding: 8px 16px;
+  display: inline-block;
 }
 </style>
