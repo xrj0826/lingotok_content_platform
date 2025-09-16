@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>调试Headers传递</title>
+</head>
+<body>
+    <h1>调试Headers传递问题</h1>
+    <button onclick="testHeaders()">测试Headers传递</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testHeaders() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '正在测试...';
+            
+            try {
+                // 模拟API调用，查看控制台输出
+                console.log('=== 开始测试Headers传递 ===');
+                
+                const testData = {
+                    series_name: '测试系列',
+                    title: '测试-apple',
+                    word: 'apple'
+                };
+                
+                // 这里会触发我们修改的请求拦截器
+                // 查看控制台的输出来验证headers是否正确传递
+                
+                resultDiv.innerHTML = `
+                    <h3>测试进行中...</h3>
+                    <p>请查看浏览器控制台的输出</p>
+                    <p>应该看到以下信息：</p>
+                    <ul>
+                        <li>Request interceptor - URL: /manager/api/v1/aigc/word/create</li>
+                        <li>Request interceptor - Original options: {...}</li>
+                        <li>Request interceptor result: {...}</li>
+                        <li>Final headers: {包含Timestamp和Signature}</li>
+                    </ul>
+                    <p style="color: red;">如果没有看到Timestamp和Signature，说明API调用有问题</p>
+                `;
+                
+            } catch (error) {
+                console.error('测试失败:', error);
+                resultDiv.innerHTML = `
+                    <h3>测试失败:</h3>
+                    <p style="color: red;">${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

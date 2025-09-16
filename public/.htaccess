@@ -1,0 +1,5 @@
+# Apache configuration for FFmpeg.wasm Cross-Origin Isolation
+<IfModule mod_headers.c>
+    Header always set Cross-Origin-Embedder-Policy "require-corp"
+    Header always set Cross-Origin-Opener-Policy "same-origin"
+</IfModule>
