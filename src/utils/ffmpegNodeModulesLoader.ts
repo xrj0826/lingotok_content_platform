@@ -68,18 +68,41 @@ async function getNodeModulesPathsDynamic() {
   try {
     console.log('🔄 [DEBUG] 尝试动态导入方案...');
 
-    // 动态导入核心文件 - 使用包的正确导出路径
-    const coreModule = await import('@ffmpeg/core?url');
-    const wasmModule = await import('@ffmpeg/core/wasm?url');
+    // 在生产环境中，直接使用 public 目录的文件
+    if (import.meta.env.PROD) {
+      const paths = {
+        coreURL: '/ffmpeg/ffmpeg-core.js',
+        wasmURL: '/ffmpeg/ffmpeg-core.wasm',
+        workerURL: '/ffmpeg/ffmpeg-core.worker.js'
+      };
+      console.log('✅ [DEBUG] 生产环境路径:', paths);
+      return paths;
+    }
 
-    const paths = {
-      coreURL: coreModule.default,
-      wasmURL: wasmModule.default,
-      workerURL: coreModule.default // UMD版本，worker 包含在 core 中
-    };
+    // 开发环境尝试动态导入
+    try {
+      const coreModule = await import('@ffmpeg/core/dist/umd/ffmpeg-core.js?url');
+      const wasmModule = await import('@ffmpeg/core/dist/umd/ffmpeg-core.wasm?url');
+      const workerModule = await import('@ffmpeg/core/dist/umd/ffmpeg-core.worker.js?url');
 
-    console.log('✅ [DEBUG] 动态导入成功:', paths);
-    return paths;
+      const paths = {
+        coreURL: coreModule.default,
+        wasmURL: wasmModule.default,
+        workerURL: workerModule.default
+      };
+
+      console.log('✅ [DEBUG] 动态导入成功:', paths);
+      return paths;
+    } catch (importError) {
+      // 如果动态导入失败，回退到 public 目录
+      const paths = {
+        coreURL: '/ffmpeg/ffmpeg-core.js',
+        wasmURL: '/ffmpeg/ffmpeg-core.wasm',
+        workerURL: '/ffmpeg/ffmpeg-core.worker.js'
+      };
+      console.log('✅ [DEBUG] 回退到 public 目录:', paths);
+      return paths;
+    }
   } catch (error) {
     console.error('❌ [DEBUG] 动态导入失败:', error);
     throw error;

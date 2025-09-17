@@ -52,6 +52,21 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
       include: ['@ffmpeg/core']
     },
+
+    build: {
+      rollupOptions: {
+        external: (id) => {
+          // 不要将 FFmpeg 相关的 ?url 导入外部化
+          if (id.includes('@ffmpeg/core') && id.includes('?url')) {
+            return false;
+          }
+          return false;
+        }
+      },
+      // 确保静态资源正确复制
+      copyPublicDir: true,
+      assetsDir: 'assets'
+    },
     server: {
       port: 8888,
       cors: true,
