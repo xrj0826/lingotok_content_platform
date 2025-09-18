@@ -24,15 +24,6 @@ export default [
         },
       },
       {
-        path: 'test',
-        name: 'videoEditorTest',
-        component: () => import('@/pages/video-editor/test-ffmpeg.vue'),
-        meta: {
-          title: 'FFmpeg测试',
-          hidden: true, // 隐藏在导航中
-        },
-      },
-      {
         path: 'validation',
         name: 'ffmpegValidation',
         component: () => import('@/pages/video-editor/ffmpeg-validation.vue'),
