@@ -23,6 +23,7 @@ export const homepageRouterList: Array<RouteRecordRaw> = mapModuleRouterList(hom
 export const fixedRouterList: Array<RouteRecordRaw> = mapModuleRouterList(fixedModules);
 
 export const allRoutes = [...fixedRouterList, ...homepageRouterList, ...defaultRouterList];
+console.log('allRoutes', allRoutes)
 
 // 固定路由模块转换为路由
 export function mapModuleRouterList(modules: Record<string, unknown>): Array<RouteRecordRaw> {
