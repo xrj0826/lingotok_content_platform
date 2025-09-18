@@ -148,13 +148,8 @@
             <h4>角色A配置</h4>
             <div class="dialog-inputs">
               <div class="dialog-row">
-                <label>对话内容-1：</label>
-                <t-input v-model="dialogConfig.roleA.content1" placeholder="输入框文本：角色A的第一句对话" style="width: 400px;" />
-              </div>
-              <div class="dialog-row">
-                <label>对话内容-2：</label>
-                <t-input v-model="dialogConfig.roleA.content2" placeholder="输入框文本：角色A的第二句对话（可选）"
-                  style="width: 400px;" />
+                <label>对话内容：</label>
+                <t-input v-model="dialogConfig.roleA.content1" placeholder="输入角色A的对话内容" style="width: 400px;" />
               </div>
               <div class="audio-config">
                 <div class="audio-row">
@@ -190,13 +185,8 @@
             <h4>角色B配置</h4>
             <div class="dialog-inputs">
               <div class="dialog-row">
-                <label>对话内容-1：</label>
-                <t-input v-model="dialogConfig.roleB.content1" placeholder="输入框文本：角色B的第一句对话" style="width: 400px;" />
-              </div>
-              <div class="dialog-row">
-                <label>对话内容-2：</label>
-                <t-input v-model="dialogConfig.roleB.content2" placeholder="输入框文本：角色B的第二句对话（可选）"
-                  style="width: 400px;" />
+                <label>对话内容：</label>
+                <t-input v-model="dialogConfig.roleB.content1" placeholder="输入角色B的对话内容" style="width: 400px;" />
               </div>
               <div class="audio-config">
                 <div class="audio-row">
@@ -701,13 +691,11 @@ const formData = ref({
 const dialogConfig = ref({
   roleA: {
     content1: '',
-    content2: '',
     audioType: 'BV007_streaming', // 亲切女声
     audioRatio: 1.0
   },
   roleB: {
     content1: '',
-    content2: '',
     audioType: 'BV002_streaming', // 通用男声
     audioRatio: 1.0
   }
@@ -1013,14 +1001,14 @@ const generateDialogVideo = async () => {
       near_ai_img_url: currentVideo.value?.detail_a?.near_ai_img_url || '',
       audio_type: dialogConfig.value.roleA.audioType,
       audio_ratio: ensureFloat(dialogConfig.value.roleA.audioRatio),
-      content_list: [dialogConfig.value.roleA.content1, dialogConfig.value.roleA.content2].filter(Boolean)
+      content_list: [dialogConfig.value.roleA.content1].filter(Boolean)
     } as AIGCDialogDetail;
 
     const detailB: AIGCDialogDetail = {
       near_ai_img_url: currentVideo.value?.detail_b?.near_ai_img_url || '',
       audio_type: dialogConfig.value.roleB.audioType,
       audio_ratio: ensureFloat(dialogConfig.value.roleB.audioRatio),
-      content_list: [dialogConfig.value.roleB.content1, dialogConfig.value.roleB.content2].filter(Boolean)
+      content_list: [dialogConfig.value.roleB.content1].filter(Boolean)
     } as AIGCDialogDetail;
 
     console.log('=== 生成对话视频请求参数 ===', {
@@ -1976,6 +1964,29 @@ onMounted(() => {
     getAIGCDialog(props.videoId).then(response => {
       if (response.code === 200) {
         currentVideo.value = response.data.aigc_dialog;
+
+        // 填充对话配置（如果存在的话）
+        const video = response.data.aigc_dialog;
+        if (video.detail_a?.content_list?.[0]) {
+          dialogConfig.value.roleA.content1 = video.detail_a.content_list[0];
+        }
+        if (video.detail_a?.audio_type) {
+          dialogConfig.value.roleA.audioType = video.detail_a.audio_type;
+        }
+        if (video.detail_a?.audio_ratio) {
+          dialogConfig.value.roleA.audioRatio = video.detail_a.audio_ratio;
+        }
+
+        if (video.detail_b?.content_list?.[0]) {
+          dialogConfig.value.roleB.content1 = video.detail_b.content_list[0];
+        }
+        if (video.detail_b?.audio_type) {
+          dialogConfig.value.roleB.audioType = video.detail_b.audio_type;
+        }
+        if (video.detail_b?.audio_ratio) {
+          dialogConfig.value.roleB.audioRatio = video.detail_b.audio_ratio;
+        }
+
         // 根据视频状态设置当前步骤
         if (response.data.aigc_dialog.play_url) {
           currentStepIndex.value = 4;
