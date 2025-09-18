@@ -11,7 +11,7 @@ export default [
     meta: {
       title: '视频库',
       icon: shallowRef(PlayCircleIcon),
-      orderNo: 3,
+      orderNo: 4,
       hidden: false
     },
     children: [
