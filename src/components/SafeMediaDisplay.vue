@@ -133,23 +133,45 @@ const loadMedia = async () => {
       // 对视频使用媒体资源加载器，或尝试HTTP方式
       console.log('🎬 [SafeMediaDisplay] 使用媒体资源加载器');
 
-      // 对于已知有证书问题的域名，直接尝试使用HTTP
-      if (isYepzanHttps) {
-        const httpUrl = props.src.replace('https://', 'http://');
-        try {
-          console.log('🔄 [SafeMediaDisplay] 尝试使用HTTP协议:', httpUrl);
-          // 测试HTTP URL是否可访问
-          const response = await fetch(httpUrl, { method: 'HEAD', mode: 'no-cors' });
-          if (response) {
-            url = httpUrl;
-            console.log('✅ [SafeMediaDisplay] HTTP协议可用:', httpUrl);
-          } else {
-            // 若HTTP不可用，回退到标准加载器
-            url = await getAccessibleMediaUrl(props.src);
+      // 处理yepzan域名的特殊情况
+      if (props.src.includes('hs-cover.yepzan.cn')) {
+        // 尝试方法1: 强制使用HTTP协议
+        if (props.src.startsWith('https://')) {
+          try {
+            const httpUrl = props.src.replace('https://', 'http://');
+            console.log('🔄 [SafeMediaDisplay] 尝试yepzan HTTP:', httpUrl);
+
+            // 简单检查URL是否可以访问
+            const canAccess = await new Promise<boolean>((resolve) => {
+              const img = new Image();
+              img.onload = () => resolve(true);
+              img.onerror = () => resolve(false);
+              img.src = httpUrl;
+              setTimeout(() => resolve(false), 3000); // 3秒超时
+            });
+
+            if (canAccess) {
+              url = httpUrl;
+              console.log('✅ [SafeMediaDisplay] yepzan HTTP协议可用');
+            } else {
+              console.log('⚠️ [SafeMediaDisplay] yepzan HTTP协议不可用，尝试占位图');
+              // 使用占位图
+              url = '/images/video-placeholder.svg';
+            }
+          } catch (error) {
+            console.warn('⚠️ [SafeMediaDisplay] yepzan HTTP协议处理失败', error);
+            // 出错时使用占位图
+            url = '/images/video-placeholder.svg';
           }
-        } catch (httpErr) {
-          console.warn('⚠️ [SafeMediaDisplay] HTTP协议尝试失败，使用标准加载器');
-          url = await getAccessibleMediaUrl(props.src);
+        } else {
+          try {
+            // 尝试标准加载
+            url = await getAccessibleMediaUrl(props.src);
+          } catch (error) {
+            console.warn('⚠️ [SafeMediaDisplay] yepzan标准加载失败', error);
+            // 使用占位图
+            url = '/images/video-placeholder.svg';
+          }
         }
       } else {
         // 标准媒体资源加载

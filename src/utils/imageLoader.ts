@@ -81,18 +81,47 @@ export async function smartImageLoader(url: string): Promise<string> {
   }
 
   // 特殊处理hs-cover.yepzan.cn域名的HTTPS证书问题
-  if (url.includes('hs-cover.yepzan.cn') && url.startsWith('https://')) {
-    const httpUrl = url.replace('https://', 'http://');
-    console.log('🔄 [ImageLoader] 尝试将yepzan域名转换为HTTP:', httpUrl);
+  if (url.includes('hs-cover.yepzan.cn')) {
+    console.log('🔍 [ImageLoader] 检测到yepzan域名，使用特殊处理');
 
+    // 方法1：尝试使用HTTP协议
+    if (url.startsWith('https://')) {
+      const httpUrl = url.replace('https://', 'http://');
+      console.log('🔄 [ImageLoader] 尝试使用HTTP协议:', httpUrl);
+
+      try {
+        const canLoadHttp = await testImageLoad(httpUrl);
+        if (canLoadHttp) {
+          console.log('✅ [ImageLoader] HTTP协议加载成功:', httpUrl);
+          return httpUrl;
+        }
+      } catch (error) {
+        console.warn('⚠️ [ImageLoader] HTTP协议加载失败:', error);
+      }
+    }
+
+    // 方法2：尝试使用默认占位图
     try {
-      const canLoadHttp = await testImageLoad(httpUrl);
-      if (canLoadHttp) {
-        console.log('✅ [ImageLoader] 使用HTTP协议加载成功:', httpUrl);
-        return httpUrl;
+      const placeholderUrl = '/images/video-placeholder.svg';
+      console.log('🔄 [ImageLoader] 尝试使用默认占位图:', placeholderUrl);
+
+      const canLoadPlaceholder = await testImageLoad(placeholderUrl);
+      if (canLoadPlaceholder) {
+        console.log('✅ [ImageLoader] 默认占位图加载成功');
+        return placeholderUrl;
       }
     } catch (error) {
-      console.warn('⚠️ [ImageLoader] HTTP协议加载失败:', error);
+      console.warn('⚠️ [ImageLoader] 默认占位图加载失败:', error);
+    }
+
+    // 方法3：尝试使用DataURL生成一个简单的颜色块作为占位符
+    try {
+      // 生成一个简单的蓝色占位图
+      const dataUrl = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjQwIiBoZWlnaHQ9IjE2MCIgZmlsbD0iIzFlODhlNSIvPjwvc3ZnPg==';
+      console.log('🔄 [ImageLoader] 使用内联数据URL作为最后手段');
+      return dataUrl;
+    } catch (error) {
+      console.warn('⚠️ [ImageLoader] 数据URL也失败了:', error);
     }
   }
 
