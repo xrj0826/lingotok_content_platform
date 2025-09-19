@@ -24,6 +24,15 @@ export default [
         },
       },
       {
+        path: 'create/:type?',
+        name: 'videoGenerationCreateWithType',
+        component: () => import('@/pages/video-generation/index.vue'),
+        meta: {
+          title: '创建视频',
+          hiddenBreadcrumb: true,
+        },
+      },
+      {
         path: 'dialogue',
         name: 'dialogueVideoGeneration',
         component: () => import('@/pages/video-generation/dialogue-video.vue'),

@@ -9,9 +9,11 @@
         <div class="loading-text">加载图片中...</div>
       </div>
       <div v-else-if="error" class="error-placeholder">
-        <t-icon name="error-circle" class="error-icon" />
+        <div class="default-image-cover">
+          <img src="/images/image-placeholder.svg" alt="视频封面占位图" class="placeholder-image" />
+          <div class="image-title">{{ props.imageTitle || props.alt || '视频封面' }}</div>
+        </div>
         <div class="error-text">图片加载失败</div>
-        <div class="error-details">{{ error }}</div>
         <div class="error-actions">
           <t-button size="small" theme="primary" variant="outline" @click="retry">
             重试 ({{ retryCount }}/{{ maxRetries }})
@@ -34,7 +36,10 @@
         <div class="loading-text">加载视频中...</div>
       </div>
       <div v-else-if="error" class="error-placeholder">
-        <t-icon name="error-circle" class="error-icon" />
+        <div class="default-video-cover">
+          <img src="/images/video-placeholder.svg" alt="视频占位图" class="placeholder-image" />
+          <div class="video-title">{{ props.videoTitle || '未命名视频' }}</div>
+        </div>
         <div class="error-text">视频加载失败</div>
         <t-button size="small" theme="primary" variant="outline" @click="retry">
           重试
@@ -72,6 +77,8 @@ interface Props {
   videoClass?: string;
   showDebugInfo?: boolean;
   maxRetries?: number;
+  videoTitle?: string;
+  imageTitle?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -79,7 +86,9 @@ const props = withDefaults(defineProps<Props>(), {
   imageClass: '',
   videoClass: '',
   showDebugInfo: false,
-  maxRetries: 3
+  maxRetries: 3,
+  videoTitle: '',
+  imageTitle: ''
 });
 
 const emit = defineEmits<{
@@ -108,17 +117,46 @@ const loadMedia = async () => {
 
   try {
     console.log('🎬 [SafeMediaDisplay] 开始加载媒体:', props.src);
-    
+
+    // 检查是否为yepzan.cn域名的HTTPS证书问题
+    const isYepzanHttps = props.src.includes('hs-cover.yepzan.cn') && props.src.startsWith('https://');
+    if (isYepzanHttps) {
+      console.log('⚠️ [SafeMediaDisplay] 检测到yepzan域名HTTPS证书问题，将使用特殊处理');
+    }
+
     let url: string;
     if (props.mediaType === 'image') {
       // 对图片使用智能加载器
       console.log('🖼️ [SafeMediaDisplay] 使用智能图片加载器');
       url = await smartImageLoader(props.src);
     } else {
-      // 对视频使用原来的媒体资源加载器
+      // 对视频使用媒体资源加载器，或尝试HTTP方式
       console.log('🎬 [SafeMediaDisplay] 使用媒体资源加载器');
-      url = await getAccessibleMediaUrl(props.src);
+
+      // 对于已知有证书问题的域名，直接尝试使用HTTP
+      if (isYepzanHttps) {
+        const httpUrl = props.src.replace('https://', 'http://');
+        try {
+          console.log('🔄 [SafeMediaDisplay] 尝试使用HTTP协议:', httpUrl);
+          // 测试HTTP URL是否可访问
+          const response = await fetch(httpUrl, { method: 'HEAD', mode: 'no-cors' });
+          if (response) {
+            url = httpUrl;
+            console.log('✅ [SafeMediaDisplay] HTTP协议可用:', httpUrl);
+          } else {
+            // 若HTTP不可用，回退到标准加载器
+            url = await getAccessibleMediaUrl(props.src);
+          }
+        } catch (httpErr) {
+          console.warn('⚠️ [SafeMediaDisplay] HTTP协议尝试失败，使用标准加载器');
+          url = await getAccessibleMediaUrl(props.src);
+        }
+      } else {
+        // 标准媒体资源加载
+        url = await getAccessibleMediaUrl(props.src);
+      }
     }
+
     accessibleUrl.value = url;
     console.log('✅ [SafeMediaDisplay] 媒体加载成功:', url);
   } catch (err) {
@@ -126,6 +164,18 @@ const loadMedia = async () => {
     error.value = errorMsg;
     console.error('💥 [SafeMediaDisplay] 媒体加载失败:', errorMsg);
     emit('error', errorMsg);
+
+    // 错误处理 - 尝试使用HTTP作为最后的手段
+    if (props.src.startsWith('https://')) {
+      try {
+        const httpUrl = props.src.replace('https://', 'http://');
+        console.log('🔄 [SafeMediaDisplay] 尝试HTTP作为最后手段:', httpUrl);
+        accessibleUrl.value = httpUrl;
+        error.value = ''; // 清除错误，让组件尝试加载HTTP URL
+      } catch (fallbackErr) {
+        console.error('💥 [SafeMediaDisplay] HTTP回退也失败:', fallbackErr);
+      }
+    }
   } finally {
     loading.value = false;
   }
@@ -223,12 +273,46 @@ onUnmounted(() => {
     width: 100%;
     height: 100%;
     min-height: 120px;
-    background: #fef2f2;
-    border: 1px dashed #fecaca;
+    background: #f0f9ff;
+    border: 1px dashed #bae6fd;
     border-radius: 6px;
-    color: #dc2626;
+    color: #0369a1;
     padding: 16px;
     text-align: center;
+
+    .default-image-cover,
+    .default-video-cover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      background-color: #f0f9ff;
+      width: 100%;
+      max-width: 240px;
+
+      .placeholder-image {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        object-fit: contain;
+      }
+    }
+
+    .video-title,
+    .image-title {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #0369a1;
+      text-align: center;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     .loading-icon {
       font-size: 24px;

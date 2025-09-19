@@ -80,6 +80,22 @@ export async function smartImageLoader(url: string): Promise<string> {
     throw new Error('图片URL为空');
   }
 
+  // 特殊处理hs-cover.yepzan.cn域名的HTTPS证书问题
+  if (url.includes('hs-cover.yepzan.cn') && url.startsWith('https://')) {
+    const httpUrl = url.replace('https://', 'http://');
+    console.log('🔄 [ImageLoader] 尝试将yepzan域名转换为HTTP:', httpUrl);
+
+    try {
+      const canLoadHttp = await testImageLoad(httpUrl);
+      if (canLoadHttp) {
+        console.log('✅ [ImageLoader] 使用HTTP协议加载成功:', httpUrl);
+        return httpUrl;
+      }
+    } catch (error) {
+      console.warn('⚠️ [ImageLoader] HTTP协议加载失败:', error);
+    }
+  }
+
   // Strategy 1: 直接测试图片是否可以加载（通常能绕过COEP显示限制）
   try {
     const canLoad = await testImageLoad(url);
@@ -103,7 +119,27 @@ export async function smartImageLoader(url: string): Promise<string> {
     console.warn('⚠️ [ImageLoader] Canvas转换失败:', error);
   }
 
-  // Strategy 3: 回退到现有的mediaResourceLoader（包含代理）
+  // Strategy 3: 尝试使用安全的CORS代理服务
+  const proxyServices = [
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://cors-anywhere.herokuapp.com/${url}`
+  ];
+
+  for (const proxyUrl of proxyServices) {
+    try {
+      const canLoadProxy = await testImageLoad(proxyUrl);
+      if (canLoadProxy) {
+        console.log('✅ [ImageLoader] CORS代理加载成功:', proxyUrl);
+        return proxyUrl;
+      }
+    } catch (proxyError) {
+      console.warn(`⚠️ [ImageLoader] 代理 ${proxyUrl} 加载失败`);
+      // 继续尝试下一个代理
+    }
+  }
+
+  // Strategy 4: 回退到现有的mediaResourceLoader（包含代理）
   try {
     const accessibleUrl = await getAccessibleMediaUrl(url);
     if (accessibleUrl && accessibleUrl !== url) {
@@ -147,6 +183,8 @@ export async function preloadImage(url: string): Promise<boolean> {
     return false;
   }
 }
+
+
 
 
 

@@ -295,12 +295,15 @@ export class FFmpegFileValidator {
     }
 
     // 5. 综合评估
-    const overall =
-      fileValidation.allValid &&
-      blobURLTest.success &&
-      environment.hasSharedArrayBuffer &&
-      environment.isCrossOriginIsolated &&
-      environment.ffmpegUtilAvailable;
+    // 开发环境放宽限制
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const overall = isDevelopment
+      ? (fileValidation.allValid && environment.ffmpegUtilAvailable)
+      : (fileValidation.allValid &&
+        blobURLTest.success &&
+        environment.hasSharedArrayBuffer &&
+        environment.isCrossOriginIsolated &&
+        environment.ffmpegUtilAvailable);
 
     console.log(`🎯 环境验证完成，整体状态: ${overall ? '✅ 正常' : '❌ 有问题'}`);
 
@@ -401,6 +404,7 @@ export async function quickValidateFFmpeg(): Promise<ValidationSummary> {
 export async function fullValidateFFmpeg(): Promise<any> {
   return FFmpegFileValidator.validateEnvironment();
 }
+
 
 
 

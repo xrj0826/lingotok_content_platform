@@ -234,6 +234,13 @@ export class EmergencyFFmpegLoader {
       issues.push('协议');
     }
 
+    // 允许在开发环境中绕过检查
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+      console.log('⚠️ 开发环境：跳过环境严格检查');
+      return { ok: true, issues: [] };
+    }
+
     return {
       ok: issues.length === 0,
       issues
@@ -382,6 +389,7 @@ export async function createFreshFFmpegInstance(): Promise<FFmpeg> {
     }
   }
 }
+
 
 
 

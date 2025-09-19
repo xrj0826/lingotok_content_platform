@@ -126,8 +126,32 @@ async function loadExternalResource(url: string): Promise<string> {
     console.warn('⚠️ [DEBUG] cors加载失败，尝试代理:', error);
   }
 
+  // 方案2: 处理特定域名的SSL证书问题（针对hs-cover.yepzan.cn）
+  if (url.includes('hs-cover.yepzan.cn')) {
+    try {
+      // 对于yepzan域名，使用HTTP而非HTTPS
+      const httpUrl = url.replace('https://', 'http://');
+      console.log('🔄 [DEBUG] 尝试HTTP访问yepzan域名:', httpUrl);
+
+      const response = await fetch(httpUrl, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'omit'
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        console.log('✅ [DEBUG] HTTP协议加载成功:', httpUrl);
+        return objectUrl;
+      }
+    } catch (error) {
+      console.warn('⚠️ [DEBUG] HTTP协议加载失败:', error);
+    }
+  }
+
   try {
-    // 方案2: 通过代理加载
+    // 方案3: 通过代理加载
     const proxyUrl = `/api/proxy-media?url=${encodeURIComponent(url)}`;
     const response = await fetch(proxyUrl);
 
@@ -141,19 +165,35 @@ async function loadExternalResource(url: string): Promise<string> {
     console.warn('⚠️ [DEBUG] 代理加载失败:', error);
   }
 
-  // 方案3: 使用CORS代理服务
+  // 方案4: 使用安全的CORS代理服务
   try {
-    const corsProxyUrl = `https://cors-anywhere.herokuapp.com/${url}`;
-    const response = await fetch(corsProxyUrl);
+    // 使用多个备用代理，确保至少一个可用
+    const proxyServices = [
+      `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      `https://cors-anywhere.herokuapp.com/${url}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`
+    ];
 
-    if (response.ok) {
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      console.log('✅ [DEBUG] CORS代理加载成功:', url);
-      return objectUrl;
+    for (const proxyUrl of proxyServices) {
+      try {
+        const response = await fetch(proxyUrl);
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          console.log('✅ [DEBUG] CORS代理加载成功:', proxyUrl);
+          return objectUrl;
+        }
+      } catch (proxyError) {
+        console.warn(`⚠️ [DEBUG] 代理 ${proxyUrl} 加载失败:`, proxyError);
+        // 继续尝试下一个代理
+        continue;
+      }
     }
+
+    throw new Error('所有CORS代理都失败');
   } catch (error) {
-    console.warn('⚠️ [DEBUG] CORS代理加载失败:', error);
+    console.warn('⚠️ [DEBUG] 所有CORS代理加载失败:', error);
   }
 
   throw new Error(`无法加载外部资源: ${url}`);

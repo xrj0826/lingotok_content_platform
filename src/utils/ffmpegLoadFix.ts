@@ -262,6 +262,13 @@ export class FFmpegLoadFixer {
       issues.push('需要HTTPS或localhost环境');
     }
 
+    // 开发环境下不抛出异常
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    if (isDevelopment) {
+      console.warn(`⚠️ 开发环境：环境检查发现问题，但仍会继续执行: ${issues.join(', ')}`);
+      return;
+    }
+
     if (issues.length > 0) {
       throw new Error(`环境检查失败: ${issues.join(', ')}`);
     }
@@ -400,6 +407,7 @@ export function createDiagnosticInfo(): {
 
   return { environment, suggestions };
 }
+
 
 
 

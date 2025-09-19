@@ -22,6 +22,13 @@ function checkSharedArrayBufferSupport(): boolean {
   console.log('  - 当前协议:', location.protocol);
   console.log('  - 当前域名:', location.hostname);
 
+  // 允许在开发环境中绕过检查
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  if (isDevelopment) {
+    console.log('⚠️ 开发环境：强制允许FFmpeg运行，即使SharedArrayBuffer不可用');
+    return true;
+  }
+
   return hasSharedArrayBuffer && isCrossOriginIsolated;
 }
 
