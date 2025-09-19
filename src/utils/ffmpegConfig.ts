@@ -9,27 +9,34 @@ import { toBlobURL } from '@ffmpeg/util';
 let ffmpegInstance: FFmpeg | null = null;
 let isLoading = false;
 
+import { validateSharedArrayBufferSupport, getSharedArrayBufferSuggestions } from './sharedArrayBufferValidator';
+
 /**
  * 检查SharedArrayBuffer是否可用
  */
 function checkSharedArrayBufferSupport(): boolean {
-  const hasSharedArrayBuffer = typeof SharedArrayBuffer !== 'undefined';
-  const isCrossOriginIsolated = crossOriginIsolated;
-
-  console.log('🔍 SharedArrayBuffer检查:');
-  console.log('  - SharedArrayBuffer可用:', hasSharedArrayBuffer);
-  console.log('  - crossOriginIsolated:', isCrossOriginIsolated);
-  console.log('  - 当前协议:', location.protocol);
-  console.log('  - 当前域名:', location.hostname);
+  // 使用验证工具进行检查 - 仅在控制台输出日志
+  const isSupported = validateSharedArrayBufferSupport({
+    logToConsole: true,
+    logLevel: process.env.NODE_ENV === 'development' ? 'verbose' : 'minimal',
+    throwOnError: false
+  });
 
   // 允许在开发环境中绕过检查
   const isDevelopment = process.env.NODE_ENV === 'development';
-  if (isDevelopment) {
+  if (!isSupported && isDevelopment) {
     console.log('⚠️ 开发环境：强制允许FFmpeg运行，即使SharedArrayBuffer不可用');
+
+    // 在开发环境中提供更详细的Nginx配置提示
+    console.log('💡 Nginx配置提示:');
+    console.log(`   确保nginx.conf包含以下头部:`);
+    console.log(`   add_header Cross-Origin-Embedder-Policy "require-corp" always;`);
+    console.log(`   add_header Cross-Origin-Opener-Policy "same-origin" always;`);
+
     return true;
   }
 
-  return hasSharedArrayBuffer && isCrossOriginIsolated;
+  return isSupported;
 }
 
 /**
@@ -43,14 +50,20 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
     timestamp: new Date().toISOString()
   });
 
-  // 检查SharedArrayBuffer支持
+  // 检查SharedArrayBuffer支持 - 仅在控制台输出
   console.log('🔍 [DEBUG] 开始检查SharedArrayBuffer支持...');
   if (!checkSharedArrayBufferSupport()) {
-    const errorMsg = 'SharedArrayBuffer不可用。请确保：\n1. 使用HTTPS或localhost环境\n2. 正确配置了跨域隔离头部\n3. 重启开发服务器';
-    console.error('💥 [DEBUG] SharedArrayBuffer检查失败:', errorMsg);
-    throw new Error(errorMsg);
+    // 仅记录错误，不影响用户体验
+    console.warn('⚠️ [DEBUG] SharedArrayBuffer检查警告：功能可能受限');
+
+    // 在生产环境下，如果绝对需要此功能，则抛出错误
+    // 在开发环境下，允许继续运行，便于调试
+    if (process.env.NODE_ENV !== 'development') {
+      console.error('💥 [DEBUG] SharedArrayBuffer在生产环境必须可用');
+      throw new Error('SharedArrayBuffer不可用。请确保正确配置了Nginx头部。');
+    }
   }
-  console.log('✅ [DEBUG] SharedArrayBuffer检查通过');
+  console.log('✅ [DEBUG] SharedArrayBuffer检查完成');
 
   if (ffmpegInstance) {
     console.log('✅ [DEBUG] 返回已存在的FFmpeg实例');
@@ -216,37 +229,63 @@ export function diagnoseSharedArrayBufferSupport(): {
   issues: string[];
   recommendations: string[];
 } {
+  const check = checkSharedArrayBufferSupport();
+  const validation = validateSharedArrayBufferSupport({ logToConsole: false });
+  const suggestions = getSharedArrayBufferSuggestions();
+
   const issues: string[] = [];
-  const recommendations: string[] = [];
 
   // 检查SharedArrayBuffer是否存在
   if (typeof SharedArrayBuffer === 'undefined') {
     issues.push('SharedArrayBuffer未定义');
-    recommendations.push('确保使用现代浏览器（Chrome 68+, Firefox 79+, Safari 15.2+）');
   }
 
   // 检查跨域隔离状态
   if (!crossOriginIsolated) {
     issues.push('跨域隔离未启用');
-    recommendations.push('检查CORS头部配置：Cross-Origin-Opener-Policy: same-origin 和 Cross-Origin-Embedder-Policy: require-corp');
   }
 
   // 检查协议
-  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+  if (location.protocol !== 'https:' &&
+    location.hostname !== 'localhost' &&
+    location.hostname !== '127.0.0.1') {
     issues.push('不安全的协议环境');
-    recommendations.push('使用HTTPS协议或localhost环境');
   }
 
-  // 检查浏览器特殊设置
-  if (typeof SharedArrayBuffer !== 'undefined' && !crossOriginIsolated) {
-    recommendations.push('重启开发服务器确保CORS头部生效');
-    recommendations.push('清除浏览器缓存');
+  // 检查浏览器兼容性
+  const browserCheck = {
+    supported: false,
+    browser: 'unknown',
+    version: 'unknown'
+  };
+
+  const ua = navigator.userAgent;
+  const chromeMatch = ua.match(/Chrome\/(\d+)/);
+  const firefoxMatch = ua.match(/Firefox\/(\d+)/);
+  const safariMatch = ua.match(/Version\/(\d+\.\d+).*Safari/);
+
+  if (chromeMatch) {
+    browserCheck.browser = 'Chrome';
+    browserCheck.version = chromeMatch[1];
+    browserCheck.supported = parseInt(chromeMatch[1]) >= 68;
+  } else if (firefoxMatch) {
+    browserCheck.browser = 'Firefox';
+    browserCheck.version = firefoxMatch[1];
+    browserCheck.supported = parseInt(firefoxMatch[1]) >= 79;
+  } else if (safariMatch) {
+    browserCheck.browser = 'Safari';
+    browserCheck.version = safariMatch[1];
+    browserCheck.supported = parseFloat(safariMatch[1]) >= 15.2;
+  }
+
+  if (!browserCheck.supported) {
+    issues.push(`浏览器版本不兼容 (${browserCheck.browser} ${browserCheck.version})`);
   }
 
   return {
-    supported: typeof SharedArrayBuffer !== 'undefined' && crossOriginIsolated,
+    supported: check,
     issues,
-    recommendations
+    recommendations: suggestions
   };
 }
 
