@@ -73,26 +73,37 @@ async function loadImageAsBlob(url: string): Promise<Blob | null> {
 import neirongweikongSvg from '@/assets/neirongweikong.svg';
 
 /**
- * 处理特定域名的资源 - 针对hs-cover.yepzan.cn证书问题
+ * 处理特定域名的资源 - 针对hs-cover.yepzan.cn和hs-video.yepzan.cn证书问题
  */
 async function handleSpecialDomains(url: string): Promise<string | null> {
-  // 特别处理hs-cover.yepzan.cn域名
-  if (url.includes('hs-cover.yepzan.cn')) {
-    console.log('🔍 [DEBUG] 检测到hs-cover.yepzan.cn域名，使用特殊处理');
+  // 特别处理yepzan.cn域名下的资源
+  if (url.includes('hs-cover.yepzan.cn') || url.includes('hs-video.yepzan.cn')) {
+    const domain = url.includes('hs-cover.yepzan.cn') ? 'hs-cover.yepzan.cn' : 'hs-video.yepzan.cn';
+    console.log(`🔍 [DEBUG] 检测到${domain}域名，使用特殊处理`);
+
+    // 视频资源特殊处理 - 直接返回HTTP URL而不转换为blob
+    // 这样可以避免范围请求错误(ERR_REQUEST_RANGE_NOT_SATISFIABLE)
+    if (url.includes('hs-video.yepzan.cn')) {
+      const httpUrl = url.replace('https://', 'http://');
+      console.log('🎬 [DEBUG] 视频资源直接返回HTTP URL:', httpUrl);
+      return httpUrl;
+    }
 
     // 方法1: 强制使用HTTP协议
     try {
       const httpUrl = url.replace('https://', 'http://');
       console.log('🔄 [DEBUG] 尝试HTTP协议访问:', httpUrl);
 
+      // 图片资源才使用fetch+blob方式
       const response = await fetch(httpUrl, {
         method: 'GET',
         cache: 'no-store',
-        mode: 'cors',
+        mode: 'no-cors', // 使用no-cors模式尝试绕过CORS限制
         credentials: 'omit'
       });
 
-      if (response.ok) {
+      // no-cors模式下response.type为'opaque'
+      if (response.type === 'opaque' || response.ok) {
         const blob = await response.blob();
         const objectUrl = URL.createObjectURL(blob);
         console.log('✅ [DEBUG] HTTP协议加载成功:', httpUrl);
@@ -119,7 +130,23 @@ async function handleSpecialDomains(url: string): Promise<string | null> {
       console.warn('⚠️ [DEBUG] yepzan专用代理加载失败:', error);
     }
 
-    // 方法3: 提供一个默认图片替代
+    // 方法3: 使用公共CORS代理服务
+    try {
+      const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+      console.log('🔄 [DEBUG] 尝试CORS代理:', corsProxyUrl);
+
+      const response = await fetch(corsProxyUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        console.log('✅ [DEBUG] CORS代理加载成功');
+        return objectUrl;
+      }
+    } catch (error) {
+      console.warn('⚠️ [DEBUG] CORS代理加载失败:', error);
+    }
+
+    // 方法4: 提供一个默认图片替代
     try {
       // 使用assets中的默认图片作为替代
       console.log('🔄 [DEBUG] 使用assets中的默认图片替代:', neirongweikongSvg);

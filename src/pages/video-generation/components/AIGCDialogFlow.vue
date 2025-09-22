@@ -413,224 +413,148 @@
                 </div>
               </div>
 
-              <!-- 视频拼接工具 -->
-              <div v-if="selectedVideosForMerge.length > 1" class="tool-section">
-                <div class="tool-header" @click="toggleTool('merge')">
-                  <span>视频拼接 ({{ selectedVideosForMerge.length }}个视频)</span>
-                  <span class="toggle-icon">{{ showMergeTool ? '−' : '+' }}</span>
-                </div>
-                <div v-if="showMergeTool" class="tool-content">
-                  <div class="merge-tool-simple">
-                    <div class="merge-preview">
-                      <h5>拼接预览顺序:</h5>
-                      <div class="merge-sequence">
-                        <div v-for="(video, index) in selectedVideosForMerge" :key="video.id" class="sequence-item">
-                          <span class="sequence-number">{{ index + 1 }}</span>
-                          <span class="sequence-title">{{ video.title }}</span>
-                          <span class="sequence-role">{{ video.role === 'A' ? '角色A' : '角色B' }}</span>
-                          <div class="sequence-actions">
-                            <t-button size="small" variant="text" :disabled="index === 0" @click="moveVideoUp(index)">
-                              ↑
-                            </t-button>
-                            <t-button size="small" variant="text"
-                              :disabled="index === selectedVideosForMerge.length - 1" @click="moveVideoDown(index)">
-                              ↓
-                            </t-button>
-                            <t-button size="small" variant="text" theme="danger"
-                              @click="removeFromMergeSelection(index)">
-                              ✕
-                            </t-button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="merge-settings">
-                      <div class="setting-row">
-                        <label>输出格式:</label>
-                        <t-select v-model="mergeOptions.outputFormat" style="width: 120px;">
-                          <t-option value="mp4" label="MP4" />
-                          <t-option value="webm" label="WebM" />
-                          <t-option value="avi" label="AVI" />
-                        </t-select>
-                      </div>
-
-                      <div class="setting-row">
-                        <label>视频质量:</label>
-                        <t-select v-model="mergeOptions.quality" style="width: 120px;">
-                          <t-option value="high" label="高质量" />
-                          <t-option value="medium" label="中等质量" />
-                          <t-option value="low" label="低质量" />
-                        </t-select>
-                      </div>
-
-                      <div class="setting-row">
-                        <label>转场效果:</label>
-                        <t-switch v-model="mergeOptions.enableTransition" />
-                      </div>
-                    </div>
-
-                    <div class="merge-actions">
-                      <t-button theme="primary" :disabled="selectedVideosForMerge.length < 2 || processingMerge"
-                        :loading="processingMerge" @click="executeVideoMerge">
-                        {{ processingMerge ? '拼接中...' : `拼接 ${selectedVideosForMerge.length} 个视频` }}
-                      </t-button>
-                      <t-button variant="outline" @click="clearVideoSelection" style="margin-left: 8px;">
-                        清空选择
-                      </t-button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 快速操作 -->
-              <div v-if="roleAVideos.length > 0 && roleBVideos.length > 0" class="quick-actions">
-                <t-button @click="quickMergeAllVideos">
-                  快速拼接所有视频
-                </t-button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="step-actions">
-          <t-button variant="outline" @click="prevStep">
-            上一步
-          </t-button>
-          <t-button theme="primary" @click="nextStep" :disabled="!canProceedStep4">
-            下一步：完成
-          </t-button>
-        </div>
-      </div>
-
-      <!-- 第五步：完成 -->
-      <div v-if="currentStepIndex === 4" class="step-panel">
-        <div class="step-title">
-          <h3>视频生成完成</h3>
-          <p>确认视频信息并提交到视频库</p>
-        </div>
-
-        <div class="completion-info">
-          <div class="video-summary">
-            <h4>视频信息确认</h4>
-            <div class="summary-item">
-              <span>视频名称：</span>
-              <span>{{ formData.title }}</span>
-            </div>
-            <div class="summary-item">
-              <span>所属合集：</span>
-              <span>{{ formData.series_name || '无' }}</span>
-            </div>
-            <div class="summary-item">
-              <span>场景描述：</span>
-              <span>{{ formData.far_img_prompt }}</span>
-            </div>
-
-            <!-- 显示最终视频来源信息 -->
-            <div v-if="finalVideoUrl || currentVideo?.play_url" class="summary-item">
-              <span>视频来源：</span>
-              <span v-if="finalVideoUrl" class="video-source edited">
-                🎬 编辑后的最终视频
-                <small v-if="finalVideoUploadTime">({{ finalVideoUploadTime }})</small>
-              </span>
-              <span v-else class="video-source generated">
-                🤖 系统生成的视频
-              </span>
             </div>
           </div>
 
-          <!-- 视频上传区域 -->
-          <div v-if="!finalVideoUrl" class="video-upload-area">
-            <h4>上传最终视频</h4>
-            <p class="upload-tip">请上传编辑完成的最终视频文件，支持 MP4、AVI、MOV、WebM 格式，最大 500MB</p>
+          <div class="step-actions">
+            <t-button variant="outline" @click="prevStep">
+              上一步
+            </t-button>
+            <t-button theme="primary" @click="nextStep" :disabled="!canProceedStep4">
+              下一步：完成
+            </t-button>
+          </div>
+        </div>
 
-            <HuaweiOBSUpload accept="video/mp4,video/avi,video/mov,video/webm" :max-size="500 * 1024 * 1024"
-              button-text="上传最终视频" tips="支持拖拽上传" folder="final_videos" @success="handleFinalVideoUploadSuccess"
-              @error="handleFinalVideoUploadError">
-              <template #default>
-                <div class="upload-container">
-                  <div class="upload-trigger">
-                    <t-icon name="cloud-upload" size="48px" />
-                    <div class="upload-text">
-                      <p>上传最终视频</p>
-                      <p>支持拖拽上传</p>
+        <!-- 第五步：完成 -->
+        <div v-if="currentStepIndex === 4" class="step-panel">
+          <div class="step-title">
+            <h3>视频生成完成</h3>
+            <p>确认视频信息并提交到视频库</p>
+          </div>
+
+          <div class="completion-info">
+            <div class="video-summary">
+              <h4>视频信息确认</h4>
+              <div class="summary-item">
+                <span>视频名称：</span>
+                <span>{{ formData.title }}</span>
+              </div>
+              <div class="summary-item">
+                <span>所属合集：</span>
+                <span>{{ formData.series_name || '无' }}</span>
+              </div>
+              <div class="summary-item">
+                <span>场景描述：</span>
+                <span>{{ formData.far_img_prompt }}</span>
+              </div>
+
+              <!-- 显示最终视频来源信息 -->
+              <div v-if="finalVideoUrl || currentVideo?.play_url" class="summary-item">
+                <span>视频来源：</span>
+                <span v-if="finalVideoUrl" class="video-source edited">
+                  🎬 编辑后的最终视频
+                  <small v-if="finalVideoUploadTime">({{ finalVideoUploadTime }})</small>
+                </span>
+                <span v-else class="video-source generated">
+                  🤖 系统生成的视频
+                </span>
+              </div>
+            </div>
+
+            <!-- 视频上传区域 -->
+            <div v-if="!finalVideoUrl" class="video-upload-area">
+              <h4>上传最终视频</h4>
+              <p class="upload-tip">请上传编辑完成的最终视频文件，支持 MP4、AVI、MOV、WebM 格式，最大 500MB</p>
+
+              <HuaweiOBSUpload accept="video/mp4,video/avi,video/mov,video/webm" :max-size="500 * 1024 * 1024"
+                button-text="上传最终视频" tips="支持拖拽上传" folder="final_videos" @success="handleFinalVideoUploadSuccess"
+                @error="handleFinalVideoUploadError">
+                <template #default>
+                  <div class="upload-container">
+                    <div class="upload-trigger">
+                      <t-icon name="cloud-upload" size="48px" />
+                      <div class="upload-text">
+                        <p>上传最终视频</p>
+                        <p>支持拖拽上传</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-            </HuaweiOBSUpload>
+                </template>
+              </HuaweiOBSUpload>
 
-            <!-- 系统生成的视频预览 -->
-            <div v-if="currentVideo?.play_url" class="system-video-preview">
-              <h5>系统生成的视频预览</h5>
-              <video :src="currentVideo.play_url" controls style="width: 100%; max-width: 600px;"></video>
+              <!-- 系统生成的视频预览 -->
+              <div v-if="currentVideo?.play_url" class="system-video-preview">
+                <h5>系统生成的视频预览</h5>
+                <video :src="currentVideo.play_url" controls style="width: 100%; max-width: 600px;"></video>
+                <div class="video-info">
+                  <p class="video-tip">
+                    <t-icon name="info-circle" style="color: #1890ff;" />
+                    这是系统自动生成的对话视频，您可以下载后编辑
+                  </p>
+                  <t-button @click="downloadSystemVideo" size="small" variant="outline">
+                    <t-icon name="download" />
+                    下载系统视频
+                  </t-button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 已上传视频预览 -->
+            <div v-else class="final-video">
+              <h4>已上传的最终视频</h4>
+              <video :src="finalVideoUrl" controls style="width: 100%; max-width: 600px;"></video>
+
               <div class="video-info">
                 <p class="video-tip">
-                  <t-icon name="info-circle" style="color: #1890ff;" />
-                  这是系统自动生成的对话视频，您可以下载后编辑
+                  <t-icon name="check-circle" style="color: #52c41a;" />
+                  此视频已上传到华为云OBS
                 </p>
-                <t-button @click="downloadSystemVideo" size="small" variant="outline">
-                  <t-icon name="download" />
-                  下载系统视频
-                </t-button>
+                <div class="video-details">
+                  <p><strong>上传时间:</strong> {{ finalVideoUploadTime }}</p>
+                  <p><strong>视频地址:</strong> <span class="url-text">{{ finalVideoUrl }}</span></p>
+                </div>
+                <div class="video-actions">
+                  <t-button @click="removeUploadedVideo" variant="outline">
+                    <t-icon name="delete" />
+                    删除并重新上传
+                  </t-button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- 已上传视频预览 -->
-          <div v-else class="final-video">
-            <h4>已上传的最终视频</h4>
-            <video :src="finalVideoUrl" controls style="width: 100%; max-width: 600px;"></video>
+          <div class="step-actions" v-if="!submitSuccess">
+            <t-button variant="outline" @click="prevStep">
+              上一步
+            </t-button>
+            <t-button theme="primary" size="large" @click="submitFinalVideo" :loading="loadingSubmit">
+              提交视频
+            </t-button>
+          </div>
 
-            <div class="video-info">
-              <p class="video-tip">
-                <t-icon name="check-circle" style="color: #52c41a;" />
-                此视频已上传到华为云OBS
-              </p>
-              <div class="video-details">
-                <p><strong>上传时间:</strong> {{ finalVideoUploadTime }}</p>
-                <p><strong>视频地址:</strong> <span class="url-text">{{ finalVideoUrl }}</span></p>
-              </div>
-              <div class="video-actions">
-                <t-button @click="removeUploadedVideo" variant="outline">
-                  <t-icon name="delete" />
-                  删除并重新上传
-                </t-button>
-              </div>
+          <!-- 提交成功后的操作按钮 -->
+          <div v-if="submitSuccess" class="success-actions">
+            <t-alert theme="success" message="视频提交成功！" description="您的视频已成功提交并保存到视频库中。" />
+            <div class="action-buttons">
+              <t-button theme="primary" size="large" @click="goToVideoLibrary">
+                <template #icon><t-icon name="view-module" /></template>
+                前往视频库查看
+              </t-button>
+              <t-button variant="outline" @click="handleBack">
+                返回列表
+              </t-button>
             </div>
           </div>
         </div>
 
-        <div class="step-actions" v-if="!submitSuccess">
-          <t-button variant="outline" @click="prevStep">
-            上一步
-          </t-button>
-          <t-button theme="primary" size="large" @click="submitFinalVideo" :loading="loadingSubmit">
-            提交视频
-          </t-button>
-        </div>
-
-        <!-- 提交成功后的操作按钮 -->
-        <div v-if="submitSuccess" class="success-actions">
-          <t-alert theme="success" message="视频提交成功！" description="您的视频已成功提交并保存到视频库中。" />
-          <div class="action-buttons">
-            <t-button theme="primary" size="large" @click="goToVideoLibrary">
-              <template #icon><t-icon name="view-module" /></template>
-              前往视频库查看
-            </t-button>
-            <t-button variant="outline" @click="handleBack">
-              返回列表
-            </t-button>
-          </div>
-        </div>
       </div>
 
+
+      <!-- 视频编辑弹窗 -->
+      <VideoEditingDialog v-model:visible="videoEditDialogVisible" :initial-videos="editDialogInitialVideos"
+        :hide-online-videos="true" @confirm="handleVideoEditConfirm" />
     </div>
-
-
-    <!-- 视频编辑弹窗 -->
-    <VideoEditingDialog v-model:visible="videoEditDialogVisible" :initial-videos="editDialogInitialVideos"
-      :hide-online-videos="true" @confirm="handleVideoEditConfirm" />
   </div>
 </template>
 

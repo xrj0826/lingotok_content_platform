@@ -1503,7 +1503,7 @@ const handleSeriesClick = (row) => {
   }).catch(err => {
     console.error('路由跳转失败:', err);
     // 如果路由跳转失败,尝试刷新页面
-    window.location.href = '/video/videoManage?seriesName=' + encodeURIComponent(row.name);
+    router.push('/video/videoManage?seriesName=' + encodeURIComponent(row.name));
   });
 };
 

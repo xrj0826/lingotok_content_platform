@@ -60,7 +60,7 @@ const startCreation = () => {
     MessagePlugin.success(`正在进入${selectedType.value === 'dialogue' ? '对话' : '单词'}视频创建流程`);
     // 这里可以跳转到具体的创建页面
     setTimeout(() => {
-      window.location.href = '/video-generation/create';
+      router.push('/video-generation/create');
     }, 1000);
   }
 };

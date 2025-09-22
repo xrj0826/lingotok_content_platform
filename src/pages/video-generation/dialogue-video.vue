@@ -379,7 +379,7 @@
         <div v-if="showCutTool" class="tool-content">
           <div class="cut-tool-placeholder">
             <div v-if="!selectedVideoForEdit" class="no-selection">
-              <p>请先从左侧视频列表中选择要剪切的视频</p>
+              <p>请先从列表中选择要剪切的视频，或者先创建一个视频</p>
             </div>
             <div v-else class="selected-video-info">
               <h4>已选择视频:</h4>
@@ -405,7 +405,7 @@
         <div v-if="showMergeTool" class="tool-content">
           <div class="merge-tool-content">
             <div v-if="selectedVideosForMerge.length === 0" class="no-selection">
-              <p>请先从左侧视频列表中选择要拼接的视频</p>
+              <p>请先从列表中选择要拼接的视频，或者先创建视频</p>
             </div>
             <div v-else>
               <div class="merge-settings">
@@ -444,9 +444,13 @@
 
       <!-- 快速操作按钮 -->
       <div class="quick-actions">
-        <t-button v-if="roleAVideos.length > 0 && roleBVideos.length > 0" theme="default" size="large"
-          @click="quickMergeAllVideos" block>
-          快速拼接所有视频
+        <div v-if="roleAVideos.length > 0 && roleBVideos.length > 0">
+          <t-button theme="default" size="large" @click="quickMergeAllVideos" block>
+            快速拼接所有视频
+          </t-button>
+        </div>
+        <t-button theme="default" size="large" @click="showTutorial" block>
+          打开视频编辑工具
         </t-button>
       </div>
     </div>
@@ -1360,6 +1364,18 @@ const quickMergeAllVideos = () => {
   MessagePlugin.info(`已选择 ${selectedVideosForMerge.value.length} 个视频，请在拼接工具中执行拼接`);
   showMergeTool.value = true;
   showCutTool.value = false;
+};
+
+// 显示视频编辑教程
+const showTutorial = () => {
+  MessagePlugin.info({
+    content: '视频编辑功能教程：\n1. 创建角色A或角色B的单人视频\n2. 使用剪切工具编辑单个视频\n3. 选择多个视频进行拼接\n4. 调整拼接顺序生成最终视频',
+    duration: 5000,
+    closeBtn: true
+  });
+  
+  // 打开拼接工具展示使用方法
+  showMergeTool.value = true;
 };
 
 // 新增：开始视频拼接（从预览区域触发）

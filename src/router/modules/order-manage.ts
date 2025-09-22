@@ -17,6 +17,9 @@ export default [
       {
         path: '',
         component: () => import('@/pages/order-manage/index.vue'),
+        meta: {
+          title: '视频管理',
+        },
       }
     ]
   },

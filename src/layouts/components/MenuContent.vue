@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="menu-content-wrapper">
     <template v-for="item in visibleMenuItems" :key="item.path">
       <t-menu-item style="overflow: visible" width="200px" :name="item.path" :value="item.path" :to="item.path">
         <template #icon>
@@ -53,4 +53,16 @@ const menuIcon = (item: ListItemType) => {
   }
   return item.icon.render();
 };
+
 </script>
+
+<style lang="less" scoped>
+.menu-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 0;
+}
+</style>

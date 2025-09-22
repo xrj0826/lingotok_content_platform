@@ -33,9 +33,11 @@
 
         <div v-else class="video-grid">
           <div v-for="video in videoList" :key="video.id" class="video-card" @click="playVideo(video)">
-            <!-- 视频封面 -->
+            <!-- 视频封面 - 使用与对话视频生成相同的展示方式 -->
             <div class="video-cover">
-              <img :src="video.cover_url || defaultCover" :alt="video.title" @error="handleImageError" />
+              <div class="video-preview">
+                <img :src="video.cover_url || defaultCover" :alt="video.title" @error="handleImageError" />
+              </div>
               <div class="play-overlay">
                 <t-icon name="play-circle-filled" size="48px" />
               </div>
@@ -96,10 +98,14 @@
     <t-dialog v-model:visible="showVideoPlayer" :header="playingVideo?.title || '视频播放'" width="80%" :footer="false"
       :close-on-overlay-click="true" @close="stopPlayingVideo">
       <div v-if="playingVideo" class="video-player-container">
-        <video :src="playingVideo.play_url" controls autoplay style="width: 100%; max-height: 70vh;"
-          @error="handleVideoError">
-          您的浏览器不支持视频播放
-        </video>
+        <div class="video-player-wrapper">
+          <video v-if="playingVideo.play_url" :src="processedVideoUrl" controls autoplay class="video-player"
+            @error="handleVideoError"></video>
+          <div v-if="videoError" class="video-error-overlay">
+            <img :src="defaultCover" alt="视频加载失败" />
+            <p>视频加载失败</p>
+          </div>
+        </div>
 
         <div class="player-info">
           <h3>{{ playingVideo.title }}</h3>
@@ -156,28 +162,34 @@
             <!-- 视频预览 -->
             <div v-if="detailVideo.play_url" class="media-item">
               <label>视频:</label>
-              <video :src="detailVideo.play_url" controls style="width: 100%; max-height: 200px;">
-                您的浏览器不支持视频播放
-              </video>
+              <div class="video-player-wrapper">
+                <video :src="processedDetailVideoUrl" controls class="video-player"
+                  @error="handleDetailVideoError"></video>
+                <div v-if="detailVideoError" class="video-error-overlay">
+                  <img :src="defaultCover" alt="视频加载失败" />
+                  <p>视频加载失败</p>
+                </div>
+              </div>
             </div>
 
             <!-- 封面图片 -->
             <div v-if="detailVideo.cover_url" class="media-item">
               <label>封面:</label>
-              <img :src="detailVideo.cover_url" alt="视频封面" style="max-width: 100%; max-height: 200px;" />
+              <img :src="detailVideo.cover_url || defaultCover" alt="视频封面" @error="handleImageError"
+                style="max-width: 100%; max-height: 200px;" />
             </div>
 
             <!-- 单词视频的AI生成图片 -->
             <div v-if="isWordVideo(detailVideo) && (detailVideo as AIGCWord).ai_gen_img_url" class="media-item">
               <label>AI生成图片:</label>
-              <img :src="(detailVideo as AIGCWord).ai_gen_img_url" alt="AI生成图片"
-                style="max-width: 100%; max-height: 200px;" />
+              <img :src="(detailVideo as AIGCWord).ai_gen_img_url || defaultCover" alt="AI生成图片"
+                @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
             </div>
 
             <!-- 对话视频的远景图 -->
             <div v-if="isDialogVideo(detailVideo) && (detailVideo as AIGCDialog).ai_far_img_url" class="media-item">
               <label>远景图:</label>
-              <img :src="(detailVideo as AIGCDialog).ai_far_img_url" alt="远景图"
+              <img :src="(detailVideo as AIGCDialog).ai_far_img_url || defaultCover" alt="远景图" @error="handleImageError"
                 style="max-width: 100%; max-height: 200px;" />
             </div>
           </div>
@@ -205,7 +217,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { MessagePlugin } from 'tdesign-vue-next';
 import CryptoJS from 'crypto-js';
@@ -216,6 +228,7 @@ import {
   type AIGCDialog,
   getWordStatusText
 } from '@/api/aigc-video';
+// 不再使用SafeMediaDisplay组件，直接使用原生img和video标签
 
 // 路由
 const router = useRouter();
@@ -227,6 +240,8 @@ const videoList = ref<(AIGCWord | AIGCDialog)[]>([]);
 const total = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(12);
+const videoError = ref(false);
+const detailVideoError = ref(false);
 
 // 弹窗状态
 const showVideoPlayer = ref(false);
@@ -234,8 +249,11 @@ const playingVideo = ref<AIGCWord | AIGCDialog | null>(null);
 const showVideoDetails = ref(false);
 const detailVideo = ref<AIGCWord | AIGCDialog | null>(null);
 
-// 默认封面
-const defaultCover = '/images/video-thumbnail-placeholder.svg';
+// 默认封面 - 使用src/assets文件夹下的图片作为占位图
+import neirongweikongSvg from '@/assets/neirongweikong.svg';
+import assetsEmptySvg from '@/assets/assets-empty.svg';
+import { getAccessibleMediaUrl } from '@/utils/mediaResourceLoader';
+const defaultCover = neirongweikongSvg;
 
 // 类型守卫函数
 const isWordVideo = (video: AIGCWord | AIGCDialog): video is AIGCWord => {
@@ -246,9 +264,19 @@ const isDialogVideo = (video: AIGCWord | AIGCDialog): video is AIGCDialog => {
   return filterType.value === AIGCType.dialog;
 };
 
+// 标记是否正在加载中，避免重复请求
+let isLoading = false;
+
 // 获取视频列表
 const fetchVideoList = async () => {
+  // 如果已经在加载中，则不重复请求
+  if (isLoading) {
+    console.log('已有请求正在进行中，跳过此次请求');
+    return;
+  }
+
   try {
+    isLoading = true;
     loading.value = true;
     const offset = (currentPage.value - 1) * pageSize.value;
 
@@ -303,6 +331,7 @@ const fetchVideoList = async () => {
     total.value = 0;
   } finally {
     loading.value = false;
+    isLoading = false;
   }
 };
 
@@ -348,28 +377,79 @@ const handlePageSizeChange = (size: number) => {
   console.log(`页面大小已变更为 ${size} 条/页，正在加载第 1 页数据`);
 };
 
+// 计算属性: 处理后的视频URL
+const processedVideoUrl = ref('');
+const processedDetailVideoUrl = ref('');
+
+// 处理视频URL - 使用与对话视频生成相同的处理方式
+// 添加缓存避免重复加载
+const urlCache = new Map<string, string>();
+const processVideoUrl = async (url: string): Promise<string> => {
+  // 检查缓存中是否已存在处理过的URL
+  if (urlCache.has(url)) {
+    console.log('从缓存获取视频URL:', url);
+    return urlCache.get(url)!;
+  }
+
+  try {
+    // 对于视频URL，直接转换为HTTP协议而不使用blob
+    if (url.includes('hs-video.yepzan.cn')) {
+      const httpUrl = url.replace('https://', 'http://');
+      console.log('视频URL直接使用HTTP协议:', httpUrl);
+      // 存入缓存
+      urlCache.set(url, httpUrl);
+      return httpUrl;
+    }
+
+    // 使用mediaResourceLoader处理URL
+    const processedUrl = await getAccessibleMediaUrl(url);
+    // 存入缓存
+    urlCache.set(url, processedUrl);
+    return processedUrl;
+  } catch (error) {
+    console.error('处理视频URL失败:', error);
+    return url; // 失败时返回原URL
+  }
+};
+
 // 播放视频
-const playVideo = (video: AIGCWord | AIGCDialog) => {
+const playVideo = async (video: AIGCWord | AIGCDialog) => {
   if (!video.play_url) {
     MessagePlugin.warning('该视频暂无播放地址');
     return;
   }
+
   playingVideo.value = video;
+  videoError.value = false; // 重置错误状态
+
+  // 处理视频URL
+  try {
+    processedVideoUrl.value = await processVideoUrl(video.play_url);
+    console.log('视频URL处理成功:', processedVideoUrl.value);
+  } catch (error) {
+    console.error('视频URL处理失败:', error);
+    processedVideoUrl.value = video.play_url;
+  }
+
   showVideoPlayer.value = true;
   // 关闭详情弹窗
   showVideoDetails.value = false;
 };
 
 // 下载视频
-const downloadVideo = (video: AIGCWord | AIGCDialog) => {
+const downloadVideo = async (video: AIGCWord | AIGCDialog) => {
   if (!video.play_url) {
     MessagePlugin.warning('该视频暂无下载地址');
     return;
   }
 
   try {
+    // 先处理视频URL，确保能够正确访问
+    const accessibleUrl = await processVideoUrl(video.play_url);
+
+    // 创建下载链接
     const link = document.createElement('a');
-    link.href = video.play_url;
+    link.href = accessibleUrl;
     link.download = `${video.title}.mp4`;
     document.body.appendChild(link);
     link.click();
@@ -382,8 +462,21 @@ const downloadVideo = (video: AIGCWord | AIGCDialog) => {
 };
 
 // 查看详情
-const viewDetails = (video: AIGCWord | AIGCDialog) => {
+const viewDetails = async (video: AIGCWord | AIGCDialog) => {
   detailVideo.value = video;
+  detailVideoError.value = false; // 重置错误状态
+
+  // 处理视频URL
+  if (video.play_url) {
+    try {
+      processedDetailVideoUrl.value = await processVideoUrl(video.play_url);
+      console.log('详情视频URL处理成功:', processedDetailVideoUrl.value);
+    } catch (error) {
+      console.error('详情视频URL处理失败:', error);
+      processedDetailVideoUrl.value = video.play_url;
+    }
+  }
+
   showVideoDetails.value = true;
 };
 
@@ -406,6 +499,14 @@ const handleImageError = (event: Event) => {
 // 处理视频播放错误
 const handleVideoError = (event: Event) => {
   console.error('视频播放错误:', event);
+  videoError.value = true;
+  MessagePlugin.error('视频播放失败，请检查网络连接');
+};
+
+// 处理详情页视频播放错误
+const handleDetailVideoError = (event: Event) => {
+  console.error('详情页视频播放错误:', event);
+  detailVideoError.value = true;
   MessagePlugin.error('视频播放失败，请检查网络连接');
 };
 
@@ -429,9 +530,34 @@ const stopDetailVideo = () => {
   });
 };
 
+// 清理函数
+const cleanupResources = () => {
+  // 清理缓存的URL
+  urlCache.forEach((url) => {
+    if (url.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(url);
+        console.log('已释放Blob URL:', url);
+      } catch (error) {
+        console.error('释放Blob URL失败:', error);
+      }
+    }
+  });
+  urlCache.clear();
+  console.log('URL缓存已清理');
+};
+
+// 修复VideoBottomNav组件未找到的问题
+import VideoBottomNav from '@/components/BottomNavBar/index.vue';
+
 // 组件挂载时获取数据
 onMounted(() => {
   fetchVideoList();
+});
+
+// 组件卸载时清理资源
+onUnmounted(() => {
+  cleanupResources();
 });
 </script>
 
@@ -513,11 +639,16 @@ onMounted(() => {
           overflow: hidden;
           background: #f3f4f6;
 
-          img {
+          .video-preview {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: transform 0.3s ease;
+            }
           }
 
           .play-overlay {
@@ -550,7 +681,7 @@ onMounted(() => {
               opacity: 1;
             }
 
-            img {
+            .video-preview img {
               transform: scale(1.05);
             }
           }
@@ -607,6 +738,46 @@ onMounted(() => {
 
 // 弹窗样式
 .video-player-container {
+  .video-player-wrapper {
+    position: relative;
+    width: 100%;
+    max-height: 70vh;
+    overflow: hidden;
+    background: #000;
+    border-radius: 8px;
+
+    .video-player {
+      width: 100%;
+      max-height: 70vh;
+      display: block;
+    }
+
+    .video-error-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+
+      img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 16px;
+      }
+
+      p {
+        font-size: 16px;
+        margin: 0;
+      }
+    }
+  }
+
   .player-info {
     margin-top: 16px;
     padding: 16px;
@@ -687,6 +858,44 @@ onMounted(() => {
         video {
           border-radius: 8px;
           border: 1px solid #e5e7eb;
+        }
+
+        .video-player-wrapper {
+          position: relative;
+          width: 100%;
+          max-height: 200px;
+
+          .video-player {
+            width: 100%;
+            max-height: 200px;
+            display: block;
+          }
+
+          .video-error-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 8px;
+
+            img {
+              width: 60px;
+              height: 60px;
+              margin-bottom: 8px;
+            }
+
+            p {
+              font-size: 14px;
+              margin: 0;
+            }
+          }
         }
       }
     }

@@ -1,30 +1,14 @@
 <template>
-  <div :class="sideNavCls">
-    <t-menu :class="menuCls" :theme="theme" :value="currentPath" :collapsed="collapsed" :default-value="currentPath">
-      <!--      <template #logo>-->
-      <!--        <span v-if="showLogo" :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">-->
-      <!--          <component :is="getLogo()"  :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`" />-->
-      <!--          <div style="font-size: 22px; font-weight: 700;  line-height: 50px; margin-left: 10px ">智能球馆</div>-->
-      <!--        </span>-->
-      <!--      </template>-->
+  <div :class="sideNavCls" class="side-nav-container">
+    <t-menu :class="menuCls" :theme="theme" :value="currentPath" :collapsed="collapsed" :default-value="currentPath" class="custom-menu">
       <span :class="`${prefix}-side-nav-logo-wrapper`" @click="goHome">
-        <!-- <component
-          :is="getLogo()"
-          style="transform: translateX(-30px)"
-          :class="`${prefix}-side-nav-logo-${collapsed ? 't' : 'tdesign'}-logo`"
-        /> -->
         <div v-if="!collapsed"
           style="font-size: 24px; font-weight: 700; line-height: 50px; margin-left: -20px; margin-right: 16px">
-          <!-- 高校体育管理系统 -->
           内容管理系统
         </div>
       </span>
-      <!--      <div style="display: flex; ">-->
-      <!--        <img style="height: 50px; " src="/src/assets/assets-logo-full.svg">-->
-      <!--      </div>-->
       <menu-content :nav-data="menu" />
     </t-menu>
-    <div :class="`${prefix}-side-nav-placeholder${collapsed ? '-hidden' : ''}`"></div>
   </div>
 </template>
 
@@ -158,4 +142,60 @@ const getLogo = () => {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/* 自定义样式覆盖底部空白区域 */
+.side-nav-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.custom-menu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:deep(.t-menu) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:deep(.t-menu__item:last-child) {
+  margin-bottom: 0;
+}
+
+/* 移除底部占位元素的样式 */
+.@{starter-prefix}-side-nav-placeholder,
+.@{starter-prefix}-side-nav-placeholder-hidden {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+
+/* 确保菜单容器高度正确 */
+.@{starter-prefix}-sidebar-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:deep(.t-default-menu) {
+  height: 100%;
+}
+
+:deep(.t-default-menu::after) {
+  display: none !important;
+}
+</style>

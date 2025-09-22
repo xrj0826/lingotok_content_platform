@@ -182,9 +182,9 @@ const startVideoCreation = () => {
 
   // 跳转到对应的详细页面
   if (selectedType.value === 'dialogue') {
-    window.location.href = '/video-generation/dialogue';
+    router.push('/video-generation/dialogue');
   } else {
-    window.location.href = '/video-generation/word';
+    router.push('/video-generation/word');
   }
 };
 

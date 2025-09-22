@@ -17,6 +17,9 @@ export default [
       {
         path: '',
         component: () => import('@/pages/user-videos/index.vue'),
+        meta: {
+          title: '用户视频',
+        },
       },
     ],
   },

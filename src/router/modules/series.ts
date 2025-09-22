@@ -5,9 +5,10 @@ import Layout from '@/layouts/index.vue';
 
 export default [
   {
-    path: '/series/seriesManage',
+    path: '/series',
     name: 'series',
     component: Layout,
+    redirect: '/series/seriesManage',
     meta: {
       title: '视频合集管理',
       icon: shallowRef(BooksIcon),
@@ -15,8 +16,12 @@ export default [
     },
     children: [
       {
-        path: '',
+        path: 'seriesManage',
+        name: 'seriesManage',
         component: () => import('@/pages/admin-manange/index.vue'),
+        meta: {
+          title: '视频合集管理',
+        },
       }
     ]
   },

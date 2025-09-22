@@ -1,0 +1,56 @@
+/**
+ * 自定义样式覆盖，用于解决特定UI问题
+ */
+
+/* 解决左侧菜单底部空白项问题 */
+.starter-side-nav-placeholder,
+.starter-side-nav-placeholder-hidden {
+  display: none !important;
+}
+
+/* 确保菜单容器正确显示 */
+.t-default-menu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.t-default-menu .t-menu__item:last-child {
+  margin-bottom: 0;
+}
+
+/* 移除底部可能的空白区域 */
+.t-default-menu::after {
+  display: none !important;
+}
+
+/* 确保侧边栏布局正确 */
+.starter-sidebar-layout {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 隐藏任何可能的空白菜单项 */
+.t-menu-item:empty,
+.t-menu__item:empty {
+  display: none !important;
+}
+
+/* 确保菜单项内容正确显示 */
+.t-menu__item {
+  overflow: visible;
+}
+
+/* 修复可能的底部空白区域 */
+.t-layout__sider {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+
+
+

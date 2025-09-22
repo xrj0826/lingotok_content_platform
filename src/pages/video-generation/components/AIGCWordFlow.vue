@@ -515,7 +515,7 @@ const stopPolling = () => {
 // 查看视频库
 const viewInLibrary = () => {
   // 导航到左侧栏中的视频库页面
-  window.location.href = '/video-library/list';
+  router.push('/video-library/list');
 };
 
 // 创建新视频

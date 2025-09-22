@@ -18,6 +18,9 @@ export default [
       {
         path: '',
         component: () => import('@/pages/notice/send.vue'),
+        meta: {
+          title: '站内信',
+        },
       },
     ],
   },

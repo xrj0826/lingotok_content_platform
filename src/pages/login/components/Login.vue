@@ -107,7 +107,7 @@ const onSubmit = async (ctx: SubmitContext) => {
         MessagePlugin.success('登录成功');
 
         // 使用 window.location 进行页面跳转
-        window.location.href = '/series/seriesManage';
+        router.push('/series/seriesManage');
       } else {
         MessagePlugin.error('密码错误');
       }
