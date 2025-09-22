@@ -96,11 +96,11 @@ router.onError((error) => {
 // 全局导航守卫，处理未匹配的路径
 router.beforeEach((to, from, next) => {
   // 检查路由是否存在
-  const matchedRoutes = router.getRoutes().filter(route => 
-    route.path === to.path || 
+  const matchedRoutes = router.getRoutes().filter(route =>
+    route.path === to.path ||
     (route.path.includes(':') && to.matched.length > 0)
   );
-  
+
   if (matchedRoutes.length === 0) {
     console.warn('路由未找到，重定向到视频库页面:', to.path);
     next('/video-library/list');
