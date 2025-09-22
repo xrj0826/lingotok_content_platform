@@ -1,0 +1,20 @@
+# 确保SPA路由在直接访问时正常工作
+/*    /index.html   200
+
+# FFmpeg CORS 特殊头设置
+/ffmpeg/*  /ffmpeg/:splat  200
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  Cross-Origin-Opener-Policy: same-origin
+
+# 外部媒体资源代理头设置
+/api/proxy-media  200
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+# 视频库直接访问支持 - 特别针对/video-library/list路径
+/video-library/*  /index.html  200
+
+# 视频生成页面直接访问支持
+/video-generation/*  /index.html  200

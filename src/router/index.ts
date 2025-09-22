@@ -1,5 +1,5 @@
 import uniq from 'lodash/uniq';
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import notice from './modules/notice';
 
 const env = import.meta.env.MODE || 'development';
@@ -15,7 +15,11 @@ const defaultRouterList: Array<RouteRecordRaw> = [
   {
     path: '/',
     redirect: '/series/seriesManage',
+    meta: {
+      hidden: true, // 隐藏在导航菜单中
+    },
   },
+  // 移除通配符路由，改为在路由错误处理中统一处理未匹配路径
 ];
 
 // 存放固定路由
@@ -66,7 +70,8 @@ export const getActive = (maxLevel = 3): string => {
 };
 
 const router = createRouter({
-  history: createWebHistory(env === 'site' ? '/starter/vue-next/' : import.meta.env.VITE_BASE_URL),
+  // 修改为hash模式，解决路由404问题
+  history: createWebHashHistory(env === 'site' ? '/starter/vue-next/' : import.meta.env.VITE_BASE_URL),
   routes: allRoutes,
   scrollBehavior() {
     return {
@@ -75,6 +80,33 @@ const router = createRouter({
       behavior: 'smooth',
     };
   },
+});
+
+// 路由错误处理，防止直接访问路由时出现404
+router.onError((error) => {
+  console.error('路由错误:', error);
+  // 如果是找不到组件，重定向到视频库页面
+  if (error.message.includes('Failed to fetch dynamically imported module') ||
+    error.message.includes('Failed to resolve module') ||
+    error.message.includes('Unexpected token')) {
+    router.push('/video-library/list');
+  }
+});
+
+// 全局导航守卫，处理未匹配的路径
+router.beforeEach((to, from, next) => {
+  // 检查路由是否存在
+  const matchedRoutes = router.getRoutes().filter(route => 
+    route.path === to.path || 
+    (route.path.includes(':') && to.matched.length > 0)
+  );
+  
+  if (matchedRoutes.length === 0) {
+    console.warn('路由未找到，重定向到视频库页面:', to.path);
+    next('/video-library/list');
+  } else {
+    next();
+  }
 });
 
 export default router;

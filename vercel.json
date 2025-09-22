@@ -36,8 +36,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/video-library/:path*", "destination": "/index.html" },
-    { "source": "/video-generation/:path*", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

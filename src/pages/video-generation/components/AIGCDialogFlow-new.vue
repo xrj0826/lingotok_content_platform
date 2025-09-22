@@ -97,7 +97,7 @@
       </div>
 
       <!-- 视频编辑工具栏 -->
-      <div v-if="roleAVideos.length > 0 || roleBVideos.length > 0" class="video-tools-section">
+      <div class="video-tools-section">
         <div class="tools-header">
           <h3>视频编辑工具</h3>
           <div class="tools-info">

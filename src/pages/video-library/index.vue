@@ -235,7 +235,7 @@ const showVideoDetails = ref(false);
 const detailVideo = ref<AIGCWord | AIGCDialog | null>(null);
 
 // 默认封面
-const defaultCover = '/logo.png';
+const defaultCover = '/images/video-thumbnail-placeholder.svg';
 
 // 类型守卫函数
 const isWordVideo = (video: AIGCWord | AIGCDialog): video is AIGCWord => {
@@ -400,6 +400,7 @@ const goToGeneration = () => {
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
   target.src = defaultCover;
+  console.log('使用默认视频封面:', defaultCover);
 };
 
 // 处理视频播放错误

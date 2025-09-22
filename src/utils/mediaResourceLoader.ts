@@ -69,6 +69,9 @@ async function loadImageAsBlob(url: string): Promise<Blob | null> {
 /**
  * 通过代理加载外部资源
  */
+// 导入占位图
+import neirongweikongSvg from '@/assets/neirongweikong.svg';
+
 /**
  * 处理特定域名的资源 - 针对hs-cover.yepzan.cn证书问题
  */
@@ -118,17 +121,9 @@ async function handleSpecialDomains(url: string): Promise<string | null> {
 
     // 方法3: 提供一个默认图片替代
     try {
-      // 使用本地默认图片作为替代
-      const fallbackUrl = '/images/video-placeholder.svg';
-      console.log('🔄 [DEBUG] 使用本地默认图片替代:', fallbackUrl);
-
-      const response = await fetch(fallbackUrl);
-      if (response.ok) {
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-        console.log('✅ [DEBUG] 默认图片加载成功');
-        return objectUrl;
-      }
+      // 使用assets中的默认图片作为替代
+      console.log('🔄 [DEBUG] 使用assets中的默认图片替代:', neirongweikongSvg);
+      return neirongweikongSvg;
     } catch (error) {
       console.warn('⚠️ [DEBUG] 默认图片加载失败:', error);
     }

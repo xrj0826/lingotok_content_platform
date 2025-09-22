@@ -23,14 +23,19 @@ export async function initFFmpegWithCorsWorkaround(): Promise<FFmpeg> {
 
   const ffmpeg = new FFmpeg();
 
-  // 设置日志监听
-  ffmpeg.on('log', ({ type, message }) => {
-    if (type === 'fferr') {
-      console.error('[FFmpeg CORS]', message);
-    } else {
-      console.log('[FFmpeg CORS]', message);
-    }
-  });
+    // 设置日志监听
+    ffmpeg.on('log', ({ type, message }) => {
+      if (type === 'fferr') {
+        console.error('[FFmpeg CORS]', message);
+      } else {
+        console.log('[FFmpeg CORS]', message);
+      }
+    });
+    
+    // 增强日志监听，捕获CORS相关错误
+    ffmpeg.on('progress', ({ progress, time }) => {
+      console.log(`[FFmpeg CORS] 进度: ${(progress * 100).toFixed(2)}%, 时间: ${time.toFixed(2)}s`);
+    });
 
   try {
     console.log('[CORS解决方案] 尝试本地文件直接加载...');
@@ -45,18 +50,22 @@ export async function initFFmpegWithCorsWorkaround(): Promise<FFmpeg> {
       }, 30000);
     });
 
-    // 使用特殊的 fetch 方式获取文件
+    // 使用增强的 fetch 方式获取文件
     const fetchWithCors = async (url: string, type: string) => {
       try {
         console.log(`[CORS解决方案] 获取文件: ${url}`);
 
-        // 尝试不同的获取方式
+        // 优化：使用更多fetch选项，提高兼容性
         const response = await fetch(url, {
           method: 'GET',
           mode: 'cors', // 明确指定 CORS 模式
           credentials: 'same-origin',
+          cache: 'force-cache', // 使用缓存提高性能
           headers: {
-            'Accept': type
+            'Accept': type,
+            'Cross-Origin-Resource-Policy': 'cross-origin',
+            'Sec-Fetch-Dest': 'script',
+            'Sec-Fetch-Mode': 'cors'
           }
         });
 
@@ -69,8 +78,17 @@ export async function initFFmpegWithCorsWorkaround(): Promise<FFmpeg> {
       } catch (fetchError) {
         console.warn(`[CORS解决方案] 直接获取失败，尝试 toBlobURL: ${fetchError}`);
 
-        // 回退到 toBlobURL 方式
-        return await toBlobURL(url, type);
+        try {
+          // 回退到 toBlobURL 方式
+          return await toBlobURL(url, type);
+        } catch (blobUrlError) {
+          console.error(`[CORS解决方案] toBlobURL也失败了: ${blobUrlError}`);
+          
+          // 最终回退方案：尝试使用本地路径
+          console.log(`[CORS解决方案] 尝试使用备份文件`);
+          const backupUrl = url.replace('/ffmpeg/', '/ffmpeg/backup/');
+          return await toBlobURL(backupUrl, type);
+        }
       }
     };
 

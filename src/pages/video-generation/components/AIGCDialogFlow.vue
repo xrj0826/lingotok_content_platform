@@ -263,8 +263,7 @@
             </t-button>
 
             <!-- 新增视频编辑按钮 -->
-            <t-button v-if="roleAVideos.length > 0 || roleBVideos.length > 0" variant="outline" size="large"
-              @click="openVideoEditDialog" style="margin-left: 16px;">
+            <t-button variant="outline" size="large" @click="openVideoEditDialog" style="margin-left: 16px;">
               <template #icon>
                 <t-icon name="edit" />
               </template>
@@ -336,7 +335,7 @@
             </div>
 
             <!-- 视频编辑工具 -->
-            <div v-if="selectedVideosForMerge.length > 0 || selectedVideoForEdit" class="video-tools-section">
+            <div class="video-tools-section">
               <div class="tools-header">
                 <h4>视频编辑工具</h4>
               </div>

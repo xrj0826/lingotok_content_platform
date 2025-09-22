@@ -10,7 +10,7 @@
       </div>
       <div v-else-if="error" class="error-placeholder">
         <div class="default-image-cover">
-          <img src="/images/image-placeholder.svg" alt="视频封面占位图" class="placeholder-image" />
+          <img :src="imagePlaceholder" alt="视频封面占位图" class="placeholder-image" />
           <div class="image-title">{{ props.imageTitle || props.alt || '视频封面' }}</div>
         </div>
         <div class="error-text">图片加载失败</div>
@@ -37,7 +37,7 @@
       </div>
       <div v-else-if="error" class="error-placeholder">
         <div class="default-video-cover">
-          <img src="/images/video-placeholder.svg" alt="视频占位图" class="placeholder-image" />
+          <img :src="videoPlaceholder" alt="视频占位图" class="placeholder-image" />
           <div class="video-title">{{ props.videoTitle || '未命名视频' }}</div>
         </div>
         <div class="error-text">视频加载失败</div>
@@ -68,6 +68,8 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { getAccessibleMediaUrl } from '@/utils/mediaResourceLoader';
 import { smartImageLoader } from '@/utils/imageLoader';
+import neirongweikongSvg from '@/assets/neirongweikong.svg';
+import emptyIconSvg from '@/assets/assets-empty.svg';
 
 interface Props {
   src: string;
@@ -104,6 +106,8 @@ const retryCount = ref(0);
 const videoRef = ref<HTMLVideoElement>();
 
 const originalUrl = computed(() => props.src);
+const imagePlaceholder = computed(() => emptyIconSvg);
+const videoPlaceholder = computed(() => neirongweikongSvg);
 
 // 加载媒体资源
 const loadMedia = async () => {
@@ -156,12 +160,12 @@ const loadMedia = async () => {
             } else {
               console.log('⚠️ [SafeMediaDisplay] yepzan HTTP协议不可用，尝试占位图');
               // 使用占位图
-              url = '/images/video-placeholder.svg';
+              url = videoPlaceholder.value;
             }
           } catch (error) {
             console.warn('⚠️ [SafeMediaDisplay] yepzan HTTP协议处理失败', error);
             // 出错时使用占位图
-            url = '/images/video-placeholder.svg';
+            url = videoPlaceholder.value;
           }
         } else {
           try {
@@ -170,7 +174,7 @@ const loadMedia = async () => {
           } catch (error) {
             console.warn('⚠️ [SafeMediaDisplay] yepzan标准加载失败', error);
             // 使用占位图
-            url = '/images/video-placeholder.svg';
+            url = videoPlaceholder.value;
           }
         }
       } else {
