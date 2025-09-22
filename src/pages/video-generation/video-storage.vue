@@ -122,20 +122,14 @@
       </template>
     </t-dialog>
 
-    <!-- 底部导航栏 -->
-    <BottomNavBar />
-
-    <!-- 内容底部填充，避免被底部导航栏遮挡 -->
-    <div class="bottom-spacing"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
-import { getVideoCollections, getStorageVideoList, deleteStorageVideo, generateVideoThumbnail } from '@/api/video-generation';
+import { getVideoCollections, getStorageVideoList, deleteStorageVideo } from '@/api/video-generation';
 import { getAIGCFinalVideoList, AIGCType } from '@/api/aigc-video';
-import BottomNavBar from '@/components/BottomNavBar/index.vue';
 
 // 接口定义
 interface VideoCollection {
@@ -217,20 +211,11 @@ const loadVideos = async () => {
       videoList.value = response.data.list;
       totalVideos.value = response.data.total;
 
-      // 处理缩略图
+      // 不处理缩略图，直接使用原始URL
       videoList.value.forEach(video => {
         if (!video.thumbnailUrl && video.videoUrl) {
-          // 如果没有缩略图，可以在这里添加默认缩略图或生成缩略图的逻辑
-          // 这里示例使用视频的第一帧作为缩略图
-          try {
-            generateVideoThumbnail(video.videoUrl, 1).then(thumbnailUrl => {
-              video.thumbnailUrl = thumbnailUrl;
-            }).catch(() => {
-              console.log('生成缩略图失败:', video.title);
-            });
-          } catch (e) {
-            console.error('处理视频缩略图出错:', e);
-          }
+          // 在没有缩略图的情况下，直接显示默认图像
+          console.log('视频缺少缩略图，将使用默认图像:', video.title);
         }
       });
     } else {
@@ -605,11 +590,6 @@ const formatDate = (timestamp: number) => {
   color: #6b7280;
 }
 
-/* 底部填充 */
-.bottom-spacing {
-  height: 70px;
-  /* 稍微大于底部导航栏的高度 */
-}
 
 /* 响应式设计 */
 @media (max-width: 768px) {

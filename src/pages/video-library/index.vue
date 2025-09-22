@@ -17,9 +17,6 @@
       </div>
     </div>
 
-    <!-- 底部导航栏 -->
-    <VideoBottomNav />
-
     <!-- 视频列表 -->
     <div class="video-content">
       <t-loading :loading="loading" size="large">
@@ -36,7 +33,8 @@
             <!-- 视频封面 - 使用与对话视频生成相同的展示方式 -->
             <div class="video-cover">
               <div class="video-preview">
-                <img :src="video.cover_url || defaultCover" :alt="video.title" @error="handleImageError" />
+                <img :src="typeof video.cover_url === 'string' ? video.cover_url : defaultCover" :alt="video.title"
+                  @error="handleImageError" />
               </div>
               <div class="play-overlay">
                 <t-icon name="play-circle-filled" size="48px" />
@@ -67,7 +65,7 @@
                   </template>
                   播放
                 </t-button>
-                <t-button size="small" variant="outline" @click.stop="downloadVideo(video)">
+                <t-button size="small" variant="outline" @click.stop="downloadVideo(video); $event.stopPropagation();">
                   <template #icon>
                     <t-icon name="download" />
                   </template>
@@ -113,7 +111,7 @@
             <p><strong>单词:</strong> {{ (playingVideo as AIGCWord).word }}</p>
           </div>
           <div class="player-actions">
-            <t-button @click="downloadVideo(playingVideo)">
+            <t-button @click="downloadVideo(playingVideo); $event.stopPropagation();">
               <template #icon>
                 <t-icon name="download" />
               </template>
@@ -175,22 +173,24 @@
             <!-- 封面图片 -->
             <div v-if="detailVideo.cover_url" class="media-item">
               <label>封面:</label>
-              <img :src="detailVideo.cover_url || defaultCover" alt="视频封面" @error="handleImageError"
-                style="max-width: 100%; max-height: 200px;" />
+              <img :src="typeof detailVideo.cover_url === 'string' ? detailVideo.cover_url : defaultCover" alt="视频封面"
+                @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
             </div>
 
             <!-- 单词视频的AI生成图片 -->
             <div v-if="isWordVideo(detailVideo) && (detailVideo as AIGCWord).ai_gen_img_url" class="media-item">
               <label>AI生成图片:</label>
-              <img :src="(detailVideo as AIGCWord).ai_gen_img_url || defaultCover" alt="AI生成图片"
-                @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
+              <img
+                :src="typeof (detailVideo as AIGCWord).ai_gen_img_url === 'string' ? (detailVideo as AIGCWord).ai_gen_img_url : defaultCover"
+                alt="AI生成图片" @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
             </div>
 
             <!-- 对话视频的远景图 -->
             <div v-if="isDialogVideo(detailVideo) && (detailVideo as AIGCDialog).ai_far_img_url" class="media-item">
               <label>远景图:</label>
-              <img :src="(detailVideo as AIGCDialog).ai_far_img_url || defaultCover" alt="远景图" @error="handleImageError"
-                style="max-width: 100%; max-height: 200px;" />
+              <img
+                :src="typeof (detailVideo as AIGCDialog).ai_far_img_url === 'string' ? (detailVideo as AIGCDialog).ai_far_img_url : defaultCover"
+                alt="远景图" @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
             </div>
           </div>
         </div>
@@ -252,7 +252,7 @@ const detailVideo = ref<AIGCWord | AIGCDialog | null>(null);
 // 默认封面 - 使用src/assets文件夹下的图片作为占位图
 import neirongweikongSvg from '@/assets/neirongweikong.svg';
 import assetsEmptySvg from '@/assets/assets-empty.svg';
-import { getAccessibleMediaUrl } from '@/utils/mediaResourceLoader';
+// 直接使用本地资源，不通过mediaResourceLoader处理
 const defaultCover = neirongweikongSvg;
 
 // 类型守卫函数
@@ -274,6 +274,8 @@ const fetchVideoList = async () => {
     console.log('已有请求正在进行中，跳过此次请求');
     return;
   }
+
+  console.log('开始加载视频列表 - 类型:', filterType.value);
 
   try {
     isLoading = true;
@@ -314,10 +316,25 @@ const fetchVideoList = async () => {
       total.value = response.data.total || 0;
 
       // 处理视频缩略图，确保每个视频都有缩略图
-      videoList.value.forEach(video => {
+      videoList.value.forEach((video, index) => {
+        console.log(`视频 ${index + 1} 信息:`);
+        console.log('- 标题:', video.title);
+        console.log('- 封面URL:', video.cover_url, typeof video.cover_url);
+        console.log('- 视频URL:', video.play_url, typeof video.play_url);
+
+        // 对对象类型的URL进行修正
+        if (video.cover_url && typeof video.cover_url === 'object') {
+          console.warn('检测到封面URL是对象类型，设置为空');
+          video.cover_url = '';
+        }
+
+        if (video.play_url && typeof video.play_url === 'object') {
+          console.warn('检测到播放URL是对象类型，设置为空');
+          video.play_url = '';
+        }
+
         if (!video.cover_url && video.play_url) {
           // 如果没有缩略图但有播放地址，可以考虑生成缩略图
-          // 这里可以在将来实现自动生成缩略图的功能
           console.log('视频缺少缩略图:', video.title);
         }
       });
@@ -381,34 +398,22 @@ const handlePageSizeChange = (size: number) => {
 const processedVideoUrl = ref('');
 const processedDetailVideoUrl = ref('');
 
-// 处理视频URL - 使用与对话视频生成相同的处理方式
+// 处理视频URL - 直接使用视频地址链接而不进行任何处理
 // 添加缓存避免重复加载
 const urlCache = new Map<string, string>();
 const processVideoUrl = async (url: string): Promise<string> => {
-  // 检查缓存中是否已存在处理过的URL
-  if (urlCache.has(url)) {
-    console.log('从缓存获取视频URL:', url);
-    return urlCache.get(url)!;
+  // 检查URL是否为字符串
+  if (typeof url !== 'string') {
+    console.error('视频URL不是字符串:', url);
+    return '';
   }
 
-  try {
-    // 对于视频URL，直接转换为HTTP协议而不使用blob
-    if (url.includes('hs-video.yepzan.cn')) {
-      const httpUrl = url.replace('https://', 'http://');
-      console.log('视频URL直接使用HTTP协议:', httpUrl);
-      // 存入缓存
-      urlCache.set(url, httpUrl);
-      return httpUrl;
-    }
-
-    // 使用mediaResourceLoader处理URL
-    const processedUrl = await getAccessibleMediaUrl(url);
-    // 存入缓存
-    urlCache.set(url, processedUrl);
-    return processedUrl;
-  } catch (error) {
-    console.error('处理视频URL失败:', error);
-    return url; // 失败时返回原URL
+  // 检查URL是否是一个有效的地址
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  } else {
+    console.error('视频URL格式不正确:', url);
+    return '';
   }
 };
 
@@ -422,13 +427,12 @@ const playVideo = async (video: AIGCWord | AIGCDialog) => {
   playingVideo.value = video;
   videoError.value = false; // 重置错误状态
 
-  // 处理视频URL
-  try {
-    processedVideoUrl.value = await processVideoUrl(video.play_url);
-    console.log('视频URL处理成功:', processedVideoUrl.value);
-  } catch (error) {
-    console.error('视频URL处理失败:', error);
+  // 检查并处理视频URL
+  if (typeof video.play_url === 'string') {
     processedVideoUrl.value = video.play_url;
+  } else {
+    console.error('播放视频URL无效:', video.play_url);
+    processedVideoUrl.value = '';
   }
 
   showVideoPlayer.value = true;
@@ -436,29 +440,29 @@ const playVideo = async (video: AIGCWord | AIGCDialog) => {
   showVideoDetails.value = false;
 };
 
-// 下载视频
-const downloadVideo = async (video: AIGCWord | AIGCDialog) => {
-  if (!video.play_url) {
+// 下载视频 - 参考对话视频生成页面的下载逻辑
+const downloadVideo = (video: AIGCWord | AIGCDialog) => {
+  if (!video.play_url || typeof video.play_url !== 'string') {
     MessagePlugin.warning('该视频暂无下载地址');
     return;
   }
 
-  try {
-    // 先处理视频URL，确保能够正确访问
-    const accessibleUrl = await processVideoUrl(video.play_url);
+  // 简化的下载逻辑，不进行任何额外处理，直接触发浏览器下载
+  const link = document.createElement('a');
+  link.href = video.play_url;
+  link.setAttribute('download', `${video.title || '视频'}.mp4`); // 明确设置download属性
+  link.setAttribute('target', '_blank'); // 新窗口打开但会被download属性覆盖为下载
 
-    // 创建下载链接
-    const link = document.createElement('a');
-    link.href = accessibleUrl;
-    link.download = `${video.title}.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    MessagePlugin.success('开始下载视频');
-  } catch (error) {
-    console.error('下载失败:', error);
-    MessagePlugin.error('下载失败，请重试');
-  }
+  // 将链接添加到DOM然后模拟点击并立即移除
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // 显示下载开始提示
+  MessagePlugin.success('视频下载已开始');
+
+  // 阻止事件冒泡
+  return false;
 };
 
 // 查看详情
@@ -466,15 +470,12 @@ const viewDetails = async (video: AIGCWord | AIGCDialog) => {
   detailVideo.value = video;
   detailVideoError.value = false; // 重置错误状态
 
-  // 处理视频URL
-  if (video.play_url) {
-    try {
-      processedDetailVideoUrl.value = await processVideoUrl(video.play_url);
-      console.log('详情视频URL处理成功:', processedDetailVideoUrl.value);
-    } catch (error) {
-      console.error('详情视频URL处理失败:', error);
-      processedDetailVideoUrl.value = video.play_url;
-    }
+  // 检查并处理视频URL
+  if (typeof video.play_url === 'string' && video.play_url.length > 0) {
+    processedDetailVideoUrl.value = video.play_url;
+  } else {
+    console.error('详情页视频URL无效:', video.play_url);
+    processedDetailVideoUrl.value = '';
   }
 
   showVideoDetails.value = true;
@@ -489,11 +490,19 @@ const goToGeneration = () => {
   }
 };
 
-// 处理图片加载错误
+// 处理图片加载错误，限制日志输出次数
+let logCounter = 0;
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
+  const originalSrc = target.src;
   target.src = defaultCover;
-  console.log('使用默认视频封面:', defaultCover);
+
+  // 只输出一次日志，避免反复打印
+  if (logCounter === 0) {
+    console.log('使用默认视频封面');
+    console.log('加载失败的图片地址:', originalSrc);
+    logCounter++;
+  }
 };
 
 // 处理视频播放错误
@@ -530,28 +539,17 @@ const stopDetailVideo = () => {
   });
 };
 
-// 清理函数
+// 清理函数 - 不再需要处理blob URL
 const cleanupResources = () => {
-  // 清理缓存的URL
-  urlCache.forEach((url) => {
-    if (url.startsWith('blob:')) {
-      try {
-        URL.revokeObjectURL(url);
-        console.log('已释放Blob URL:', url);
-      } catch (error) {
-        console.error('释放Blob URL失败:', error);
-      }
-    }
-  });
+  console.log('清理视频库资源');
+  // 清空缓存
   urlCache.clear();
-  console.log('URL缓存已清理');
 };
 
-// 修复VideoBottomNav组件未找到的问题
-import VideoBottomNav from '@/components/BottomNavBar/index.vue';
 
 // 组件挂载时获取数据
 onMounted(() => {
+  console.log('视频库页面已加载');
   fetchVideoList();
 });
 

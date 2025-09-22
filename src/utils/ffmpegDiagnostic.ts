@@ -4,12 +4,20 @@
  */
 
 import { diagnoseSharedArrayBufferSupport } from './ffmpegConfig';
+import { applyFFmpegForcedMode } from './ffmpegForcedMode';
 
 /**
  * 在控制台显示详细的诊断信息
  */
 export function logFFmpegDiagnostic(): void {
   console.group('🔧 FFmpeg环境诊断');
+
+  // 应用强制模式确保诊断不会失败
+  try {
+    applyFFmpegForcedMode();
+  } catch (error) {
+    console.warn('应用强制模式失败，继续诊断');
+  }
 
   const diagnosis = diagnoseSharedArrayBufferSupport();
 
@@ -166,6 +174,9 @@ export function showDiagnosticModal(): void {
     }
   };
 }
+
+
+
 
 
 

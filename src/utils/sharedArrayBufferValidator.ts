@@ -121,10 +121,8 @@ export function validateSharedArrayBufferSupport(
         console.log('✅ SharedArrayBuffer 可用 - FFmpeg功能正常');
       } else {
         console.warn('⚠️ SharedArrayBuffer 不可用 - FFmpeg功能可能受限');
-        // 在开发环境中显示提示
-        if (process.env.NODE_ENV === 'development') {
-          console.info('💡 提示: 请确保Nginx配置了正确的CORS头部');
-        }
+        // 在任何环境中都显示提示
+        console.info('💡 提示: 请确保Nginx配置了正确的CORS头部: Cross-Origin-Opener-Policy: same-origin 和 Cross-Origin-Embedder-Policy: require-corp');
       }
     }
     else { // minimal

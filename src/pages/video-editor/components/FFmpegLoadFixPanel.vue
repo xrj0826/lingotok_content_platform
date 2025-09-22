@@ -128,6 +128,7 @@ import {
   createDiagnosticInfo,
   type LoadingProgress
 } from '@/utils/ffmpegLoadFix';
+import { applyFFmpegForcedMode, autoApplyForcedModeIfNeeded } from '@/utils/ffmpegForcedMode';
 
 interface LogItem {
   time: string;
@@ -318,6 +319,15 @@ FFmpeg 加载故障排除指南：
 
 // 生命周期
 onMounted(() => {
+  // 在加载前先应用强制模式
+  addLog('info', '正在应用FFmpeg强制兼容模式...');
+  const forcedResult = applyFFmpegForcedMode();
+  if (forcedResult) {
+    addLog('success', 'FFmpeg强制兼容模式应用成功');
+  } else {
+    addLog('warning', '强制兼容模式应用可能不完全');
+  }
+
   updateStatus();
   runDiagnostic();
   addLog('info', '诊断面板已初始化');
@@ -492,67 +502,3 @@ onUnmounted(() => {
   }
 }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

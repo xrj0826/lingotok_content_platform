@@ -151,14 +151,11 @@ export class EmergencyFFmpegLoader {
 
     if (!envCheck.ok) {
       allDetails.push(`环境问题: ${envCheck.issues.join(', ')}`);
+      // 即使有SharedArrayBuffer问题，也继续尝试其他加载策略
+      // 而不是直接失败返回
       if (envCheck.issues.includes('SharedArrayBuffer')) {
-        return {
-          success: false,
-          method: 'environment-check',
-          error: 'SharedArrayBuffer不可用，无法加载FFmpeg',
-          loadTime: Date.now() - startTime,
-          details: allDetails
-        };
+        allDetails.push('警告: SharedArrayBuffer不可用，但将尝试其他加载策略');
+        console.warn('⚠️ SharedArrayBuffer不可用，将尝试替代方案，部分功能可能受限');
       }
     }
 
@@ -234,17 +231,15 @@ export class EmergencyFFmpegLoader {
       issues.push('协议');
     }
 
-    // 允许在开发环境中绕过检查
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    if (isDevelopment) {
-      console.log('⚠️ 开发环境：跳过环境严格检查');
-      return { ok: true, issues: [] };
+    // 无论是开发环境还是生产环境，都允许继续执行
+    // 只记录问题但不阻止继续尝试
+    const mode = process.env.NODE_ENV === 'development' ? '开发环境' : '生产环境';
+    if (issues.length > 0) {
+      console.log(`⚠️ ${mode}：检测到环境问题，但仍会继续尝试: ${issues.join(', ')}`);
     }
-
-    return {
-      ok: issues.length === 0,
-      issues
-    };
+    
+    // 返回放宽后的检查结果，强制设为ok=true以允许继续尝试
+    return { ok: true, issues };
   }
 
   /**

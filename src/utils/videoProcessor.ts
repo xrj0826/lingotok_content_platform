@@ -10,6 +10,7 @@ import { getFFmpegInstance, diagnoseSharedArrayBufferSupport } from './ffmpegCon
 import { getSimpleFFmpegInstance } from './ffmpegConfigSimple';
 import { getCorrectFFmpegInstance } from './ffmpegConfigCorrect';
 import { logFFmpegDiagnostic } from './ffmpegDiagnostic';
+import { applyFFmpegForcedMode, autoApplyForcedModeIfNeeded } from './ffmpegForcedMode';
 
 // 视频剪切选项接口
 export interface VideoCutOptions {
@@ -365,6 +366,16 @@ function createErrorInfoVideo(message: string): Promise<string> {
  * @param options 剪切选项
  * @returns Promise包裹的剪切后的视频Blob URL
  */
+/**
+ * 确保在使用FFmpeg前启用兼容模式
+ */
+function ensureFFmpegCompatibility() {
+  console.log('🔧 启用FFmpeg强制兼容模式');
+  // 自动应用强制模式
+  applyFFmpegForcedMode();
+  return true;
+}
+
 export async function cutVideoWithFFmpeg(
   file: File,
   startTime: number,
@@ -382,12 +393,15 @@ export async function cutVideoWithFFmpeg(
     // 获取FFmpeg实例
     updateProgress(progressDiv, '加载FFmpeg核心...');
 
-    // 检查SharedArrayBuffer支持
-    const diagnosis = diagnoseSharedArrayBufferSupport();
-    if (!diagnosis.supported) {
-      console.error('SharedArrayBuffer不支持，显示诊断信息');
+    // 启用强制兼容模式来解决SharedArrayBuffer问题
+    ensureFFmpegCompatibility();
+    console.log('✅ 已启用FFmpeg强制兼容模式，跳过环境检查');
+
+    // 尝试显示标准诊断信息，但不影响程序运行
+    try {
       logFFmpegDiagnostic();
-      throw new Error(`SharedArrayBuffer不可用，FFmpeg无法使用。\n问题：${diagnosis.issues.join(', ')}\n建议：${diagnosis.recommendations.join(', ')}`);
+    } catch (diagErr) {
+      console.log('⚠️ 显示诊断信息失败，但不影响功能');
     }
 
     // 按照文档推荐的方式加载FFmpeg
@@ -903,6 +917,9 @@ export async function mergeVideosWithFFmpeg(
   const progressDiv = showProgress('初始化FFmpeg...');
 
   try {
+    // 启用强制兼容模式
+    ensureFFmpegCompatibility();
+
     updateProgress(progressDiv, '加载FFmpeg核心...');
     const ffmpeg = await getFFmpegInstance();
 

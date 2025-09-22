@@ -465,6 +465,9 @@ import ImageUpload from './components/ImageUpload.vue';
 // import VideoCutTool from './components/VideoCutTool.vue'; // 暂时注释掉，稍后添加
 import { getVideoCollections } from '@/api/video-generation';
 import { mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
+// 导入FFmpeg兼容性初始化脚本
+// 这会在模块加载时自动启用兼容模式
+import './ffmpeg-compatibility-init';
 import {
   createAIGCDialog,
   operateAIGCDialogGenFarImg,
@@ -1373,7 +1376,7 @@ const showTutorial = () => {
     duration: 5000,
     closeBtn: true
   });
-  
+
   // 打开拼接工具展示使用方法
   showMergeTool.value = true;
 };
