@@ -102,7 +102,7 @@
         <div class="video-player-wrapper">
           <div v-if="playingVideo.play_url" class="video-container">
             <video ref="videoPlayer" :src="playingVideo.play_url" controls preload="metadata" class="video-player"
-              style="width: 100%; max-height: 70vh;" @loadedmetadata="handleVideoLoaded" @error="handleVideoError">
+              style="width: 100%; max-height: 70vh;">
               您的浏览器不支持视频播放
             </video>
           </div>
@@ -114,15 +114,6 @@
             </div>
           </div>
 
-          <!-- 错误状态显示 -->
-          <div v-if="videoError" class="video-error-overlay">
-            <t-icon name="error-circle" class="error-icon" />
-            <div class="error-title">视频加载失败</div>
-            <div class="error-description">请检查网络连接或联系管理员</div>
-            <t-button size="small" theme="primary" @click="retryVideoLoad">
-              重新加载
-            </t-button>
-          </div>
         </div>
 
         <div class="player-info">
@@ -183,8 +174,8 @@
             <div v-if="detailVideo.play_url" class="media-item">
               <label>视频:</label>
               <div class="video-player-wrapper">
-                <video :src="detailVideo.play_url" controls class="video-player" style="width: 100%; max-height: 200px;"
-                  @error="handleDetailVideoError">
+                <video :src="detailVideo.play_url" controls class="video-player"
+                  style="width: 100%; max-height: 200px;">
                   您的浏览器不支持视频播放
                 </video>
               </div>
@@ -254,8 +245,6 @@ const videoList = ref<(AIGCWord | AIGCDialog)[]>([]);
 const total = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(12);
-const videoError = ref(false);
-const detailVideoError = ref(false);
 
 
 // 弹窗状态
@@ -263,6 +252,10 @@ const showVideoPlayer = ref(false);
 const playingVideo = ref<AIGCWord | AIGCDialog | null>(null);
 const showVideoDetails = ref(false);
 const detailVideo = ref<AIGCWord | AIGCDialog | null>(null);
+
+// 错误状态
+const videoError = ref(false);
+const detailVideoError = ref(false);
 
 
 // 默认封面 - 使用src/assets文件夹下的图片作为占位图
@@ -535,41 +528,9 @@ const handleImageError = (event: Event) => {
   img.style.display = 'none';
 };
 
-// 处理视频加载完成事件
-const handleVideoLoaded = () => {
-  console.log('✅ 视频元数据加载成功');
-  videoError.value = false;
-};
 
-// 重新加载视频
-const retryVideoLoad = () => {
-  console.log('🔄 重新加载视频');
-  videoError.value = false;
 
-  // 重新设置视频源
-  if (playingVideo.value?.play_url) {
-    const video = document.querySelector('.video-player-container video') as HTMLVideoElement;
-    if (video) {
-      video.load(); // 重新加载视频
-    }
-  }
-};
 
-// 处理视频播放错误
-const handleVideoError = (event: Event) => {
-  console.error('视频播放错误:', event);
-  videoError.value = true;
-
-  // 简化错误提示，类似对话视频生成页面的处理方式
-  MessagePlugin.error('视频加载失败，请稍后重试');
-};
-
-// 处理详情页视频播放错误 - 与视频生成页面保持一致
-const handleDetailVideoError = (event: Event) => {
-  console.error('详情页视频播放错误:', event);
-  detailVideoError.value = true;
-  MessagePlugin.error('视频加载失败，请稍后重试');
-};
 
 // 停止播放弹窗中的视频
 const stopPlayingVideo = () => {
@@ -852,39 +813,6 @@ onUnmounted(() => {
       }
     }
 
-    .video-error-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(248, 249, 250, 0.95);
-      backdrop-filter: blur(4px);
-
-      .error-icon {
-        font-size: 48px;
-        color: #ef4444;
-        margin-bottom: 16px;
-      }
-
-      .error-title {
-        font-size: 18px;
-        font-weight: 500;
-        margin-bottom: 8px;
-        color: #374151;
-      }
-
-      .error-description {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 16px;
-        text-align: center;
-      }
-    }
   }
 
   .player-info {

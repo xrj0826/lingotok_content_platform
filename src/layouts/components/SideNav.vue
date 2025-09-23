@@ -76,6 +76,9 @@ const currentPath = computed(() => {
   if (path.startsWith('/video-library')) {
     return '/video-library';
   }
+  if (path.startsWith('/series')) {
+    return '/series';
+  }
   
   return path;
 });
