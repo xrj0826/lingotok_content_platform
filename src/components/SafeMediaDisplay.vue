@@ -123,7 +123,7 @@ const loadMedia = async () => {
     console.log('🎬 [SafeMediaDisplay] 开始加载媒体:', props.src);
 
     // 检查是否为yepzan.cn域名的HTTPS证书问题
-    const isYepzanHttps = props.src.includes('hs-cover.yepzan.cn') && props.src.startsWith('https://');
+    const isYepzanHttps = (props.src.includes('hs-cover.yepzan.cn') || props.src.includes('hs-video.yepzan.cn')) && props.src.startsWith('https://');
     if (isYepzanHttps) {
       console.log('⚠️ [SafeMediaDisplay] 检测到yepzan域名HTTPS证书问题，将使用特殊处理');
     }
@@ -138,7 +138,7 @@ const loadMedia = async () => {
       console.log('🎬 [SafeMediaDisplay] 使用媒体资源加载器');
 
       // 处理yepzan域名的特殊情况
-      if (props.src.includes('hs-cover.yepzan.cn')) {
+      if (props.src.includes('hs-cover.yepzan.cn') || props.src.includes('hs-video.yepzan.cn')) {
         // 尝试方法1: 强制使用HTTP协议
         if (props.src.startsWith('https://')) {
           try {

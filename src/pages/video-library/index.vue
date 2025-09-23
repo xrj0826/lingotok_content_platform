@@ -30,11 +30,18 @@
 
         <div v-else class="video-grid">
           <div v-for="video in videoList" :key="video.id" class="video-card" @click="playVideo(video)">
-            <!-- 视频封面 - 使用与对话视频生成相同的展示方式 -->
+            <!-- 视频封面 - 使用安全媒体组件处理HTTPS证书问题 -->
             <div class="video-cover">
               <div class="video-preview">
-                <img :src="typeof video.cover_url === 'string' ? video.cover_url : defaultCover" :alt="video.title"
-                  @error="handleImageError" />
+                <SafeMediaDisplay v-if="getVideoCoverImage(video)" :src="getVideoCoverImage(video)" media-type="image"
+                  :alt="video.title" style="width: 100%; height: 100%; object-fit: cover;"
+                  @error="() => handleCoverImageError(video)" />
+                <SafeMediaDisplay v-else-if="video.play_url && !hasCoverImageError(video)" :src="video.play_url"
+                  media-type="video" :alt="video.title"
+                  style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" :preload="'metadata'"
+                  :muted="true" @error="() => handleCoverImageError(video)" />
+                <img v-else :src="defaultCover" :alt="video.title"
+                  style="width: 100%; height: 100%; object-fit: cover;" />
               </div>
               <div class="play-overlay">
                 <t-icon name="play-circle-filled" size="48px" />
@@ -97,11 +104,28 @@
       :close-on-overlay-click="true" @close="stopPlayingVideo">
       <div v-if="playingVideo" class="video-player-container">
         <div class="video-player-wrapper">
-          <video v-if="playingVideo.play_url" :src="processedVideoUrl" controls autoplay class="video-player"
-            @error="handleVideoError"></video>
+          <div v-if="playingVideo.play_url" class="video-container">
+            <video ref="videoPlayer" :src="playingVideo.play_url" controls preload="metadata" class="video-player"
+              style="width: 100%; max-height: 70vh;" @loadedmetadata="handleVideoLoaded" @error="handleVideoError">
+              您的浏览器不支持视频播放
+            </video>
+          </div>
+          <div v-else class="video-placeholder">
+            <div class="placeholder-content">
+              <t-icon name="video" class="video-icon" />
+              <div class="placeholder-title">暂无视频</div>
+              <div class="placeholder-description">视频尚未生成</div>
+            </div>
+          </div>
+
+          <!-- 错误状态显示 -->
           <div v-if="videoError" class="video-error-overlay">
-            <img :src="defaultCover" alt="视频加载失败" />
-            <p>视频加载失败</p>
+            <t-icon name="error-circle" class="error-icon" />
+            <div class="error-title">视频加载失败</div>
+            <div class="error-description">请检查网络连接或联系管理员</div>
+            <t-button size="small" theme="primary" @click="retryVideoLoad">
+              重新加载
+            </t-button>
           </div>
         </div>
 
@@ -110,6 +134,8 @@
           <div v-if="isWordVideo(playingVideo)" class="word-info">
             <p><strong>单词:</strong> {{ (playingVideo as AIGCWord).word }}</p>
           </div>
+
+
           <div class="player-actions">
             <t-button @click="downloadVideo(playingVideo); $event.stopPropagation();">
               <template #icon>
@@ -161,8 +187,8 @@
             <div v-if="detailVideo.play_url" class="media-item">
               <label>视频:</label>
               <div class="video-player-wrapper">
-                <video :src="processedDetailVideoUrl" controls class="video-player"
-                  @error="handleDetailVideoError"></video>
+                <SafeMediaDisplay :src="detailVideo.play_url" media-type="video" :alt="detailVideo.title"
+                  :controls="true" class="video-player" style="width: 100%; max-height: 200px;" />
                 <div v-if="detailVideoError" class="video-error-overlay">
                   <img :src="defaultCover" alt="视频加载失败" />
                   <p>视频加载失败</p>
@@ -170,30 +196,23 @@
               </div>
             </div>
 
-            <!-- 封面图片 -->
-            <div v-if="detailVideo.cover_url" class="media-item">
-              <label>封面:</label>
-              <img :src="typeof detailVideo.cover_url === 'string' ? detailVideo.cover_url : defaultCover" alt="视频封面"
-                @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
-            </div>
 
             <!-- 单词视频的AI生成图片 -->
             <div v-if="isWordVideo(detailVideo) && (detailVideo as AIGCWord).ai_gen_img_url" class="media-item">
               <label>AI生成图片:</label>
-              <img
-                :src="typeof (detailVideo as AIGCWord).ai_gen_img_url === 'string' ? (detailVideo as AIGCWord).ai_gen_img_url : defaultCover"
-                alt="AI生成图片" @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
+              <SafeMediaDisplay :src="(detailVideo as AIGCWord).ai_gen_img_url" media-type="image" alt="AI生成图片"
+                style="max-width: 100%; max-height: 200px;" />
             </div>
 
             <!-- 对话视频的远景图 -->
             <div v-if="isDialogVideo(detailVideo) && (detailVideo as AIGCDialog).ai_far_img_url" class="media-item">
               <label>远景图:</label>
-              <img
-                :src="typeof (detailVideo as AIGCDialog).ai_far_img_url === 'string' ? (detailVideo as AIGCDialog).ai_far_img_url : defaultCover"
-                alt="远景图" @error="handleImageError" style="max-width: 100%; max-height: 200px;" />
+              <SafeMediaDisplay :src="(detailVideo as AIGCDialog).ai_far_img_url" media-type="image" alt="远景图"
+                style="max-width: 100%; max-height: 200px;" />
             </div>
           </div>
         </div>
+
 
         <!-- 操作按钮 -->
         <div class="details-actions">
@@ -228,7 +247,8 @@ import {
   type AIGCDialog,
   getWordStatusText
 } from '@/api/aigc-video';
-// 不再使用SafeMediaDisplay组件，直接使用原生img和video标签
+// 引入安全媒体显示组件，处理HTTPS证书问题
+import SafeMediaDisplay from '@/components/SafeMediaDisplay.vue';
 
 // 路由
 const router = useRouter();
@@ -243,11 +263,15 @@ const pageSize = ref(12);
 const videoError = ref(false);
 const detailVideoError = ref(false);
 
+// 封面图片加载错误的视频ID记录
+const coverImageErrors = ref<Set<string>>(new Set());
+
 // 弹窗状态
 const showVideoPlayer = ref(false);
 const playingVideo = ref<AIGCWord | AIGCDialog | null>(null);
 const showVideoDetails = ref(false);
 const detailVideo = ref<AIGCWord | AIGCDialog | null>(null);
+
 
 // 默认封面 - 使用src/assets文件夹下的图片作为占位图
 import neirongweikongSvg from '@/assets/neirongweikong.svg';
@@ -262,6 +286,35 @@ const isWordVideo = (video: AIGCWord | AIGCDialog): video is AIGCWord => {
 
 const isDialogVideo = (video: AIGCWord | AIGCDialog): video is AIGCDialog => {
   return filterType.value === AIGCType.dialog;
+};
+
+// 获取视频封面图片 - 优先使用AI图片
+const getVideoCoverImage = (video: AIGCWord | AIGCDialog): string | null => {
+  // 优先级：AI生成图片 > 远景图 > 封面图
+  if (isWordVideo(video) && (video as AIGCWord).ai_gen_img_url) {
+    return (video as AIGCWord).ai_gen_img_url;
+  }
+
+  if (isDialogVideo(video) && (video as AIGCDialog).ai_far_img_url) {
+    return (video as AIGCDialog).ai_far_img_url;
+  }
+
+  if (video.cover_url) {
+    return video.cover_url;
+  }
+
+  return null;
+};
+
+// 处理封面图片加载错误
+const handleCoverImageError = (video: AIGCWord | AIGCDialog) => {
+  console.warn('封面图片加载失败，将显示默认封面:', video.title);
+  coverImageErrors.value.add(video.id);
+};
+
+// 检查视频是否有封面图片加载错误
+const hasCoverImageError = (video: AIGCWord | AIGCDialog): boolean => {
+  return coverImageErrors.value.has(video.id);
 };
 
 // 标记是否正在加载中，避免重复请求
@@ -280,6 +333,10 @@ const fetchVideoList = async () => {
   try {
     isLoading = true;
     loading.value = true;
+
+    // 清空封面图片加载错误记录
+    coverImageErrors.value.clear();
+
     const offset = (currentPage.value - 1) * pageSize.value;
 
     // 生成签名和请求头，与视频合集管理页面使用相同的方法
@@ -315,27 +372,19 @@ const fetchVideoList = async () => {
       }
       total.value = response.data.total || 0;
 
-      // 处理视频缩略图，确保每个视频都有缩略图
+      // 记录视频信息，SafeMediaDisplay组件会自动处理URL错误
       videoList.value.forEach((video, index) => {
         console.log(`视频 ${index + 1} 信息:`);
         console.log('- 标题:', video.title);
-        console.log('- 封面URL:', video.cover_url, typeof video.cover_url);
-        console.log('- 视频URL:', video.play_url, typeof video.play_url);
+        console.log('- 封面URL:', video.cover_url);
+        console.log('- 视频URL:', video.play_url);
 
-        // 对对象类型的URL进行修正
-        if (video.cover_url && typeof video.cover_url === 'object') {
-          console.warn('检测到封面URL是对象类型，设置为空');
-          video.cover_url = '';
-        }
-
+        // 确保URL是字符串格式，对象类型的URL会由SafeMediaDisplay自动处理
         if (video.play_url && typeof video.play_url === 'object') {
-          console.warn('检测到播放URL是对象类型，设置为空');
-          video.play_url = '';
+          console.warn('检测到播放URL是对象类型，SafeMediaDisplay会自动处理');
         }
-
-        if (!video.cover_url && video.play_url) {
-          // 如果没有缩略图但有播放地址，可以考虑生成缩略图
-          console.log('视频缺少缩略图:', video.title);
+        if (video.cover_url && typeof video.cover_url === 'object') {
+          console.warn('检测到封面URL是对象类型，SafeMediaDisplay会自动处理');
         }
       });
     } else {
@@ -427,17 +476,11 @@ const playVideo = async (video: AIGCWord | AIGCDialog) => {
   playingVideo.value = video;
   videoError.value = false; // 重置错误状态
 
-  // 检查并处理视频URL
-  if (typeof video.play_url === 'string') {
-    processedVideoUrl.value = video.play_url;
-  } else {
-    console.error('播放视频URL无效:', video.play_url);
-    processedVideoUrl.value = '';
-  }
-
   showVideoPlayer.value = true;
   // 关闭详情弹窗
   showVideoDetails.value = false;
+
+  console.log('🎬 开始播放视频:', video.title, video.play_url);
 };
 
 // 下载视频 - 参考对话视频生成页面的下载逻辑
@@ -481,27 +524,56 @@ const viewDetails = async (video: AIGCWord | AIGCDialog) => {
   showVideoDetails.value = true;
 };
 
-// 跳转到视频生成页面
+// 跳转到视频生成页面 - 统一导航到创建页面
 const goToGeneration = () => {
-  if (filterType.value === AIGCType.word) {
-    router.push('/video-generation/word');
-  } else {
-    router.push('/video-generation/create');
+  router.push('/video-generation/create');
+};
+
+// 处理媒体资源加载错误的统一处理函数
+let errorLogCounter = 0;
+const handleMediaError = (url: string, type: 'image' | 'video' = 'image') => {
+  // 限制错误日志输出次数，避免重复打印
+  if (errorLogCounter < 5) {
+    console.warn(`[媒体加载错误] ${type}资源加载失败:`, url);
+
+    // 特别标记yepzan域名的证书问题
+    if (url.includes('yepzan.cn') && url.startsWith('https://')) {
+      console.warn('[证书问题] 检测到yepzan.cn域名的HTTPS证书错误，SafeMediaDisplay组件会自动降级到HTTP协议');
+    }
+
+    errorLogCounter++;
+
+    if (errorLogCounter === 5) {
+      console.warn('[媒体加载错误] 后续错误将被抑制以避免日志溢出');
+    }
   }
 };
 
-// 处理图片加载错误，限制日志输出次数
-let logCounter = 0;
+// 处理图片加载错误（兼容性保留）
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
   const originalSrc = target.src;
   target.src = defaultCover;
+  handleMediaError(originalSrc, 'image');
+};
 
-  // 只输出一次日志，避免反复打印
-  if (logCounter === 0) {
-    console.log('使用默认视频封面');
-    console.log('加载失败的图片地址:', originalSrc);
-    logCounter++;
+// 处理视频加载完成事件
+const handleVideoLoaded = () => {
+  console.log('✅ 视频元数据加载成功');
+  videoError.value = false;
+};
+
+// 重新加载视频
+const retryVideoLoad = () => {
+  console.log('🔄 重新加载视频');
+  videoError.value = false;
+
+  // 重新设置视频源
+  if (playingVideo.value?.play_url) {
+    const video = document.querySelector('.video-player-container video') as HTMLVideoElement;
+    if (video) {
+      video.load(); // 重新加载视频
+    }
   }
 };
 
@@ -509,14 +581,26 @@ const handleImageError = (event: Event) => {
 const handleVideoError = (event: Event) => {
   console.error('视频播放错误:', event);
   videoError.value = true;
-  MessagePlugin.error('视频播放失败，请检查网络连接');
+
+  // 简化错误提示，类似对话视频生成页面的处理方式
+  MessagePlugin.error('视频加载失败，请稍后重试');
 };
 
 // 处理详情页视频播放错误
 const handleDetailVideoError = (event: Event) => {
+  const target = event.target as HTMLVideoElement;
+  const videoUrl = target.src;
+
   console.error('详情页视频播放错误:', event);
+  handleMediaError(videoUrl, 'video');
   detailVideoError.value = true;
-  MessagePlugin.error('视频播放失败，请检查网络连接');
+
+  // 针对证书错误给出更具体的提示
+  if (videoUrl.includes('yepzan.cn') && videoUrl.startsWith('https://')) {
+    MessagePlugin.warning('视频服务器证书问题，正在尝试降级加载...');
+  } else {
+    MessagePlugin.error('视频播放失败，请检查网络连接');
+  }
 };
 
 // 停止播放弹窗中的视频
@@ -538,6 +622,8 @@ const stopDetailVideo = () => {
     }
   });
 };
+
+
 
 // 清理函数 - 不再需要处理blob URL
 const cleanupResources = () => {
@@ -641,6 +727,13 @@ onUnmounted(() => {
             width: 100%;
             height: 100%;
 
+            video {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              transition: transform 0.3s ease;
+            }
+
             img {
               width: 100%;
               height: 100%;
@@ -680,6 +773,10 @@ onUnmounted(() => {
             }
 
             .video-preview img {
+              transform: scale(1.05);
+            }
+
+            .video-preview video {
               transform: scale(1.05);
             }
           }
@@ -739,15 +836,52 @@ onUnmounted(() => {
   .video-player-wrapper {
     position: relative;
     width: 100%;
-    max-height: 70vh;
-    overflow: hidden;
-    background: #000;
+    min-height: 400px;
+    background: #f8f9fa;
     border-radius: 8px;
+    overflow: hidden;
 
-    .video-player {
+    .video-container {
       width: 100%;
-      max-height: 70vh;
-      display: block;
+      height: 100%;
+      background: #000;
+
+      .video-player {
+        width: 100%;
+        max-height: 70vh;
+        display: block;
+      }
+    }
+
+    .video-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 400px;
+      background: #f8f9fa;
+
+      .placeholder-content {
+        text-align: center;
+        color: #9ca3af;
+
+        .video-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+          color: #d1d5db;
+        }
+
+        .placeholder-title {
+          font-size: 18px;
+          font-weight: 500;
+          margin-bottom: 8px;
+          color: #6b7280;
+        }
+
+        .placeholder-description {
+          font-size: 14px;
+          color: #9ca3af;
+        }
+      }
     }
 
     .video-error-overlay {
@@ -760,18 +894,27 @@ onUnmounted(() => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
+      background: rgba(248, 249, 250, 0.95);
+      backdrop-filter: blur(4px);
 
-      img {
-        width: 80px;
-        height: 80px;
+      .error-icon {
+        font-size: 48px;
+        color: #ef4444;
         margin-bottom: 16px;
       }
 
-      p {
-        font-size: 16px;
-        margin: 0;
+      .error-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #374151;
+      }
+
+      .error-description {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 16px;
+        text-align: center;
       }
     }
   }
@@ -800,6 +943,7 @@ onUnmounted(() => {
       display: flex;
       gap: 12px;
     }
+
   }
 }
 
@@ -898,6 +1042,7 @@ onUnmounted(() => {
       }
     }
   }
+
 
   .details-actions {
     display: flex;
