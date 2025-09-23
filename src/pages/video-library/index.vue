@@ -33,15 +33,11 @@
             <!-- 视频封面 - 使用安全媒体组件处理HTTPS证书问题 -->
             <div class="video-cover">
               <div class="video-preview">
-                <SafeMediaDisplay v-if="getVideoCoverImage(video)" :src="getVideoCoverImage(video)" media-type="image"
-                  :alt="video.title" style="width: 100%; height: 100%; object-fit: cover;"
-                  @error="() => handleCoverImageError(video)" />
-                <SafeMediaDisplay v-else-if="video.play_url && !hasCoverImageError(video)" :src="video.play_url"
-                  media-type="video" :alt="video.title"
-                  style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" :preload="'metadata'"
-                  :muted="true" @error="() => handleCoverImageError(video)" />
-                <img v-else :src="defaultCover" :alt="video.title"
-                  style="width: 100%; height: 100%; object-fit: cover;" />
+                <img v-if="getVideoCoverImage(video)" :src="getVideoCoverImage(video)" :alt="video.title"
+                  style="width: 100%; height: 100%; object-fit: cover;" @error="handleImageError" />
+                <div v-else class="thumbnail-placeholder">
+                  <t-icon name="video" size="32px" />
+                </div>
               </div>
               <div class="play-overlay">
                 <t-icon name="play-circle-filled" size="48px" />
@@ -187,12 +183,10 @@
             <div v-if="detailVideo.play_url" class="media-item">
               <label>视频:</label>
               <div class="video-player-wrapper">
-                <SafeMediaDisplay :src="detailVideo.play_url" media-type="video" :alt="detailVideo.title"
-                  :controls="true" class="video-player" style="width: 100%; max-height: 200px;" />
-                <div v-if="detailVideoError" class="video-error-overlay">
-                  <img :src="defaultCover" alt="视频加载失败" />
-                  <p>视频加载失败</p>
-                </div>
+                <video :src="detailVideo.play_url" controls class="video-player" style="width: 100%; max-height: 200px;"
+                  @error="handleDetailVideoError">
+                  您的浏览器不支持视频播放
+                </video>
               </div>
             </div>
 
@@ -200,15 +194,15 @@
             <!-- 单词视频的AI生成图片 -->
             <div v-if="isWordVideo(detailVideo) && (detailVideo as AIGCWord).ai_gen_img_url" class="media-item">
               <label>AI生成图片:</label>
-              <SafeMediaDisplay :src="(detailVideo as AIGCWord).ai_gen_img_url" media-type="image" alt="AI生成图片"
-                style="max-width: 100%; max-height: 200px;" />
+              <img :src="(detailVideo as AIGCWord).ai_gen_img_url" alt="AI生成图片"
+                style="max-width: 100%; max-height: 200px;" @error="handleImageError" />
             </div>
 
             <!-- 对话视频的远景图 -->
             <div v-if="isDialogVideo(detailVideo) && (detailVideo as AIGCDialog).ai_far_img_url" class="media-item">
               <label>远景图:</label>
-              <SafeMediaDisplay :src="(detailVideo as AIGCDialog).ai_far_img_url" media-type="image" alt="远景图"
-                style="max-width: 100%; max-height: 200px;" />
+              <img :src="(detailVideo as AIGCDialog).ai_far_img_url" alt="远景图"
+                style="max-width: 100%; max-height: 200px;" @error="handleImageError" />
             </div>
           </div>
         </div>
@@ -263,8 +257,6 @@ const pageSize = ref(12);
 const videoError = ref(false);
 const detailVideoError = ref(false);
 
-// 封面图片加载错误的视频ID记录
-const coverImageErrors = ref<Set<string>>(new Set());
 
 // 弹窗状态
 const showVideoPlayer = ref(false);
@@ -306,16 +298,6 @@ const getVideoCoverImage = (video: AIGCWord | AIGCDialog): string | null => {
   return null;
 };
 
-// 处理封面图片加载错误
-const handleCoverImageError = (video: AIGCWord | AIGCDialog) => {
-  console.warn('封面图片加载失败，将显示默认封面:', video.title);
-  coverImageErrors.value.add(video.id);
-};
-
-// 检查视频是否有封面图片加载错误
-const hasCoverImageError = (video: AIGCWord | AIGCDialog): boolean => {
-  return coverImageErrors.value.has(video.id);
-};
 
 // 标记是否正在加载中，避免重复请求
 let isLoading = false;
@@ -334,8 +316,6 @@ const fetchVideoList = async () => {
     isLoading = true;
     loading.value = true;
 
-    // 清空封面图片加载错误记录
-    coverImageErrors.value.clear();
 
     const offset = (currentPage.value - 1) * pageSize.value;
 
@@ -549,12 +529,10 @@ const handleMediaError = (url: string, type: 'image' | 'video' = 'image') => {
   }
 };
 
-// 处理图片加载错误（兼容性保留）
+// 处理图片加载错误 - 与视频生成页面保持一致
 const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  const originalSrc = target.src;
-  target.src = defaultCover;
-  handleMediaError(originalSrc, 'image');
+  const img = event.target as HTMLImageElement;
+  img.style.display = 'none';
 };
 
 // 处理视频加载完成事件
@@ -586,21 +564,11 @@ const handleVideoError = (event: Event) => {
   MessagePlugin.error('视频加载失败，请稍后重试');
 };
 
-// 处理详情页视频播放错误
+// 处理详情页视频播放错误 - 与视频生成页面保持一致
 const handleDetailVideoError = (event: Event) => {
-  const target = event.target as HTMLVideoElement;
-  const videoUrl = target.src;
-
   console.error('详情页视频播放错误:', event);
-  handleMediaError(videoUrl, 'video');
   detailVideoError.value = true;
-
-  // 针对证书错误给出更具体的提示
-  if (videoUrl.includes('yepzan.cn') && videoUrl.startsWith('https://')) {
-    MessagePlugin.warning('视频服务器证书问题，正在尝试降级加载...');
-  } else {
-    MessagePlugin.error('视频播放失败，请检查网络连接');
-  }
+  MessagePlugin.error('视频加载失败，请稍后重试');
 };
 
 // 停止播放弹窗中的视频
@@ -727,18 +695,21 @@ onUnmounted(() => {
             width: 100%;
             height: 100%;
 
-            video {
+            img {
               width: 100%;
               height: 100%;
               object-fit: cover;
               transition: transform 0.3s ease;
             }
 
-            img {
+            .thumbnail-placeholder {
               width: 100%;
               height: 100%;
-              object-fit: cover;
-              transition: transform 0.3s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: #f3f4f6;
+              color: #9ca3af;
             }
           }
 
@@ -776,9 +747,6 @@ onUnmounted(() => {
               transform: scale(1.05);
             }
 
-            .video-preview video {
-              transform: scale(1.05);
-            }
           }
         }
 
