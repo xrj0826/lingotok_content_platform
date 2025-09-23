@@ -921,7 +921,28 @@ export async function mergeVideosWithFFmpeg(
     ensureFFmpegCompatibility();
 
     updateProgress(progressDiv, '加载FFmpeg核心...');
-    const ffmpeg = await getFFmpegInstance();
+
+    // 使用与视频剪切相同的FFmpeg加载策略
+    let ffmpeg;
+    try {
+      console.log('🔄 视频合并：使用文档推荐的FFmpeg配置...');
+      ffmpeg = await getCorrectFFmpegInstance();
+    } catch (correctError) {
+      console.warn('⚠️ 推荐配置失败，尝试简化版配置:', correctError);
+      try {
+        ffmpeg = await getSimpleFFmpegInstance();
+      } catch (simpleError) {
+        console.warn('⚠️ 简化版配置失败，尝试原始配置:', simpleError);
+        ffmpeg = await getFFmpegInstance();
+      }
+    }
+
+    // 确保FFmpeg已正确加载
+    if (!ffmpeg.loaded) {
+      throw new Error('FFmpeg实例获取成功但未正确加载，请检查环境配置');
+    }
+
+    console.log('✅ FFmpeg实例已加载，可以开始视频合并');
 
     updateProgress(progressDiv, '准备视频文件...');
 

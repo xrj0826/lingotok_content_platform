@@ -216,11 +216,6 @@
         <div v-if="roleAVideos.length > 0 || generatingRoleAVideos" class="role-video-section">
           <div class="section-header">
             <h3>角色A视频列表</h3>
-            <div class="section-actions">
-              <t-button v-if="roleAVideos.length > 0" size="small" theme="primary" @click="selectAllRoleAVideos">
-                全选角色A视频
-              </t-button>
-            </div>
           </div>
 
           <div class="video-list">
@@ -237,18 +232,9 @@
                 <div class="video-title">{{ video.title || `角色A视频 ${index + 1}` }}</div>
                 <div class="video-content">{{ video.content }}</div>
                 <div class="video-actions">
-                  <t-button size="small" @click="selectVideoForEdit('A', video, index)">
-                    <template #icon><edit-icon /></template>
-                    编辑
-                  </t-button>
                   <t-button size="small" variant="outline" @click="downloadVideo(video)">
                     <template #icon><download-icon /></template>
                     下载
-                  </t-button>
-                  <t-button size="small" variant="outline"
-                    :class="{ 'selected': selectedVideosForMerge.some(v => v.id === `A-${index}`) }"
-                    @click="toggleVideoSelection('A', video, index)">
-                    {{selectedVideosForMerge.some(v => v.id === `A-${index}`) ? '已选' : '选择'}}
                   </t-button>
                 </div>
               </div>
@@ -260,11 +246,6 @@
         <div v-if="roleBVideos.length > 0 || generatingRoleBVideos" class="role-video-section">
           <div class="section-header">
             <h3>角色B视频列表</h3>
-            <div class="section-actions">
-              <t-button v-if="roleBVideos.length > 0" size="small" theme="primary" @click="selectAllRoleBVideos">
-                全选角色B视频
-              </t-button>
-            </div>
           </div>
 
           <div class="video-list">
@@ -281,18 +262,9 @@
                 <div class="video-title">{{ video.title || `角色B视频 ${index + 1}` }}</div>
                 <div class="video-content">{{ video.content }}</div>
                 <div class="video-actions">
-                  <t-button size="small" @click="selectVideoForEdit('B', video, index)">
-                    <template #icon><edit-icon /></template>
-                    编辑
-                  </t-button>
                   <t-button size="small" variant="outline" @click="downloadVideo(video)">
                     <template #icon><download-icon /></template>
                     下载
-                  </t-button>
-                  <t-button size="small" variant="outline"
-                    :class="{ 'selected': selectedVideosForMerge.some(v => v.id === `B-${index}`) }"
-                    @click="toggleVideoSelection('B', video, index)">
-                    {{selectedVideosForMerge.some(v => v.id === `B-${index}`) ? '已选' : '选择'}}
                   </t-button>
                 </div>
               </div>
@@ -396,63 +368,7 @@
         </div>
       </div>
 
-      <!-- 视频拼接工具 -->
-      <div class="tool-section">
-        <div class="tool-header" @click="toggleTool('merge')">
-          <span>视频拼接</span>
-          <span class="toggle-icon">{{ showMergeTool ? '−' : '+' }}</span>
-        </div>
-        <div v-if="showMergeTool" class="tool-content">
-          <div class="merge-tool-content">
-            <div v-if="selectedVideosForMerge.length === 0" class="no-selection">
-              <p>请先从列表中选择要拼接的视频，或者先创建视频</p>
-            </div>
-            <div v-else>
-              <div class="merge-settings">
-                <div class="setting-group">
-                  <label>输出格式:</label>
-                  <t-select v-model="mergeOptions.outputFormat" style="width: 100%">
-                    <t-option value="mp4" label="MP4" />
-                    <t-option value="webm" label="WebM" />
-                    <t-option value="avi" label="AVI" />
-                  </t-select>
-                </div>
 
-                <div class="setting-group">
-                  <label>视频质量:</label>
-                  <t-select v-model="mergeOptions.quality" style="width: 100%">
-                    <t-option value="high" label="高质量" />
-                    <t-option value="medium" label="中等质量" />
-                    <t-option value="low" label="低质量" />
-                  </t-select>
-                </div>
-
-                <div class="setting-group">
-                  <label>转场效果:</label>
-                  <t-switch v-model="mergeOptions.enableTransition" />
-                </div>
-
-                <t-button theme="primary" :disabled="selectedVideosForMerge.length < 2 || processingMerge"
-                  :loading="processingMerge" @click="executeVideoMerge" block>
-                  {{ processingMerge ? '拼接中...' : `拼接 ${selectedVideosForMerge.length} 个视频` }}
-                </t-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 快速操作按钮 -->
-      <div class="quick-actions">
-        <div v-if="roleAVideos.length > 0 && roleBVideos.length > 0">
-          <t-button theme="default" size="large" @click="quickMergeAllVideos" block>
-            快速拼接所有视频
-          </t-button>
-        </div>
-        <t-button theme="default" size="large" @click="showTutorial" block>
-          打开视频编辑工具
-        </t-button>
-      </div>
     </div>
   </div>
 </template>

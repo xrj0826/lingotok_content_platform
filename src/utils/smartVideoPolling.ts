@@ -121,10 +121,12 @@ export function createVideoPolling(
         throw new Error(`轮询超时 (${config.timeout / 1000}秒)`);
       }
 
-      // 更新进度
+      // 更新进度（减少控制台输出）
       const progressMessage = `正在检查视频生成状态... (${state.attempt}/${config.maxAttempts})`;
-      config.onProgress(state.attempt, config.maxAttempts, progressMessage);
-      options.onProgress?.(state.attempt, config.maxAttempts, progressMessage);
+      // 只在有onProgress回调时才调用，减少不必要的输出
+      if (options.onProgress) {
+        options.onProgress(state.attempt, config.maxAttempts, progressMessage);
+      }
 
       // 获取数据
       const newData = await getData();
@@ -139,7 +141,7 @@ export function createVideoPolling(
 
       // 检查是否完成
       if (options.checkVideoReady(newData)) {
-        console.log(`✅ [SmartVideoPolling] 视频生成完成，共轮询 ${state.attempt} 次`);
+        console.log(`✅ [SmartVideoPolling] 检测到新视频，停止轮询 (轮询${state.attempt}次)`);
         return true; // 轮询成功完成
       }
 

@@ -1,0 +1,1 @@
+import{E as o}from"./index-6fc7a882.js";const r=()=>o({url:"/api/v1/video-generation/collections",method:"GET"}),i=e=>o({url:"/api/v1/video-generation/word/save",method:"POST",data:e}),a=e=>o({url:"/api/v1/video-storage/list",method:"GET",params:e}),s=e=>o({url:`/api/v1/video-storage/delete/${e}`,method:"DELETE"});export{a,s as d,r as g,i as s};

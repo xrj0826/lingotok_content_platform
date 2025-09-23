@@ -184,7 +184,19 @@ export async function mergeVideos(
 
   try {
     updateProgress(progressDiv, '加载FFmpeg核心...');
-    const ffmpeg = await getFFmpegInstance();
+
+    // 使用与视频剪切相同的FFmpeg加载策略
+    let ffmpeg;
+    try {
+      ffmpeg = await getFFmpegInstance();
+      // 确保FFmpeg已正确加载
+      if (!ffmpeg.loaded) {
+        throw new Error('FFmpeg实例未正确加载');
+      }
+    } catch (error) {
+      console.error('FFmpeg加载失败:', error);
+      throw new Error(`FFmpeg加载失败: ${error}`);
+    }
 
     updateProgress(progressDiv, '准备视频文件...');
 

@@ -1163,14 +1163,15 @@ const startSmartVideoPolling = () => {
           const roleBVideoReady = data?.detail_b?.gen_ai_video_succeed === true;
           const hasRoleVideos = roleAVideoReady && roleBVideoReady;
 
-          console.log(`🎬 [AIGCDialogFlow] 第一次生成检查:`, {
-            hasPlayUrl,
-            hasRoleVideos,
-            roleAVideoReady,
-            roleBVideoReady,
-            roleA_video_count: data?.detail_a?.ai_video_url_list?.length || 0,
-            roleB_video_count: data?.detail_b?.ai_video_url_list?.length || 0
-          });
+          // 只在检测到新视频时输出日志
+          if (hasPlayUrl || hasRoleVideos) {
+            console.log(`✅ [AIGCDialogFlow] 首次检测到新视频:`, {
+              hasPlayUrl,
+              hasRoleVideos,
+              roleA_video_count: data?.detail_a?.ai_video_url_list?.length || 0,
+              roleB_video_count: data?.detail_b?.ai_video_url_list?.length || 0
+            });
+          }
 
           return hasPlayUrl || hasRoleVideos;
         }
@@ -1186,17 +1187,20 @@ const startSmartVideoPolling = () => {
         const hasNewRoleBVideos = newRoleBCount > currentRoleBCount;
         const hasNewVideos = hasNewRoleAVideos || hasNewRoleBVideos;
 
-        console.log(`🎬 [AIGCDialogFlow] 新增视频检查:`, {
-          hasPlayUrl,
-          hasNewVideos,
-          hasNewRoleAVideos,
-          hasNewRoleBVideos,
-          current_roleA_count: currentRoleACount,
-          new_roleA_count: newRoleACount,
-          current_roleB_count: currentRoleBCount,
-          new_roleB_count: newRoleBCount,
-          video_status: getDialogStatusText(data)
-        });
+        // 检查是否有新的完整对话视频
+        const currentPlayUrl = currentVideo.value?.play_url;
+        const hasNewPlayUrl = hasPlayUrl && currentPlayUrl !== data.play_url;
+
+        // 只在检测到真正的新视频时输出日志和停止轮询
+        const shouldStop = hasNewVideos || hasNewPlayUrl;
+        if (shouldStop) {
+          console.log(`✅ [AIGCDialogFlow] 检测到新视频，停止轮询:`, {
+            hasNewPlayUrl,
+            hasNewVideos,
+            hasNewRoleAVideos: hasNewRoleAVideos ? `${currentRoleACount} -> ${newRoleACount}` : false,
+            hasNewRoleBVideos: hasNewRoleBVideos ? `${currentRoleBCount} -> ${newRoleBCount}` : false
+          });
+        }
 
         return hasPlayUrl || hasNewVideos;
       },
@@ -1204,13 +1208,6 @@ const startSmartVideoPolling = () => {
       // 数据变化时更新界面
       onDataChange: (data, isChanged) => {
         if (isChanged) {
-          console.log('📊 [AIGCDialogFlow] 检测到数据变化，更新界面', {
-            previous_status: currentVideo.value ? getDialogStatusText(currentVideo.value) : '无',
-            new_status: getDialogStatusText(data),
-            has_play_url: !!data?.play_url,
-            roleA_videos: data?.detail_a?.ai_video_url_list?.length || 0,
-            roleB_videos: data?.detail_b?.ai_video_url_list?.length || 0
-          });
 
           // 先保存之前的状态
           const previousData = currentVideo.value;
@@ -1225,7 +1222,6 @@ const startSmartVideoPolling = () => {
 
           // 只在有新增视频时才重新提取和显示视频
           if (shouldUpdateVideos) {
-            console.log('🎥 [AIGCDialogFlow] 检测到新增视频，重新提取视频列表');
             const roleAVideoReady = data?.detail_a?.gen_ai_video_succeed === true;
             const roleBVideoReady = data?.detail_b?.gen_ai_video_succeed === true;
 
@@ -1234,13 +1230,11 @@ const startSmartVideoPolling = () => {
               const wasRoleBReady = previousData?.detail_b?.gen_ai_video_succeed;
 
               if (!wasRoleAReady || !wasRoleBReady) {
-                console.log('🎉 [AIGCDialogFlow] 角色视频首次生成完成，开始提取视频');
                 extractRoleVideos(data, false); // 第一次生成，完全更新
                 setLoadingState(false);
                 MessagePlugin.success('角色视频生成完成！');
               } else {
                 // 后续生成，增量更新视频
-                console.log('🔄 [AIGCDialogFlow] 后续视频生成，增量更新视频列表');
                 extractRoleVideos(data, true); // 后续生成，增量更新
                 setLoadingState(false);
 
@@ -1258,23 +1252,12 @@ const startSmartVideoPolling = () => {
             if (data?.play_url && !previousData?.play_url) {
               MessagePlugin.info('完整对话视频已生成');
             }
-          } else {
-            console.log('📊 [AIGCDialogFlow] 没有新增视频，仅更新数据不重新渲染视频列表');
           }
-        } else {
-          console.log('📊 [AIGCDialogFlow] 数据无变化，跳过处理');
         }
       },
 
       // 视频生成完成 - 此回调已在onDataChange中处理，避免重复
       onVideoReady: (data) => {
-        console.log('🎉 [AIGCDialogFlow] onVideoReady回调触发，但处理已在onDataChange中完成', {
-          play_url: data.play_url,
-          video_status: getDialogStatusText(data),
-          roleA_ready: data?.detail_a?.gen_ai_video_succeed,
-          roleB_ready: data?.detail_b?.gen_ai_video_succeed
-        });
-
         // 只处理完整视频的自动跳转逻辑
         if (data.play_url && currentStepIndex.value === 3) {
           setTimeout(() => {

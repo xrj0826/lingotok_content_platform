@@ -237,9 +237,6 @@
         <div class="loading-content">
           <t-loading size="large" />
           <div class="loading-text">{{ loadingMessage }}</div>
-          <div class="loading-progress">
-            <t-progress :percentage="loadingProgress" :show-info="true" />
-          </div>
         </div>
       </div>
     </div>
@@ -312,7 +309,7 @@ const finalResult = ref<VideoItem | null>(null);
 const processingCut = ref(false);
 const processingMerge = ref(false);
 const loadingMessage = ref('');
-const loadingProgress = ref(0);
+// 移除进度条相关的变量
 
 // 视频信息
 const cutVideoRef = ref<HTMLVideoElement>();
@@ -471,7 +468,7 @@ const executeCutVideo = async () => {
   }
 
   processingCut.value = true;
-  setLoadingState('正在准备视频剪切...', 10);
+  setLoadingState('正在准备视频剪切...');
 
   try {
     console.log('🎬 开始视频剪切流程', {
@@ -493,14 +490,14 @@ const executeCutVideo = async () => {
       videoFile = new File([selectedVideoForCut.value.blob], 'video.mp4', { type: 'video/mp4' });
     } else {
       // 从URL下载视频文件
-      setLoadingState('正在下载视频文件...', 30);
+      setLoadingState('正在下载视频文件...');
       console.log('📥 下载视频文件:', selectedVideoForCut.value.url);
       const response = await fetch(selectedVideoForCut.value.url);
       const blob = await response.blob();
       videoFile = new File([blob], 'video.mp4', { type: 'video/mp4' });
     }
 
-    setLoadingState('正在剪切视频...', 60);
+    setLoadingState('正在剪切视频...');
 
     let result: string;
 
@@ -542,7 +539,7 @@ const executeCutVideo = async () => {
       duration: cutOptions.endTime - cutOptions.startTime
     };
 
-    setLoadingState('剪切完成！', 100);
+    setLoadingState('剪切完成！');
     console.log('✅ 视频剪切完成:', result);
     MessagePlugin.success('视频剪切完成！');
 
@@ -551,7 +548,7 @@ const executeCutVideo = async () => {
     MessagePlugin.error(`剪切失败: ${(error as Error).message}`);
   } finally {
     processingCut.value = false;
-    setLoadingState('', 0);
+    setLoadingState('');
   }
 };
 
@@ -633,7 +630,7 @@ const executeVideoMerge = async () => {
   }
 
   processingMerge.value = true;
-  setLoadingState('正在准备视频拼接...', 10);
+  setLoadingState('正在准备视频拼接...');
 
   try {
     // 清除之前的结果
@@ -646,7 +643,7 @@ const executeVideoMerge = async () => {
 
     // 转换为File对象数组
     const videoFiles: File[] = [];
-    setLoadingState('正在下载视频文件...', 30);
+    setLoadingState('正在下载视频文件...');
 
     for (const video of selectedVideosForMerge.value) {
       let videoFile: File;
@@ -666,7 +663,7 @@ const executeVideoMerge = async () => {
       videoFiles.push(videoFile);
     }
 
-    setLoadingState('正在拼接视频...', 60);
+    setLoadingState('正在拼接视频...');
 
     const options = {
       outputFormat: mergeOptions.outputFormat,
@@ -687,7 +684,7 @@ const executeVideoMerge = async () => {
       duration: 0 // 实际时长可以通过video元素获取
     };
 
-    setLoadingState('拼接完成！', 100);
+    setLoadingState('拼接完成！');
     console.log('✅ 视频拼接完成:', result);
     MessagePlugin.success('视频拼接完成！');
 
@@ -696,7 +693,7 @@ const executeVideoMerge = async () => {
     MessagePlugin.error(`拼接失败: ${(error as Error).message}`);
   } finally {
     processingMerge.value = false;
-    setLoadingState('', 0);
+    setLoadingState('');
   }
 };
 
@@ -714,9 +711,8 @@ const downloadMergeResult = () => {
 
 
 // 工具方法
-const setLoadingState = (message: string, progress: number) => {
+const setLoadingState = (message: string) => {
   loadingMessage.value = message;
-  loadingProgress.value = progress;
 };
 
 // 停止所有正在播放的视频

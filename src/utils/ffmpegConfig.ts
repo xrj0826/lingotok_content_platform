@@ -63,8 +63,14 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
   console.log('✅ [DEBUG] SharedArrayBuffer检查完成');
 
   if (ffmpegInstance) {
-    console.log('✅ [DEBUG] 返回已存在的FFmpeg实例');
-    return ffmpegInstance;
+    // 检查实例是否已经加载完成
+    if (ffmpegInstance.loaded) {
+      console.log('✅ [DEBUG] 返回已存在且已加载的FFmpeg实例');
+      return ffmpegInstance;
+    } else {
+      console.log('⚠️ [DEBUG] 实例存在但未加载，将重新加载');
+      ffmpegInstance = null; // 清理未加载的实例
+    }
   }
 
   if (isLoading) {
@@ -170,6 +176,11 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
     console.log('⏳ 开始加载FFmpeg，最多等待30秒...');
     await Promise.race([loadPromise, timeoutPromise]);
 
+    // 验证FFmpeg是否真正加载完成
+    if (!ffmpegInstance.loaded) {
+      throw new Error('FFmpeg加载命令执行完成，但实例未标记为已加载');
+    }
+
     console.log('✅ FFmpeg本地文件加载成功');
     return ffmpegInstance;
   } catch (error) {
@@ -188,6 +199,12 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
           workerURL: await toBlobURL(`/ffmpeg/ffmpeg-core.worker.js`, 'text/javascript'),
         };
         await ffmpegInstance.load(loadConfig);
+
+        // 验证强制模式下的加载
+        if (!ffmpegInstance.loaded) {
+          throw new Error('强制模式下FFmpeg加载命令执行完成，但实例未标记为已加载');
+        }
+
         console.log('✅ 强制模式下FFmpeg加载成功');
         return ffmpegInstance;
       } catch (forcedError) {
@@ -215,6 +232,12 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
       });
 
       await Promise.race([backupLoadPromise, backupTimeoutPromise]);
+
+      // 验证CDN方案的加载
+      if (!ffmpegInstance!.loaded) {
+        throw new Error('CDN方案FFmpeg加载命令执行完成，但实例未标记为已加载');
+      }
+
       console.log('✅ FFmpeg备用CDN加载成功');
       return ffmpegInstance!;
     } catch (backupError) {

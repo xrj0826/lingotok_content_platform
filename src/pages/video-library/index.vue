@@ -29,7 +29,7 @@
         </div>
 
         <div v-else class="video-grid">
-          <div v-for="video in videoList" :key="video.id" class="video-card" @click="playVideo(video)">
+          <div v-for="video in videoList" :key="video.id" class="video-card">
             <!-- 视频封面 - 使用安全媒体组件处理HTTPS证书问题 -->
             <div class="video-cover">
               <div class="video-preview">
@@ -38,9 +38,6 @@
                 <div v-else class="thumbnail-placeholder">
                   <t-icon name="video" size="32px" />
                 </div>
-              </div>
-              <div class="play-overlay">
-                <t-icon name="play-circle-filled" size="48px" />
               </div>
               <div class="video-type-badge">
                 {{ filterType === AIGCType.word ? '单词' : '对话' }}
@@ -62,12 +59,6 @@
               </div>
 
               <div class="video-actions">
-                <t-button size="small" theme="primary" @click.stop="playVideo(video)">
-                  <template #icon>
-                    <t-icon name="play-circle" />
-                  </template>
-                  播放
-                </t-button>
                 <t-button size="small" variant="outline" @click.stop="downloadVideo(video); $event.stopPropagation();">
                   <template #icon>
                     <t-icon name="download" />
@@ -95,45 +86,6 @@
       </t-loading>
     </div>
 
-    <!-- 视频播放弹窗 -->
-    <t-dialog v-model:visible="showVideoPlayer" :header="playingVideo?.title || '视频播放'" width="80%" :footer="false"
-      :close-on-overlay-click="true" @close="stopPlayingVideo">
-      <div v-if="playingVideo" class="video-player-container">
-        <div class="video-player-wrapper">
-          <div v-if="playingVideo.play_url" class="video-container">
-            <video ref="videoPlayer" :src="playingVideo.play_url" controls preload="metadata" class="video-player"
-              style="width: 100%; max-height: 70vh;">
-              您的浏览器不支持视频播放
-            </video>
-          </div>
-          <div v-else class="video-placeholder">
-            <div class="placeholder-content">
-              <t-icon name="video" class="video-icon" />
-              <div class="placeholder-title">暂无视频</div>
-              <div class="placeholder-description">视频尚未生成</div>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="player-info">
-          <h3>{{ playingVideo.title }}</h3>
-          <div v-if="isWordVideo(playingVideo)" class="word-info">
-            <p><strong>单词:</strong> {{ (playingVideo as AIGCWord).word }}</p>
-          </div>
-
-
-          <div class="player-actions">
-            <t-button @click="downloadVideo(playingVideo); $event.stopPropagation();">
-              <template #icon>
-                <t-icon name="download" />
-              </template>
-              下载视频
-            </t-button>
-          </div>
-        </div>
-      </div>
-    </t-dialog>
 
     <!-- 视频详情弹窗 -->
     <t-dialog v-model:visible="showVideoDetails" :header="detailVideo?.title || '视频详情'" width="60%" :footer="false"
@@ -166,22 +118,10 @@
           </div>
         </div>
 
-        <!-- 媒体文件 -->
+        <!-- AI生成图片 -->
         <div class="details-section">
-          <h4>媒体文件</h4>
+          <h4>AI生成内容</h4>
           <div class="media-grid">
-            <!-- 视频预览 -->
-            <div v-if="detailVideo.play_url" class="media-item">
-              <label>视频:</label>
-              <div class="video-player-wrapper">
-                <video :src="detailVideo.play_url" controls class="video-player"
-                  style="width: 100%; max-height: 200px;">
-                  您的浏览器不支持视频播放
-                </video>
-              </div>
-            </div>
-
-
             <!-- 单词视频的AI生成图片 -->
             <div v-if="isWordVideo(detailVideo) && (detailVideo as AIGCWord).ai_gen_img_url" class="media-item">
               <label>AI生成图片:</label>
@@ -201,17 +141,11 @@
 
         <!-- 操作按钮 -->
         <div class="details-actions">
-          <t-button theme="primary" @click="playVideo(detailVideo)">
-            <template #icon>
-              <t-icon name="play-circle" />
-            </template>
-            播放视频
-          </t-button>
-          <t-button variant="outline" @click="downloadVideo(detailVideo)">
+          <t-button theme="primary" @click="downloadVideo(detailVideo)">
             <template #icon>
               <t-icon name="download" />
             </template>
-            下载视频
+            查看并下载视频
           </t-button>
         </div>
       </div>
@@ -248,13 +182,10 @@ const pageSize = ref(12);
 
 
 // 弹窗状态
-const showVideoPlayer = ref(false);
-const playingVideo = ref<AIGCWord | AIGCDialog | null>(null);
 const showVideoDetails = ref(false);
 const detailVideo = ref<AIGCWord | AIGCDialog | null>(null);
 
 // 错误状态
-const videoError = ref(false);
 const detailVideoError = ref(false);
 
 
@@ -439,22 +370,6 @@ const processVideoUrl = async (url: string): Promise<string> => {
   }
 };
 
-// 播放视频
-const playVideo = async (video: AIGCWord | AIGCDialog) => {
-  if (!video.play_url) {
-    MessagePlugin.warning('该视频暂无播放地址');
-    return;
-  }
-
-  playingVideo.value = video;
-  videoError.value = false; // 重置错误状态
-
-  showVideoPlayer.value = true;
-  // 关闭详情弹窗
-  showVideoDetails.value = false;
-
-  console.log('🎬 开始播放视频:', video.title, video.play_url);
-};
 
 // 下载视频 - 参考对话视频生成页面的下载逻辑
 const downloadVideo = (video: AIGCWord | AIGCDialog) => {
@@ -529,21 +444,26 @@ const handleImageError = (event: Event) => {
 };
 
 
-
-
-
-// 停止播放弹窗中的视频
-const stopPlayingVideo = () => {
-  const videoElement = document.querySelector('.video-player-container video') as HTMLVideoElement;
-  if (videoElement && !videoElement.paused) {
-    videoElement.pause();
-    console.log('已停止播放视频');
-  }
+// 处理详情页视频的加载事件
+const handleDetailVideoError = (error: string) => {
+  console.error('详情页视频加载失败:', error);
+  detailVideoError.value = true;
 };
+
+const handleDetailVideoLoad = (event: Event) => {
+  console.log('详情页视频加载成功:', event);
+  detailVideoError.value = false;
+};
+
+
+
+
+
 
 // 停止详情弹窗中的视频
 const stopDetailVideo = () => {
-  const videoElements = document.querySelectorAll('.video-details-container video') as NodeListOf<HTMLVideoElement>;
+  // 因为现在使用SafeMediaDisplay组件，需要查找其内部的video元素
+  const videoElements = document.querySelectorAll('.video-details-container .safe-media-display video') as NodeListOf<HTMLVideoElement>;
   videoElements.forEach(video => {
     if (!video.paused) {
       video.pause();
@@ -674,18 +594,6 @@ onUnmounted(() => {
             }
           }
 
-          .play-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 50%;
-            padding: 8px;
-          }
 
           .video-type-badge {
             position: absolute;
@@ -700,14 +608,9 @@ onUnmounted(() => {
           }
 
           &:hover {
-            .play-overlay {
-              opacity: 1;
-            }
-
             .video-preview img {
               transform: scale(1.05);
             }
-
           }
         }
 
@@ -760,88 +663,6 @@ onUnmounted(() => {
   }
 }
 
-// 弹窗样式
-.video-player-container {
-  .video-player-wrapper {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    overflow: hidden;
-
-    .video-container {
-      width: 100%;
-      height: 100%;
-      background: #000;
-
-      .video-player {
-        width: 100%;
-        max-height: 70vh;
-        display: block;
-      }
-    }
-
-    .video-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 400px;
-      background: #f8f9fa;
-
-      .placeholder-content {
-        text-align: center;
-        color: #9ca3af;
-
-        .video-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
-          color: #d1d5db;
-        }
-
-        .placeholder-title {
-          font-size: 18px;
-          font-weight: 500;
-          margin-bottom: 8px;
-          color: #6b7280;
-        }
-
-        .placeholder-description {
-          font-size: 14px;
-          color: #9ca3af;
-        }
-      }
-    }
-
-  }
-
-  .player-info {
-    margin-top: 16px;
-    padding: 16px;
-    background: #f9fafb;
-    border-radius: 8px;
-
-    h3 {
-      margin: 0 0 12px 0;
-      color: #1f2937;
-    }
-
-    .word-info {
-      margin-bottom: 16px;
-
-      p {
-        margin: 0;
-        color: #374151;
-      }
-    }
-
-    .player-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-  }
-}
 
 .video-details-container {
   .details-section {

@@ -33,15 +33,14 @@
         </div>
       </div>
 
-      <!-- 加载进度 -->
-      <div v-if="loading || loadingProgress" class="progress-section">
-        <h4>加载进度</h4>
-        <div class="progress-container">
-          <t-progress :percentage="loadingProgress?.progress || 0" :label="false"
-            :color="loadingProgress?.progress === 100 ? '#52c41a' : '#1890ff'" />
-          <div class="progress-text">
-            <span class="progress-step">{{ loadingProgress?.step || '准备中...' }}</span>
-            <span class="progress-message">{{ loadingProgress?.message || '' }}</span>
+      <!-- 加载状态 -->
+      <div v-if="loading || loadingProgress" class="loading-section">
+        <h4>加载状态</h4>
+        <div class="loading-container">
+          <t-loading size="small" />
+          <div class="loading-text">
+            <span class="loading-step">{{ loadingProgress?.step || '准备中...' }}</span>
+            <span class="loading-message">{{ loadingProgress?.message || '' }}</span>
           </div>
         </div>
       </div>
@@ -374,7 +373,7 @@ onUnmounted(() => {
     }
   }
 
-  .progress-section {
+  .loading-section {
     margin-bottom: 24px;
 
     h4 {
@@ -382,19 +381,23 @@ onUnmounted(() => {
       color: #1f2937;
     }
 
-    .progress-container {
-      .progress-text {
+    .loading-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .loading-text {
         display: flex;
-        justify-content: space-between;
-        margin-top: 8px;
+        flex-direction: column;
+        gap: 4px;
         font-size: 12px;
 
-        .progress-step {
+        .loading-step {
           font-weight: 500;
           color: #1890ff;
         }
 
-        .progress-message {
+        .loading-message {
           color: #666;
         }
       }
