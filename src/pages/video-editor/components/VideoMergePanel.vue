@@ -194,7 +194,7 @@ const mergeOptions = reactive<MergeOptions>({
   enableCrossfade: false,
   fadeLength: 1,
   resolution: '',
-  mergeMode: 'timeline',
+  mergeMode: 'sequential', // 默认使用传统方法，更稳定
   backgroundType: 'color',
   backgroundColor: '#000000'
 });
@@ -290,22 +290,8 @@ const handleMerge = async () => {
 
     let result: string;
 
-    if (mergeOptions.mergeMode === 'timeline') {
-      // 使用新的时间轴合并方法
-      result = await mergeTimelineVideos(
-        createTimelineFromFiles(selectedFiles.value),
-        createMediaFilesFromFiles(selectedFiles.value),
-        {
-          outputFormat: mergeOptions.outputFormat,
-          quality: getQualityLevel(mergeOptions.videoQuality),
-          resolution: mergeOptions.resolution || '1920x1080',
-          fps: 30,
-          includeAudio: true,
-          backgroundType: mergeOptions.backgroundType as 'color' | 'blur',
-          backgroundColor: mergeOptions.backgroundColor
-        }
-      );
-    } else {
+    // 优先使用传统FFmpeg合并方法（更稳定）
+    if (mergeOptions.mergeMode === 'sequential') {
       // 使用传统FFmpeg合并方法
       const options = {
         outputFormat: mergeOptions.outputFormat,
@@ -319,6 +305,40 @@ const handleMerge = async () => {
       };
 
       result = await mergeVideosWithFFmpeg(selectedFiles.value, options);
+    } else {
+      // 使用新的时间轴合并方法（如果传统方法失败，会回退到传统方法）
+      try {
+        result = await mergeTimelineVideos(
+          createTimelineFromFiles(selectedFiles.value),
+          createMediaFilesFromFiles(selectedFiles.value),
+          {
+            outputFormat: mergeOptions.outputFormat,
+            quality: getQualityLevel(mergeOptions.videoQuality),
+            resolution: mergeOptions.resolution || '1920x1080',
+            fps: 30,
+            includeAudio: true,
+            backgroundType: mergeOptions.backgroundType as 'color' | 'blur',
+            backgroundColor: mergeOptions.backgroundColor
+          }
+        );
+      } catch (timelineError) {
+        console.warn('时间轴合并失败，回退到传统方法:', timelineError);
+        MessagePlugin.warning('时间轴合并失败，正在使用传统方法重试...');
+
+        // 回退到传统方法
+        const options = {
+          outputFormat: mergeOptions.outputFormat,
+          videoCodec: mergeOptions.videoCodec,
+          audioCodec: mergeOptions.audioCodec,
+          videoQuality: mergeOptions.videoQuality,
+          audioQuality: mergeOptions.audioQuality,
+          enableCrossfade: mergeOptions.enableCrossfade,
+          fadeLength: mergeOptions.fadeLength,
+          resolution: mergeOptions.resolution || undefined
+        };
+
+        result = await mergeVideosWithFFmpeg(selectedFiles.value, options);
+      }
     }
 
     resultVideoUrl.value = result;

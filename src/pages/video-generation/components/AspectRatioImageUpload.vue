@@ -1,27 +1,33 @@
-<!-- 图片上传组件 -->
 <template>
-  <div class="image-upload-container">
-    <div class="upload-area" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleDrop">
+  <div class="aspect-ratio-upload">
+    <div class="upload-area" :style="containerStyle" @click="triggerFileInput" @dragover.prevent
+      @drop.prevent="handleDrop">
       <input ref="fileInput" type="file" accept="image/*" @change="handleFileSelect" style="display: none" />
 
-      <div v-if="!imageUrl" class="upload-placeholder">
+      <div v-if="!modelValue" class="upload-placeholder">
         <t-icon name="cloud-upload" size="48px" />
-        <p>点击或拖拽上传图片</p>
-        <p class="upload-hint">支持 JPG、PNG、GIF 格式</p>
+        <p>{{ uploadText }}</p>
+        <p class="upload-hint">{{ uploadHint }}</p>
       </div>
 
-      <div v-else class="image-preview">
-        <img :src="imageUrl" alt="预览图片" />
-        <div class="image-overlay">
-          <t-button theme="primary" size="small" @click.stop="triggerFileInput">
-            <t-icon name="edit" />
-            更换
-          </t-button>
-          <t-button theme="danger" size="small" @click.stop="removeImage">
-            <t-icon name="delete" />
-            删除
-          </t-button>
-        </div>
+      <AspectRatioImage v-else :src="modelValue" :maxWidth="width" :maxHeight="height" class="image-preview">
+        <template #placeholder>
+          <div class="upload-placeholder">
+            <t-icon name="cloud-upload" size="48px" />
+            <p>{{ uploadText }}</p>
+          </div>
+        </template>
+      </AspectRatioImage>
+
+      <div v-if="modelValue" class="image-overlay">
+        <t-button theme="primary" size="small" @click.stop="triggerFileInput">
+          <t-icon name="edit" />
+          更换
+        </t-button>
+        <t-button theme="danger" size="small" @click.stop="removeImage">
+          <t-icon name="delete" />
+          删除
+        </t-button>
       </div>
     </div>
 
@@ -33,31 +39,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
+import { AspectRatioImage } from '@/components';
 
 interface Props {
-  modelValue?: string;
-  width?: string;
-  height?: string;
-}
-
-interface Emits {
-  (e: 'update:modelValue', value: string): void;
-  (e: 'upload-success', file: File, url: string): void;
-  (e: 'upload-error', error: string): void;
+  modelValue: string;
+  width?: string | number;
+  height?: string | number;
+  uploadText?: string;
+  uploadHint?: string;
+  backgroundColor?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   width: '200px',
-  height: '150px'
+  height: '200px',
+  uploadText: '点击或拖拽上传图片',
+  uploadHint: '支持 JPG、PNG、GIF 格式',
+  backgroundColor: '#f9fafb'
 });
 
-const emit = defineEmits<Emits>();
+const emit = defineEmits<{
+  'update:modelValue': [value: string];
+  'upload-success': [file: File, url: string];
+  'upload-error': [error: string];
+}>();
+
+// 容器样式
+const containerStyle = computed(() => {
+  return {
+    width: typeof props.width === 'number' ? `${props.width}px` : props.width,
+    height: typeof props.height === 'number' ? `${props.height}px` : props.height,
+    backgroundColor: props.backgroundColor
+  };
+});
 
 const fileInput = ref<HTMLInputElement>();
-const imageUrl = ref(props.modelValue);
 const uploading = ref(false);
 const uploadProgress = ref(0);
 
@@ -118,7 +137,6 @@ const uploadFile = (file: File) => {
 
       setTimeout(() => {
         uploading.value = false;
-        imageUrl.value = url;
         emit('update:modelValue', url);
         emit('upload-success', file, url);
         MessagePlugin.success('图片上传成功');
@@ -129,10 +147,9 @@ const uploadFile = (file: File) => {
 
 // 删除图片
 const removeImage = () => {
-  if (imageUrl.value) {
-    URL.revokeObjectURL(imageUrl.value);
+  if (props.modelValue && props.modelValue.startsWith('blob:')) {
+    URL.revokeObjectURL(props.modelValue);
   }
-  imageUrl.value = '';
   emit('update:modelValue', '');
   if (fileInput.value) {
     fileInput.value.value = '';
@@ -142,19 +159,20 @@ const removeImage = () => {
 </script>
 
 <style scoped>
-.image-upload-container {
+.aspect-ratio-upload {
   display: inline-block;
 }
 
 .upload-area {
-  width: v-bind(width);
-  height: v-bind(height);
   border: 2px dashed #d9d9d9;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .upload-area:hover {
@@ -167,9 +185,11 @@ const removeImage = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   height: 100%;
   color: #8c8c8c;
   text-align: center;
+  padding: 12px;
 }
 
 .upload-placeholder .t-icon {
@@ -191,13 +211,9 @@ const removeImage = () => {
   position: relative;
   width: 100%;
   height: 100%;
-}
-
-.image-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .image-overlay {
@@ -215,7 +231,7 @@ const removeImage = () => {
   transition: opacity 0.3s ease;
 }
 
-.image-preview:hover .image-overlay {
+.upload-area:hover .image-overlay {
   opacity: 1;
 }
 
@@ -230,133 +246,3 @@ const removeImage = () => {
   color: #666;
 }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -82,9 +82,10 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
       console.log(`⏱️ [DEBUG] 等待加载... (${waitCount})`);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      if (waitCount > 300) { // 30秒超时
-        console.error('💥 [DEBUG] 等待FFmpeg加载超时');
-        throw new Error('FFmpeg加载超时');
+      // 无限等待，直到加载完成
+      // 每隔100个计数（10秒）输出一次日志，但不会超时
+      if (waitCount % 100 === 0) {
+        console.log(`⏳ [DEBUG] 继续等待FFmpeg加载...已等待${waitCount / 10}秒`);
       }
     }
     console.log('✅ [DEBUG] 等待完成，返回已加载的实例');
@@ -167,14 +168,9 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
       }
     });
 
-    // 添加超时处理
-    const loadPromise = ffmpegInstance.load(loadConfig);
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error('FFmpeg加载超时 (30秒)')), 30000);
-    });
-
-    console.log('⏳ 开始加载FFmpeg，最多等待30秒...');
-    await Promise.race([loadPromise, timeoutPromise]);
+    // 直接加载，没有超时限制，会一直等待直到加载完成
+    console.log('⏳ 开始加载FFmpeg，等待直到加载完成...');
+    await ffmpegInstance.load(loadConfig);
 
     // 验证FFmpeg是否真正加载完成
     if (!ffmpegInstance.loaded) {
@@ -226,12 +222,9 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
 
       console.log('📋 CDN备用配置:', backupConfig);
 
-      const backupLoadPromise = ffmpegInstance!.load(backupConfig);
-      const backupTimeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('CDN加载超时 (30秒)')), 30000);
-      });
-
-      await Promise.race([backupLoadPromise, backupTimeoutPromise]);
+      // 直接加载CDN资源，无超时限制
+      console.log('⏳ 使用CDN备用方案加载FFmpeg，等待直到加载完成...');
+      await ffmpegInstance!.load(backupConfig);
 
       // 验证CDN方案的加载
       if (!ffmpegInstance!.loaded) {

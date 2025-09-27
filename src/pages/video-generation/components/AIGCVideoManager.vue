@@ -5,29 +5,17 @@
     <div v-if="currentStep === 'select'" class="step-container">
       <h3>选择视频类型</h3>
       <div class="type-selection">
-        <t-card 
-          class="type-card" 
-          :class="{ selected: selectedType === 'word' }"
-          @click="selectType('word')"
-        >
+        <t-card class="type-card" :class="{ selected: selectedType === 'word' }" @click="selectType('word')">
           <h4>单词视频</h4>
           <p>单词学习类视频生成</p>
         </t-card>
-        <t-card 
-          class="type-card" 
-          :class="{ selected: selectedType === 'dialog' }"
-          @click="selectType('dialog')"
-        >
+        <t-card class="type-card" :class="{ selected: selectedType === 'dialog' }" @click="selectType('dialog')">
           <h4>对话视频</h4>
           <p>对话场景类视频生成</p>
         </t-card>
       </div>
       <div class="actions">
-        <t-button 
-          theme="primary" 
-          :disabled="!selectedType"
-          @click="startCreation"
-        >
+        <t-button theme="primary" :disabled="!selectedType" @click="startCreation">
           开始创建
         </t-button>
       </div>
@@ -35,42 +23,50 @@
 
     <!-- 单词视频创建流程 -->
     <div v-if="currentStep === 'word-create'" class="step-container">
-      <AIGCWordFlow 
-        @completed="handleWordCompleted"
-        @back="backToSelection"
-      />
+      <AIGCWordFlow @completed="handleWordCompleted" @back="backToSelection" />
     </div>
 
     <!-- 对话视频创建流程 -->
     <div v-if="currentStep === 'dialog-create'" class="step-container">
-      <AIGCDialogFlow 
-        @completed="handleDialogCompleted"
-        @back="backToSelection"
-      />
+      <AIGCDialogFlow @completed="handleDialogCompleted" @back="backToSelection" />
     </div>
 
     <!-- 视频列表展示 -->
     <div v-if="currentStep === 'list'" class="step-container">
-      <AIGCVideoList 
-        @create-new="backToSelection"
-      />
+      <AIGCVideoList @create-new="backToSelection" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import AIGCWordFlow from './AIGCWordFlow.vue';
 import AIGCDialogFlow from './AIGCDialogFlow.vue';
 import AIGCVideoList from './AIGCVideoList.vue';
+import { preloadFFmpeg } from '@/utils/ffmpegCache';
 
 type VideoType = 'word' | 'dialog';
 type Step = 'select' | 'word-create' | 'dialog-create' | 'list';
 
+// 接收FFmpeg状态属性
+const props = defineProps({
+  ffmpegReady: {
+    type: Boolean,
+    default: false
+  }
+});
+
 // 状态管理
 const currentStep = ref<Step>('select');
 const selectedType = ref<VideoType | null>(null);
+
+// 监听组件挂载
+watch(() => props.ffmpegReady, (ready) => {
+  if (ready) {
+    console.log('✅ AIGCVideoManager: FFmpeg已就绪');
+  }
+}, { immediate: true });
 
 // 选择视频类型
 const selectType = (type: VideoType) => {
@@ -80,7 +76,7 @@ const selectType = (type: VideoType) => {
 // 开始创建
 const startCreation = () => {
   if (!selectedType.value) return;
-  
+
   if (selectedType.value === 'word') {
     currentStep.value = 'word-create';
   } else {
@@ -167,9 +163,3 @@ const handleDialogCompleted = (videoData: any) => {
   text-align: center;
 }
 </style>
-
-
-
-
-
-

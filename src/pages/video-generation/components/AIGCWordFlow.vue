@@ -161,6 +161,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
+import { useRouter } from 'vue-router';
 import {
   createAIGCWord,
   operateAIGCWordGenImg,
@@ -513,6 +514,7 @@ const stopPolling = () => {
 };
 
 // 查看视频库
+const router = useRouter();
 const viewInLibrary = () => {
   // 导航到左侧栏中的视频库页面
   router.push('/video-library/list');

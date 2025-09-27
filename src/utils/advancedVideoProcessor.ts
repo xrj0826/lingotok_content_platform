@@ -5,9 +5,10 @@
 
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
-import { getFFmpegInstance } from './ffmpegConfig';
+import { getFFmpeg } from './ffmpegCache';
 import { renderTimelineFrame } from './timelineRenderer';
 import { videoCache } from './videoCache';
+import { withProcessingUI, ensureFFmpegLoaded } from './videoProcessingUI';
 import type {
   TimelineTrack,
   MediaFile,
@@ -27,8 +28,10 @@ export async function exportTimelineProject(
 ): Promise<ExportResult> {
   const { format, quality, fps, includeAudio, onProgress, onCancel } = options;
 
-  try {
+  // 使用UI包装导出过程
+  return withProcessingUI(async (updateUI) => {
     console.log('🚀 开始导出时间轴项目...');
+    updateUI(5, '初始化导出环境...');
 
     // 1. 创建渲染画布
     const canvas = document.createElement('canvas');
@@ -40,8 +43,10 @@ export async function exportTimelineProject(
       throw new Error('Cannot create canvas context');
     }
 
-    // 2. 初始化FFmpeg
-    const ffmpeg = await getFFmpegInstance();
+    // 2. 从缓存获取FFmpeg实例
+    console.log('🔄 从缓存获取FFmpeg实例...');
+    updateUI(10, '准备视频处理引擎...');
+    const ffmpeg = await getFFmpeg();
 
     // 3. 计算导出参数
     const exportFps = fps || projectSettings.fps;
@@ -87,9 +92,10 @@ export async function exportTimelineProject(
 
       // 更新进度
       const videoProgress = includeAudio
-        ? 0.1 + (frameIndex / totalFrames) * 0.7  // 视频部分占70%
-        : (frameIndex / totalFrames);
-      onProgress?.(videoProgress);
+        ? 10 + (frameIndex / totalFrames) * 70  // 视频部分占70%
+        : 10 + (frameIndex / totalFrames) * 90;
+      updateUI(videoProgress, `渲染帧 ${frameIndex + 1}/${totalFrames}...`);
+      onProgress?.(videoProgress / 100);
     }
 
     console.log('✅ 所有帧渲染完成');
@@ -97,8 +103,10 @@ export async function exportTimelineProject(
     // 5. 处理音频（如果需要）
     let audioFileName: string | null = null;
     if (includeAudio) {
+      updateUI(80, '处理音频轨道...');
       onProgress?.(0.8);
       audioFileName = await extractTimelineAudio(ffmpeg, tracks, mediaFiles, duration);
+      updateUI(90, '音频处理完成，准备合成视频...');
       onProgress?.(0.9);
     }
 
@@ -137,21 +145,31 @@ export async function exportTimelineProject(
       console.warn(`Failed to delete output file: ${outputFileName}`);
     }
 
+    updateUI(95, '完成导出...');
     onProgress?.(1.0);
     console.log('✅ 视频导出完成');
 
+    updateUI(100, '导出完成！');
+
+    // 创建ArrayBuffer对象
+    const buffer = outputData.buffer instanceof SharedArrayBuffer
+      ? new ArrayBuffer(outputData.length)
+      : outputData.buffer;
+
+    // 如果需要转换，则复制数据
+    if (outputData.buffer instanceof SharedArrayBuffer) {
+      const view = new Uint8Array(buffer);
+      view.set(outputData);
+    }
+
     return {
       success: true,
-      buffer: outputData.buffer
+      buffer: buffer as ArrayBuffer
     };
-
-  } catch (error) {
-    console.error('❌ 视频导出失败:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error)
-    };
-  }
+  }, {
+    title: '视频导出',
+    message: '正在准备视频导出...'
+  });  // withProcessingUI 的结束括号
 }
 
 /**
@@ -372,6 +390,30 @@ export async function mergeTimelineVideos(
 ): Promise<string> {
   console.log('🎬 开始时间轴视频合并...');
 
+  // 添加详细的环境检查
+  try {
+    console.log('🔍 检查运行环境...');
+
+    // 检查基础环境
+    if (typeof window === 'undefined') {
+      throw new Error('需要在浏览器环境中运行');
+    }
+
+    // 检查文件有效性
+    if (!tracks || tracks.length === 0) {
+      throw new Error('没有有效的视频轨道');
+    }
+
+    if (!mediaFiles || mediaFiles.length === 0) {
+      throw new Error('没有有效的媒体文件');
+    }
+
+    console.log('✅ 环境检查通过');
+  } catch (envError) {
+    console.error('❌ 环境检查失败:', envError);
+    throw envError;
+  }
+
   const {
     outputFormat = 'mp4',
     quality = 'medium',
@@ -436,47 +478,52 @@ export async function cutVideoWithTimeline(
     videoQuality?: number;
   } = {}
 ): Promise<string> {
-  console.log('✂️ 开始时间轴视频剪切...');
+  // 确保FFmpeg已加载
+  await ensureFFmpegLoaded();
 
-  // 创建简单的时间轴结构
-  const mediaId = `media_${Date.now()}`;
-  const mediaFile: MediaFile = {
-    id: mediaId,
-    name: file.name,
-    type: 'video',
-    file,
-    url: URL.createObjectURL(file),
-    duration: endTime - startTime
-  };
+  return withProcessingUI(async (updateUI) => {
+    console.log('✂️ 开始时间轴视频剪切...');
+    updateUI(10, '准备视频剪切...');
 
-  const track: TimelineTrack = {
-    id: 'track_1',
-    name: 'Main Track',
-    type: 'media',
-    muted: false,
-    isMain: true,
-    elements: [{
-      id: 'element_1',
+    // 创建简单的时间轴结构
+    const mediaId = `media_${Date.now()}`;
+    const mediaFile: MediaFile = {
+      id: mediaId,
+      name: file.name,
+      type: 'video',
+      file,
+      url: URL.createObjectURL(file),
+      duration: endTime - startTime
+    };
+
+    const track: TimelineTrack = {
+      id: 'track_1',
+      name: 'Main Track',
       type: 'media',
+      muted: false,
+      isMain: true,
+      elements: [{
+        id: 'element_1',
+        type: 'media',
+        name: 'Cut Video',
+        startTime: 0,
+        duration: endTime - startTime,
+        trimStart: startTime,
+        trimEnd: 0,
+        mediaId: mediaId
+      }]
+    };
+
+    const projectSettings: ProjectSettings = {
       name: 'Cut Video',
-      startTime: 0,
+      canvasSize: { width: 1920, height: 1080 },
+      fps: 30,
       duration: endTime - startTime,
-      trimStart: startTime,
-      trimEnd: 0,
-      mediaId: mediaId
-    }]
-  };
+      backgroundType: 'color',
+      backgroundColor: '#000000'
+    };
 
-  const projectSettings: ProjectSettings = {
-    name: 'Cut Video',
-    canvasSize: { width: 1920, height: 1080 },
-    fps: 30,
-    duration: endTime - startTime,
-    backgroundType: 'color',
-    backgroundColor: '#000000'
-  };
-
-  try {
+    updateUI(30, '处理视频片段...');
     const result = await exportTimelineProject([track], [mediaFile], projectSettings, {
       format: options.outputFormat === 'webm' ? 'webm' : 'mp4',
       quality: 'medium',
@@ -488,15 +535,20 @@ export async function cutVideoWithTimeline(
       throw new Error(result.error || '视频剪切失败');
     }
 
+    updateUI(95, '生成视频文件...');
     const blob = new Blob([result.buffer], {
       type: options.outputFormat === 'webm' ? 'video/webm' : 'video/mp4'
     });
 
     console.log('✅ 时间轴视频剪切完成');
-    return URL.createObjectURL(blob);
+    updateUI(100, '剪切完成！');
 
-  } finally {
     // 清理资源
     URL.revokeObjectURL(mediaFile.url);
-  }
+
+    return URL.createObjectURL(blob);
+  }, {
+    title: '视频剪切',
+    message: '正在准备剪切视频...'
+  });
 }

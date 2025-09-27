@@ -59,32 +59,54 @@
           <h3>图片预览区域</h3>
         </div>
         <div class="image-cards-container">
-          <!-- 第一个图片 -->
-          <div class="image-card">
-            <ImageUpload v-model="imageUrls[0]" width="160px" height="120px" @upload-success="handleImageUpload" />
-            <div class="image-actions">
-              <t-button size="small" theme="primary" :loading="isGeneratingScene"
-                @click="generateAIScene">生成AI场景</t-button>
-            </div>
-          </div>
+          <!-- 远景图 -->
+          <DialogCharacterImage :imageUrl="sceneImageUrl" title="对话场景远景图" width="300px" height="auto"
+            maxImageHeight="200px" placeholderIcon="image-add" placeholderText="暂无远景图，请上传或生成">
+            <template #actions>
+              <t-button size="small" theme="primary" @click="triggerSceneImageUpload">
+                <t-icon name="upload" />上传图片
+              </t-button>
+              <t-button size="small" theme="success" :loading="isGeneratingScene" @click="generateAIScene">
+                <t-icon name="code" />生成AI场景
+              </t-button>
+            </template>
+          </DialogCharacterImage>
 
-          <!-- 第二个图片 -->
-          <div class="image-card">
-            <ImageUpload v-model="imageUrls[1]" width="160px" height="120px" @upload-success="handleImageUpload" />
-            <div class="image-actions">
-              <t-button size="small" theme="primary" :loading="isGeneratingScene"
-                @click="generateAIScene">生成AI场景</t-button>
-            </div>
-          </div>
+          <!-- 角色A近景图 -->
+          <DialogCharacterImage :imageUrl="characterAImageUrl" title="角色A近景图" width="200px" height="auto"
+            maxImageHeight="200px" placeholderIcon="user-circle" placeholderText="角色A图片">
+            <template #actions>
+              <t-button size="small" theme="primary" @click="triggerCharacterAImageUpload">
+                <t-icon name="upload" />上传图片
+              </t-button>
+              <t-button size="small" theme="success" :loading="isGeneratingCharacterA" @click="generateAICharacterA">
+                <t-icon name="code" />生成AI角色
+              </t-button>
+            </template>
+          </DialogCharacterImage>
 
-          <!-- 第三个图片 -->
-          <div class="image-card">
-            <ImageUpload v-model="imageUrls[2]" width="160px" height="120px" @upload-success="handleImageUpload" />
-            <div class="image-actions">
-              <t-button size="small" theme="primary" :loading="isGeneratingScene"
-                @click="generateAIScene">生成AI场景</t-button>
-            </div>
-          </div>
+          <!-- 角色B近景图 -->
+          <DialogCharacterImage :imageUrl="characterBImageUrl" title="角色B近景图" width="200px" height="auto"
+            maxImageHeight="200px" placeholderIcon="user-circle" placeholderText="角色B图片">
+            <template #actions>
+              <t-button size="small" theme="primary" @click="triggerCharacterBImageUpload">
+                <t-icon name="upload" />上传图片
+              </t-button>
+              <t-button size="small" theme="success" :loading="isGeneratingCharacterB" @click="generateAICharacterB">
+                <t-icon name="code" />生成AI角色
+              </t-button>
+            </template>
+          </DialogCharacterImage>
+        </div>
+
+        <!-- 隐藏的上传组件 -->
+        <div style="display: none;">
+          <AspectRatioImageUpload ref="sceneImageUploadRef" v-model="sceneImageUrl"
+            @upload-success="handleSceneImageUpload" />
+          <AspectRatioImageUpload ref="characterAImageUploadRef" v-model="characterAImageUrl"
+            @upload-success="handleCharacterAImageUpload" />
+          <AspectRatioImageUpload ref="characterBImageUploadRef" v-model="characterBImageUrl"
+            @upload-success="handleCharacterBImageUpload" />
         </div>
       </div>
 
@@ -378,6 +400,8 @@ import { ref, onMounted, computed, reactive } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { EditIcon, DownloadIcon } from 'tdesign-icons-vue-next';
 import ImageUpload from './components/ImageUpload.vue';
+import AspectRatioImageUpload from './components/AspectRatioImageUpload.vue';
+import { DialogCharacterImage } from '@/components';
 // import VideoCutTool from './components/VideoCutTool.vue'; // 暂时注释掉，稍后添加
 import { getVideoCollections } from '@/api/video-generation';
 import { mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
@@ -479,6 +503,14 @@ const voiceSpeedB = ref(1.0);
 
 // 图片数据
 const imageUrls = ref(['', '', '']);
+const sceneImageUrl = ref('');
+const characterAImageUrl = ref('');
+const characterBImageUrl = ref('');
+
+// 图片上传引用
+const sceneImageUploadRef = ref();
+const characterAImageUploadRef = ref();
+const characterBImageUploadRef = ref();
 
 // 生成状态
 const isGeneratingScene = ref(false);
@@ -486,6 +518,8 @@ const isGeneratingFullScene = ref(false);
 const isGeneratingPrompt = ref(false);
 const isGeneratingRoleA = ref(false);
 const isGeneratingRoleB = ref(false);
+const isGeneratingCharacterA = ref(false);
+const isGeneratingCharacterB = ref(false);
 const isGeneratingFinal = ref(false);
 
 // 生成结果
@@ -546,8 +580,14 @@ const generateAIScene = async () => {
   isGeneratingScene.value = true;
   try {
     MessagePlugin.loading('正在生成AI场景...');
-    // 此功能暂未实现，仅显示成功消息
-    MessagePlugin.success('AI场景生成成功');
+
+    // 此处模拟API调用，实际项目中应使用真实API
+    setTimeout(() => {
+      // 模拟获取到远景图片URL
+      sceneImageUrl.value = 'https://placekitten.com/800/500';
+      MessagePlugin.success('AI场景生成成功');
+    }, 2000);
+
   } catch (error) {
     console.error('生成AI场景失败:', error);
     MessagePlugin.error('生成失败，请稍后重试');
@@ -566,6 +606,11 @@ const generateFullVideo = async () => {
   if (!scenePrompt.value.trim()) {
     MessagePlugin.warning('请先输入场景Prompt');
     return;
+  }
+
+  // 如果已经有场景图片，直接使用
+  if (sceneImageUrl.value) {
+    MessagePlugin.info('使用已有场景图片');
   }
 
   // 先创建对话视频
@@ -985,9 +1030,88 @@ const pollVideoStatus = async (dialogId: string) => {
   setTimeout(checkStatus, interval);
 };
 
+// 触发场景图片上传
+const triggerSceneImageUpload = () => {
+  sceneImageUploadRef.value?.$refs.fileInput?.click();
+};
+
+// 触发角色A图片上传
+const triggerCharacterAImageUpload = () => {
+  characterAImageUploadRef.value?.$refs.fileInput?.click();
+};
+
+// 触发角色B图片上传
+const triggerCharacterBImageUpload = () => {
+  characterBImageUploadRef.value?.$refs.fileInput?.click();
+};
+
 // 处理图片上传
 const handleImageUpload = (file: File, url: string) => {
   console.log('图片上传成功:', file.name, url);
+};
+
+// 处理场景图片上传
+const handleSceneImageUpload = (file: File, url: string) => {
+  console.log('场景图片上传成功:', file.name, url);
+  MessagePlugin.success('场景图片上传成功');
+};
+
+// 处理角色A图片上传
+const handleCharacterAImageUpload = (file: File, url: string) => {
+  console.log('角色A图片上传成功:', file.name, url);
+  MessagePlugin.success('角色A图片上传成功');
+};
+
+// 处理角色B图片上传
+const handleCharacterBImageUpload = (file: File, url: string) => {
+  console.log('角色B图片上传成功:', file.name, url);
+  MessagePlugin.success('角色B图片上传成功');
+};
+
+// 生成AI角色A图片
+const generateAICharacterA = async () => {
+  if (!sceneImageUrl.value) {
+    MessagePlugin.warning('请先上传或生成场景图片');
+    return;
+  }
+
+  isGeneratingCharacterA.value = true;
+  try {
+    MessagePlugin.loading('正在生成角色A图片...');
+    // 模拟生成过程
+    setTimeout(() => {
+      characterAImageUrl.value = sceneImageUrl.value; // 这里只是演示，实际应调用API
+      MessagePlugin.success('角色A图片生成成功');
+    }, 2000);
+  } catch (error) {
+    console.error('生成角色A图片失败:', error);
+    MessagePlugin.error('生成失败，请稍后重试');
+  } finally {
+    isGeneratingCharacterA.value = false;
+  }
+};
+
+// 生成AI角色B图片
+const generateAICharacterB = async () => {
+  if (!sceneImageUrl.value) {
+    MessagePlugin.warning('请先上传或生成场景图片');
+    return;
+  }
+
+  isGeneratingCharacterB.value = true;
+  try {
+    MessagePlugin.loading('正在生成角色B图片...');
+    // 模拟生成过程
+    setTimeout(() => {
+      characterBImageUrl.value = sceneImageUrl.value; // 这里只是演示，实际应调用API
+      MessagePlugin.success('角色B图片生成成功');
+    }, 2000);
+  } catch (error) {
+    console.error('生成角色B图片失败:', error);
+    MessagePlugin.error('生成失败，请稍后重试');
+  } finally {
+    isGeneratingCharacterB.value = false;
+  }
 };
 
 // 新增：设置加载状态
