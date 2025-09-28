@@ -41,26 +41,38 @@ const loadingStages = [
 let currentStageIndex = 0;
 let progressInterval: number | null = null;
 
-// 开始预加载FFmpeg（静默模式）
+// 开始预加载FFmpeg（增强版）
 const startPreloading = async () => {
   // 始终保持隐藏状态
   showStatus.value = false;
 
   try {
-    // 静默预加载，无进度显示
-    if (getFFmpegStatus().isLoaded) {
-      // FFmpeg已经加载完成
+    // 先检查是否已经加载
+    const status = getFFmpegStatus();
+    if (status.isLoaded) {
+      console.log('✅ [FFmpegPreloader] FFmpeg已经加载完成，无需重新加载');
       emits('loaded');
       return;
     }
 
-    // 开始预加载
-    await preloadFFmpeg();
+    console.log('🚀 [FFmpegPreloader] 开始预加载FFmpeg - 增强模式');
 
-    // 加载成功
+    // 强制优先级为高，确保快速加载
+    const ffmpegPromise = preloadFFmpeg();
+
+    // 设置加载超时提醒（但不中断加载）
+    const timeoutWarning = setTimeout(() => {
+      console.log('⚠️ [FFmpegPreloader] FFmpeg加载时间较长，但仍在继续...');
+    }, 10000); // 10秒后提示
+
+    // 等待加载完成
+    await ffmpegPromise;
+    clearTimeout(timeoutWarning);
+
+    console.log('✅ [FFmpegPreloader] FFmpeg预加载成功');
     emits('loaded');
   } catch (error) {
-    // 加载失败，静默处理
+    console.error('❌ [FFmpegPreloader] FFmpeg预加载失败:', error);
     emits('error', error);
   }
 };
@@ -88,14 +100,9 @@ onMounted(() => {
     return;
   }
 
-  if (props.priority === 'high') {
-    // 高优先级，立即开始加载
-    startPreloading();
-  } else {
-    // 正常或低优先级，短暂延迟后加载
-    const delay = props.priority === 'normal' ? 500 : 2000;
-    setTimeout(startPreloading, delay);
-  }
+  // 无论优先级如何，始终立即开始加载
+  console.log('📣 [FFmpegPreloader] 立即开始预加载FFmpeg');
+  startPreloading();
 });
 
 // 组件卸载时清理

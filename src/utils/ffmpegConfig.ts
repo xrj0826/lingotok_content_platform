@@ -1,13 +1,26 @@
 /**
  * FFmpeg配置工具
  * 使用本地文件，避免CORS和网络问题
+ * 增强版 - 支持BlobURL缓存和快速加载模式
  */
 
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { toBlobURL } from '@ffmpeg/util';
+import { toBlobURL, fetchFile } from '@ffmpeg/util';
 
 let ffmpegInstance: FFmpeg | null = null;
 let isLoading = false;
+
+// 缓存BlobURL，避免重复转换
+interface URLCache {
+  coreURL: string;
+  wasmURL: string;
+  workerURL: string;
+  timestamp: number;
+}
+
+let urlCache: URLCache | null = null;
+const FFMPEG_URL_CACHE = 'ffmpeg_url_cache';
+const URL_CACHE_TTL = 24 * 60 * 60 * 1000; // 24小时缓存有效期
 
 import { validateSharedArrayBufferSupport, getSharedArrayBufferSuggestions } from './sharedArrayBufferValidator';
 import { applyFFmpegForcedMode, autoApplyForcedModeIfNeeded } from './ffmpegForcedMode';
@@ -46,9 +59,46 @@ function checkSharedArrayBufferSupport(): boolean {
 }
 
 /**
- * 获取或创建FFmpeg实例
+ * 尝试从localStorage恢复缓存的BlobURL
  */
-export async function getFFmpegInstance(): Promise<FFmpeg> {
+function getCachedBlobURLs(): URLCache | null {
+  try {
+    const cached = localStorage.getItem(FFMPEG_URL_CACHE);
+    if (!cached) return null;
+
+    const urlData: URLCache = JSON.parse(cached);
+    const now = Date.now();
+
+    // 检查缓存是否过期
+    if (now - urlData.timestamp > URL_CACHE_TTL) {
+      console.log('🕒 BlobURL缓存已过期，需要重新生成');
+      localStorage.removeItem(FFMPEG_URL_CACHE);
+      return null;
+    }
+
+    return urlData;
+  } catch (e) {
+    console.warn('无法读取BlobURL缓存:', e);
+    return null;
+  }
+}
+
+/**
+ * 缓存BlobURL到localStorage
+ */
+function saveBlobURLsToCache(urlData: URLCache): void {
+  try {
+    localStorage.setItem(FFMPEG_URL_CACHE, JSON.stringify(urlData));
+  } catch (e) {
+    console.warn('无法保存BlobURL缓存:', e);
+  }
+}
+
+/**
+ * 获取或创建FFmpeg实例
+ * @param fastLoad 是否使用快速加载模式（跳过文件验证和转换）
+ */
+export async function getFFmpegInstance(fastLoad: boolean = false): Promise<FFmpeg> {
   console.log('🎬 [DEBUG] getFFmpegInstance() 被调用');
   console.log('🔍 [DEBUG] 当前实例状态:', {
     hasInstance: ffmpegInstance !== null,
@@ -119,43 +169,77 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
     const localBaseURL = '/ffmpeg';
     console.log('📂 [DEBUG] 使用本地FFmpeg文件:', localBaseURL);
 
-    console.log('🔄 [DEBUG] 开始加载FFmpeg核心文件...');
+    // 准备加载配置
+    let loadConfig: { coreURL: string; wasmURL: string; workerURL: string; };
 
-    // 检查所有文件是否可访问
-    const files = ['ffmpeg-core.js', 'ffmpeg-core.wasm', 'ffmpeg-core.worker.js'];
-    console.log('🔍 [DEBUG] 需要检查的文件:', files);
+    // 尝试使用快速加载模式或缓存的URL
+    if (fastLoad) {
+      console.log('🚀 [DEBUG] 使用快速加载模式，跳过文件验证和转换');
 
-    for (const file of files) {
-      try {
-        console.log(`🔍 [DEBUG] 检查文件: ${file}`);
-        const testStartTime = performance.now();
-        const testResponse = await fetch(`${localBaseURL}/${file}`);
-        const testEndTime = performance.now();
+      // 创建新的FFmpeg实例但不执行完整加载流程
+      const basePath = window.location.origin;
+      const ffmpegBasePath = `${basePath}/ffmpeg`;
 
-        if (!testResponse.ok) {
-          console.error(`❌ [DEBUG] ${file} 访问失败: ${testResponse.status} (${testResponse.statusText})`);
-          throw new Error(`${file} 访问失败: ${testResponse.status}`);
+      loadConfig = {
+        coreURL: `${ffmpegBasePath}/ffmpeg-core.js`,
+        wasmURL: `${ffmpegBasePath}/ffmpeg-core.wasm`,
+        workerURL: `${ffmpegBasePath}/ffmpeg-core.worker.js`,
+      };
+    } else {
+      // 检查是否有缓存的BlobURL
+      const cachedURLs = getCachedBlobURLs();
+      // 尝试使用缓存的BlobURL
+      if (cachedURLs) {
+        console.log('🔄 [DEBUG] 使用缓存的BlobURL，跳过文件转换');
+        loadConfig = {
+          coreURL: cachedURLs.coreURL,
+          wasmURL: cachedURLs.wasmURL,
+          workerURL: cachedURLs.workerURL
+        };
+      } else {
+        console.log('🔄 [DEBUG] 开始加载FFmpeg核心文件...');
+
+        // 优化：并行预加载和转换所有文件，而不是串行处理
+        console.log('🚀 [DEBUG] 使用优化的并行文件转换方式');
+        const blobStartTime = performance.now();
+
+        // 构建正确的URL路径 - 使用相对路径而不是绝对路径，避免导入错误
+        const basePath = window.location.origin;
+        const ffmpegBasePath = `${basePath}/ffmpeg`;
+
+        console.log('🌐 [DEBUG] 使用基础路径:', ffmpegBasePath);
+
+        try {
+          // 并行转换所有文件，显著减少等待时间
+          const [coreURL, wasmURL, workerURL] = await Promise.all([
+            toBlobURL(`${ffmpegBasePath}/ffmpeg-core.js`, 'text/javascript'),
+            toBlobURL(`${ffmpegBasePath}/ffmpeg-core.wasm`, 'application/wasm'),
+            toBlobURL(`${ffmpegBasePath}/ffmpeg-core.worker.js`, 'text/javascript')
+          ]);
+
+          loadConfig = { coreURL, wasmURL, workerURL };
+
+          // 缓存生成的BlobURL
+          saveBlobURLsToCache({
+            ...loadConfig,
+            timestamp: Date.now()
+          });
+
+          const blobEndTime = performance.now();
+          console.log(`✅ [DEBUG] 并行Blob URL转换完成，耗时: ${(blobEndTime - blobStartTime).toFixed(2)}ms`);
+        } catch (error) {
+          console.error('❌ [DEBUG] Blob URL转换失败:', error);
+
+          // 失败回退：使用直接URL而不是BlobURL
+          console.log('⚠️ [DEBUG] 回退到直接文件路径');
+          loadConfig = {
+            coreURL: `${ffmpegBasePath}/ffmpeg-core.js`,
+            wasmURL: `${ffmpegBasePath}/ffmpeg-core.wasm`,
+            workerURL: `${ffmpegBasePath}/ffmpeg-core.worker.js`,
+          };
         }
-        const size = testResponse.headers.get('content-length');
-        console.log(`✅ [DEBUG] ${file} 可访问 ${size ? `(${Math.round(Number(size) / 1024)}KB)` : ''} 耗时: ${(testEndTime - testStartTime).toFixed(2)}ms`);
-      } catch (error) {
-        console.error(`❌ [DEBUG] ${file} 访问失败:`, error);
-        throw error;
       }
     }
-
-    // 使用toBlobURL正确处理文件，这是文档推荐的方式
-    console.log('🔧 [DEBUG] 转换文件为Blob URL...');
-    const blobStartTime = performance.now();
-
-    const loadConfig = {
-      coreURL: await toBlobURL(`/ffmpeg/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`/ffmpeg/ffmpeg-core.wasm`, 'application/wasm'),
-      workerURL: await toBlobURL(`/ffmpeg/ffmpeg-core.worker.js`, 'text/javascript'),
-    };
-
-    const blobEndTime = performance.now();
-    console.log(`✅ [DEBUG] Blob URL转换完成，耗时: ${(blobEndTime - blobStartTime).toFixed(2)}ms`);
 
     console.log('📋 [DEBUG] FFmpeg加载配置:', {
       coreURL: loadConfig.coreURL.substring(0, 50) + '...',
@@ -189,10 +273,14 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
       // 重新尝试加载
       try {
         ffmpegInstance = new FFmpeg();
+        // 使用正确的完整URL路径
+        const basePath = window.location.origin;
+        const ffmpegBasePath = `${basePath}/ffmpeg`;
+
         const loadConfig = {
-          coreURL: await toBlobURL(`/ffmpeg/ffmpeg-core.js`, 'text/javascript'),
-          wasmURL: await toBlobURL(`/ffmpeg/ffmpeg-core.wasm`, 'application/wasm'),
-          workerURL: await toBlobURL(`/ffmpeg/ffmpeg-core.worker.js`, 'text/javascript'),
+          coreURL: await toBlobURL(`${ffmpegBasePath}/ffmpeg-core.js`, 'text/javascript'),
+          wasmURL: await toBlobURL(`${ffmpegBasePath}/ffmpeg-core.wasm`, 'application/wasm'),
+          workerURL: await toBlobURL(`${ffmpegBasePath}/ffmpeg-core.worker.js`, 'text/javascript'),
         };
         await ffmpegInstance.load(loadConfig);
 
@@ -226,6 +314,12 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
       console.log('⏳ 使用CDN备用方案加载FFmpeg，等待直到加载完成...');
       await ffmpegInstance!.load(backupConfig);
 
+      // 缓存CDN BlobURL
+      saveBlobURLsToCache({
+        ...backupConfig,
+        timestamp: Date.now()
+      });
+
       // 验证CDN方案的加载
       if (!ffmpegInstance!.loaded) {
         throw new Error('CDN方案FFmpeg加载命令执行完成，但实例未标记为已加载');
@@ -248,6 +342,19 @@ export async function getFFmpegInstance(): Promise<FFmpeg> {
 export function resetFFmpegInstance(): void {
   ffmpegInstance = null;
   isLoading = false;
+}
+
+/**
+ * 清除FFmpeg BlobURL缓存
+ */
+export function clearFFmpegURLCache(): void {
+  try {
+    localStorage.removeItem(FFMPEG_URL_CACHE);
+    urlCache = null;
+    console.log('🧹 已清除FFmpeg BlobURL缓存');
+  } catch (e) {
+    console.warn('清除FFmpeg BlobURL缓存失败:', e);
+  }
 }
 
 /**

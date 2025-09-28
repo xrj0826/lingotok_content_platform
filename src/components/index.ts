@@ -8,6 +8,8 @@ import FFmpegPreloader from './FFmpegPreloader.vue';
 import FFmpegProgressOverlay from './FFmpegProgressOverlay.vue';
 import AspectRatioImage from './AspectRatioImage.vue';
 import DialogCharacterImage from './DialogCharacterImage.vue';
+import DialogImagesEnhanced from './DialogImagesEnhanced.vue';
+import ImagePreviewDialog from './ImagePreviewDialog.vue';
 
 const components = [
   YepzanVideoThumbnail,
@@ -15,7 +17,9 @@ const components = [
   FFmpegPreloader,
   FFmpegProgressOverlay,
   AspectRatioImage,
-  DialogCharacterImage
+  DialogCharacterImage,
+  DialogImagesEnhanced,
+  ImagePreviewDialog
 ];
 
 export function registerGlobalComponents(app: App): void {
@@ -31,7 +35,9 @@ export {
   FFmpegPreloader,
   FFmpegProgressOverlay,
   AspectRatioImage,
-  DialogCharacterImage
+  DialogCharacterImage,
+  DialogImagesEnhanced,
+  ImagePreviewDialog
 };
 
 

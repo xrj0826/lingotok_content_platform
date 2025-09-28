@@ -84,7 +84,8 @@
                 <t-icon name="image" size="64px" />
                 <p>点击按钮生成场景图</p>
               </div>
-              <img v-else :src="currentVideo.ai_far_img_url" alt="远景图" />
+              <img v-else :src="currentVideo.ai_far_img_url" alt="远景图"
+                @click="previewImage('scene', currentVideo.ai_far_img_url)" style="cursor: zoom-in;" />
             </div>
           </div>
 
@@ -102,7 +103,8 @@
                 <t-icon name="image" size="64px" />
                 <p>需要先生成场景图</p>
               </div>
-              <img v-else :src="currentVideo.detail_a.near_ai_img_url" alt="角色A近景图" />
+              <img v-else :src="currentVideo.detail_a.near_ai_img_url" alt="角色A近景图"
+                @click="previewImage('characterA', currentVideo.detail_a.near_ai_img_url)" style="cursor: zoom-in;" />
             </div>
           </div>
 
@@ -120,7 +122,8 @@
                 <t-icon name="image" size="64px" />
                 <p>需要先生成场景图</p>
               </div>
-              <img v-else :src="currentVideo.detail_b.near_ai_img_url" alt="角色B近景图" />
+              <img v-else :src="currentVideo.detail_b.near_ai_img_url" alt="角色B近景图"
+                @click="previewImage('characterB', currentVideo.detail_b.near_ai_img_url)" style="cursor: zoom-in;" />
             </div>
           </div>
         </div>
@@ -554,6 +557,18 @@
       <!-- 视频编辑弹窗 -->
       <VideoEditingDialog v-model:visible="videoEditDialogVisible" :initial-videos="editDialogInitialVideos"
         :hide-online-videos="true" @confirm="handleVideoEditConfirm" />
+
+      <!-- 场景图片预览弹窗 -->
+      <ImagePreviewDialog :visible="scenePreview.visible" @update:visible="scenePreview.visible = $event"
+        :image-url="scenePreview.url" :title="scenePreview.title" />
+
+      <!-- 角色A图片预览弹窗 -->
+      <ImagePreviewDialog :visible="characterAPreview.visible" @update:visible="characterAPreview.visible = $event"
+        :image-url="characterAPreview.url" :title="characterAPreview.title" />
+
+      <!-- 角色B图片预览弹窗 -->
+      <ImagePreviewDialog :visible="characterBPreview.visible" @update:visible="characterBPreview.visible = $event"
+        :image-url="characterBPreview.url" :title="characterBPreview.title" />
     </div>
   </div>
 </template>
@@ -564,6 +579,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { useRouter } from 'vue-router';
 import HuaweiOBSUpload from '@/components/HuaweiOBSUpload/index.vue';
 import VideoEditingDialog from './VideoEditingDialog.vue';
+import ImagePreviewDialog from '@/components/ImagePreviewDialog.vue';
 import { createVideoPolling, type SmartPolling } from '@/utils/smartPolling';
 import { cutVideoWithFFmpeg, createPlayableVideoUrl, revokeVideoUrl, mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
 import { cutVideoWithTimeline } from '@/utils/advancedVideoProcessor';
@@ -639,6 +655,28 @@ const loadingCreateDialog = ref(false);
 const videoEditDialogVisible = ref(false);
 const editDialogInitialVideos = ref<Array<{ url: string; title: string; file?: File; blob?: Blob }>>([]);
 
+// 图片预览弹窗相关状态 - 为三种图片分别创建预览状态
+const scenePreview = reactive({
+  visible: false,
+  url: '',
+  title: '场景远景图',
+  loaded: false
+});
+
+const characterAPreview = reactive({
+  visible: false,
+  url: '',
+  title: '角色A近景图',
+  loaded: false
+});
+
+const characterBPreview = reactive({
+  visible: false,
+  url: '',
+  title: '角色B近景图',
+  loaded: false
+});
+
 // 视频数据类型定义
 interface VideoItem {
   url: string;
@@ -674,6 +712,44 @@ const processingMerge = ref(false);
 // 工具展开状态
 const showCutTool = ref(false);
 const showMergeTool = ref(false);
+
+// 图片预览函数
+const previewImage = (type: 'scene' | 'characterA' | 'characterB', imageUrl: string) => {
+  if (!imageUrl) return;
+
+  // 根据图片类型选择对应的预览状态
+  let preview;
+  switch (type) {
+    case 'scene':
+      preview = scenePreview;
+      break;
+    case 'characterA':
+      preview = characterAPreview;
+      break;
+    case 'characterB':
+      preview = characterBPreview;
+      break;
+    default:
+      return;
+  }
+
+  // 只有第一次或URL变化时才更新URL
+  if (!preview.loaded || preview.url !== imageUrl) {
+    preview.url = imageUrl;
+    preview.loaded = true;
+    console.log(`更新${preview.title}预览图URL:`, imageUrl);
+  }
+
+  // 显示预览弹窗
+  preview.visible = true;
+
+  console.log('打开图片预览:', {
+    type,
+    url: imageUrl,
+    title: preview.title,
+    alreadyLoaded: preview.loaded
+  });
+};
 
 // 拼接选项
 const mergeOptions = reactive({
@@ -2025,6 +2101,7 @@ onUnmounted(() => {
             align-items: center;
             justify-content: center;
             background: #f3f4f6;
+            position: relative;
 
             .image-placeholder {
               text-align: center;
@@ -2040,6 +2117,29 @@ onUnmounted(() => {
               width: 100%;
               height: 100%;
               object-fit: cover;
+              cursor: zoom-in;
+              transition: all 0.2s ease;
+
+              &:hover {
+                transform: scale(1.02);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                z-index: 1;
+              }
+            }
+
+            // 添加查看大图提示标签
+            &:hover::before {
+              content: '点击查看大图';
+              position: absolute;
+              top: 8px;
+              right: 8px;
+              background: rgba(0, 0, 0, 0.6);
+              color: white;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 12px;
+              z-index: 2;
+              pointer-events: none;
             }
           }
         }

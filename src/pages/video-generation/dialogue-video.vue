@@ -58,46 +58,42 @@
         <div class="section-header">
           <h3>图片预览区域</h3>
         </div>
-        <div class="image-cards-container">
-          <!-- 远景图 -->
-          <DialogCharacterImage :imageUrl="sceneImageUrl" title="对话场景远景图" width="300px" height="auto"
-            maxImageHeight="200px" placeholderIcon="image-add" placeholderText="暂无远景图，请上传或生成">
-            <template #actions>
-              <t-button size="small" theme="primary" @click="triggerSceneImageUpload">
-                <t-icon name="upload" />上传图片
-              </t-button>
-              <t-button size="small" theme="success" :loading="isGeneratingScene" @click="generateAIScene">
-                <t-icon name="code" />生成AI场景
-              </t-button>
-            </template>
-          </DialogCharacterImage>
 
-          <!-- 角色A近景图 -->
-          <DialogCharacterImage :imageUrl="characterAImageUrl" title="角色A近景图" width="200px" height="auto"
-            maxImageHeight="200px" placeholderIcon="user-circle" placeholderText="角色A图片">
-            <template #actions>
-              <t-button size="small" theme="primary" @click="triggerCharacterAImageUpload">
-                <t-icon name="upload" />上传图片
-              </t-button>
-              <t-button size="small" theme="success" :loading="isGeneratingCharacterA" @click="generateAICharacterA">
-                <t-icon name="code" />生成AI角色
-              </t-button>
-            </template>
-          </DialogCharacterImage>
+        <!-- 使用增强版图片显示组件 -->
+        <DialogImagesEnhanced title="场景与角色图片" :sceneImageUrl="sceneImageUrl" :characterAImageUrl="characterAImageUrl"
+          :characterBImageUrl="characterBImageUrl" sceneTitle="对话场景远景图" characterATitle="角色A近景图"
+          characterBTitle="角色B近景图" scenePlaceholder="暂无远景图，请上传或生成" characterAPlaceholder="角色A图片"
+          characterBPlaceholder="角色B图片">
+          <!-- 远景图操作按钮 -->
+          <template #sceneActions>
+            <t-button size="small" theme="primary" @click="triggerSceneImageUpload">
+              <t-icon name="upload" />上传图片
+            </t-button>
+            <t-button size="small" theme="success" :loading="isGeneratingScene" @click="generateAIScene">
+              <t-icon name="code" />生成AI场景
+            </t-button>
+          </template>
 
-          <!-- 角色B近景图 -->
-          <DialogCharacterImage :imageUrl="characterBImageUrl" title="角色B近景图" width="200px" height="auto"
-            maxImageHeight="200px" placeholderIcon="user-circle" placeholderText="角色B图片">
-            <template #actions>
-              <t-button size="small" theme="primary" @click="triggerCharacterBImageUpload">
-                <t-icon name="upload" />上传图片
-              </t-button>
-              <t-button size="small" theme="success" :loading="isGeneratingCharacterB" @click="generateAICharacterB">
-                <t-icon name="code" />生成AI角色
-              </t-button>
-            </template>
-          </DialogCharacterImage>
-        </div>
+          <!-- 角色A操作按钮 -->
+          <template #characterAActions>
+            <t-button size="small" theme="primary" @click="triggerCharacterAImageUpload">
+              <t-icon name="upload" />上传图片
+            </t-button>
+            <t-button size="small" theme="success" :loading="isGeneratingCharacterA" @click="generateAICharacterA">
+              <t-icon name="code" />生成AI角色
+            </t-button>
+          </template>
+
+          <!-- 角色B操作按钮 -->
+          <template #characterBActions>
+            <t-button size="small" theme="primary" @click="triggerCharacterBImageUpload">
+              <t-icon name="upload" />上传图片
+            </t-button>
+            <t-button size="small" theme="success" :loading="isGeneratingCharacterB" @click="generateAICharacterB">
+              <t-icon name="code" />生成AI角色
+            </t-button>
+          </template>
+        </DialogImagesEnhanced>
 
         <!-- 隐藏的上传组件 -->
         <div style="display: none;">
@@ -401,7 +397,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { EditIcon, DownloadIcon } from 'tdesign-icons-vue-next';
 import ImageUpload from './components/ImageUpload.vue';
 import AspectRatioImageUpload from './components/AspectRatioImageUpload.vue';
-import { DialogCharacterImage } from '@/components';
+import { DialogCharacterImage, DialogImagesEnhanced } from '@/components';
 // import VideoCutTool from './components/VideoCutTool.vue'; // 暂时注释掉，稍后添加
 import { getVideoCollections } from '@/api/video-generation';
 import { mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
