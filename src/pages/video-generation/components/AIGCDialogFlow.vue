@@ -150,9 +150,33 @@
           <div class="role-config">
             <h4>角色A配置</h4>
             <div class="dialog-inputs">
-              <div class="dialog-row">
-                <label>对话内容：</label>
-                <t-input v-model="dialogConfig.roleA.content1" placeholder="输入角色A的对话内容" style="width: 400px;" />
+              <!-- 多段对话内容 -->
+              <div v-for="(content, index) in dialogConfig.roleA.contents" :key="`roleA-content-${index}`"
+                class="dialog-row">
+                <label v-if="index === 0">对话内容：</label>
+                <label v-else>&nbsp;</label>
+                <div class="dialog-input-group">
+                  <t-input v-model="dialogConfig.roleA.contents[index]" :placeholder="`输入角色A的第${index + 1}段对话内容`"
+                    style="width: 400px;" />
+                  <div class="dialog-actions">
+                    <!-- 试听按钮 -->
+                    <t-button theme="primary" variant="text" shape="circle" size="small"
+                      @click="tryAudioSentence('roleA', index)" :loading="loadingSentenceA[index]"
+                      :disabled="!dialogConfig.roleA.contents[index]?.trim()" title="试听此句">
+                      <template #icon><t-icon name="play-circle" /></template>
+                    </t-button>
+                    <!-- 添加对话按钮 -->
+                    <t-button theme="primary" variant="text" shape="circle" size="small"
+                      @click="addDialogContent('roleA')">
+                      <template #icon><t-icon name="add" /></template>
+                    </t-button>
+                    <!-- 删除对话按钮，当只有一句话时禁用 -->
+                    <t-button theme="danger" variant="text" shape="circle" size="small"
+                      @click="removeDialogContent('roleA', index)" :disabled="dialogConfig.roleA.contents.length <= 1">
+                      <template #icon><t-icon name="remove" /></template>
+                    </t-button>
+                  </div>
+                </div>
               </div>
               <div class="audio-config">
                 <div class="audio-row">
@@ -187,9 +211,33 @@
           <div class="role-config">
             <h4>角色B配置</h4>
             <div class="dialog-inputs">
-              <div class="dialog-row">
-                <label>对话内容：</label>
-                <t-input v-model="dialogConfig.roleB.content1" placeholder="输入角色B的对话内容" style="width: 400px;" />
+              <!-- 多段对话内容 -->
+              <div v-for="(content, index) in dialogConfig.roleB.contents" :key="`roleB-content-${index}`"
+                class="dialog-row">
+                <label v-if="index === 0">对话内容：</label>
+                <label v-else>&nbsp;</label>
+                <div class="dialog-input-group">
+                  <t-input v-model="dialogConfig.roleB.contents[index]" :placeholder="`输入角色B的第${index + 1}段对话内容`"
+                    style="width: 400px;" />
+                  <div class="dialog-actions">
+                    <!-- 试听按钮 -->
+                    <t-button theme="primary" variant="text" shape="circle" size="small"
+                      @click="tryAudioSentence('roleB', index)" :loading="loadingSentenceB[index]"
+                      :disabled="!dialogConfig.roleB.contents[index]?.trim()" title="试听此句">
+                      <template #icon><t-icon name="play-circle" /></template>
+                    </t-button>
+                    <!-- 添加对话按钮 -->
+                    <t-button theme="primary" variant="text" shape="circle" size="small"
+                      @click="addDialogContent('roleB')">
+                      <template #icon><t-icon name="add" /></template>
+                    </t-button>
+                    <!-- 删除对话按钮，当只有一句话时禁用 -->
+                    <t-button theme="danger" variant="text" shape="circle" size="small"
+                      @click="removeDialogContent('roleB', index)" :disabled="dialogConfig.roleB.contents.length <= 1">
+                      <template #icon><t-icon name="remove" /></template>
+                    </t-button>
+                  </div>
+                </div>
               </div>
               <div class="audio-config">
                 <div class="audio-row">
@@ -248,11 +296,17 @@
               </div>
               <div class="info-item">
                 <span>角色A对话：</span>
-                <span>{{ dialogConfig.roleA.content1 || '未设置' }}</span>
+                <span v-if="dialogConfig.roleA.contents.some(c => c.trim() !== '')">
+                  {{dialogConfig.roleA.contents.filter(c => c.trim() !== '').join(' | ')}}
+                </span>
+                <span v-else>未设置</span>
               </div>
               <div class="info-item">
                 <span>角色B对话：</span>
-                <span>{{ dialogConfig.roleB.content1 || '未设置' }}</span>
+                <span v-if="dialogConfig.roleB.contents.some(c => c.trim() !== '')">
+                  {{dialogConfig.roleB.contents.filter(c => c.trim() !== '').join(' | ')}}
+                </span>
+                <span v-else>未设置</span>
               </div>
             </div>
           </div>
@@ -430,7 +484,7 @@
         </div>
 
         <!-- 第五步：完成 -->
-        <div v-if="currentStepIndex === 4" class="step-panel">
+        <div v-if="currentStepIndex >= 4" class="step-panel">
           <div class="step-title">
             <h3>视频生成完成</h3>
             <p>确认视频信息并提交到视频库</p>
@@ -582,6 +636,7 @@ import VideoEditingDialog from './VideoEditingDialog.vue';
 import ImagePreviewDialog from '@/components/ImagePreviewDialog.vue';
 import { createVideoPolling, type SmartPolling } from '@/utils/smartPolling';
 import { cutVideoWithFFmpeg, createPlayableVideoUrl, revokeVideoUrl, mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
+import { isBrowser, executeInBrowser } from '@/utils/isBrowser';
 import { cutVideoWithTimeline } from '@/utils/advancedVideoProcessor';
 import {
   createAIGCDialog,
@@ -629,12 +684,12 @@ const formData = ref({
 // 对话配置
 const dialogConfig = ref({
   roleA: {
-    content1: '',
+    contents: [''], // 使用数组存储多段对话
     audioType: 'BV007_streaming', // 亲切女声
     audioRatio: 1.0
   },
   roleB: {
-    content1: '',
+    contents: [''], // 使用数组存储多段对话
     audioType: 'BV002_streaming', // 通用男声
     audioRatio: 1.0
   }
@@ -649,6 +704,15 @@ const loadingSubmit = ref(false);
 const loadingTryA = ref(false);
 const loadingTryB = ref(false);
 const loadingCreateDialog = ref(false);
+
+// 每句话的试听加载状态
+const loadingSentenceA = ref<Record<number, boolean>>({});
+const loadingSentenceB = ref<Record<number, boolean>>({});
+
+// 视频预览相关状态
+const videoPreviewVisible = ref(false);
+const currentPreviewVideo = ref<VideoItem | null>(null);
+const previewError = ref(false);
 
 
 // 视频编辑弹窗相关状态
@@ -799,8 +863,12 @@ const canProceedStep2 = computed(() => {
 });
 
 const canProceedStep3 = computed(() => {
-  return dialogConfig.value.roleA.content1.trim() !== '' &&
-    dialogConfig.value.roleB.content1.trim() !== '';
+  // 检查角色A是否有至少一段非空对话
+  const hasRoleAContent = dialogConfig.value.roleA.contents.some(content => content.trim() !== '');
+  // 检查角色B是否有至少一段非空对话
+  const hasRoleBContent = dialogConfig.value.roleB.contents.some(content => content.trim() !== '');
+
+  return hasRoleAContent && hasRoleBContent;
 });
 
 const canProceedStep4 = computed(() => {
@@ -1000,14 +1068,14 @@ const generateDialogVideo = async () => {
       near_ai_img_url: currentVideo.value?.detail_a?.near_ai_img_url || '',
       audio_type: dialogConfig.value.roleA.audioType,
       audio_ratio: ensureFloat(dialogConfig.value.roleA.audioRatio),
-      content_list: [dialogConfig.value.roleA.content1].filter(Boolean)
+      content_list: dialogConfig.value.roleA.contents.filter(content => content.trim() !== '')
     } as AIGCDialogDetail;
 
     const detailB: AIGCDialogDetail = {
       near_ai_img_url: currentVideo.value?.detail_b?.near_ai_img_url || '',
       audio_type: dialogConfig.value.roleB.audioType,
       audio_ratio: ensureFloat(dialogConfig.value.roleB.audioRatio),
-      content_list: [dialogConfig.value.roleB.content1].filter(Boolean)
+      content_list: dialogConfig.value.roleB.contents.filter(content => content.trim() !== '')
     } as AIGCDialogDetail;
 
     console.log('=== 生成对话视频请求参数 ===', {
@@ -1130,8 +1198,116 @@ const submitFinalVideo = async () => {
   }
 };
 
+// 添加对话内容
+const addDialogContent = (role: 'roleA' | 'roleB') => {
+  dialogConfig.value[role].contents.push('');
+  // 更新加载状态
+  const index = dialogConfig.value[role].contents.length - 1;
+  if (role === 'roleA') {
+    loadingSentenceA.value[index] = false;
+  } else {
+    loadingSentenceB.value[index] = false;
+  }
+};
+
+// 删除对话内容
+const removeDialogContent = (role: 'roleA' | 'roleB', index: number) => {
+  // 确保至少保留一条对话
+  if (dialogConfig.value[role].contents.length > 1) {
+    dialogConfig.value[role].contents.splice(index, 1);
+
+    // 更新加载状态
+    if (role === 'roleA') {
+      // 删除对应的加载状态
+      const newLoadingStates: Record<number, boolean> = {};
+      Object.keys(loadingSentenceA.value).forEach(key => {
+        const keyNum = Number(key);
+        if (keyNum < index) {
+          newLoadingStates[keyNum] = loadingSentenceA.value[keyNum];
+        } else if (keyNum > index) {
+          newLoadingStates[keyNum - 1] = loadingSentenceA.value[keyNum];
+        }
+      });
+      loadingSentenceA.value = newLoadingStates;
+    } else {
+      // 删除对应的加载状态
+      const newLoadingStates: Record<number, boolean> = {};
+      Object.keys(loadingSentenceB.value).forEach(key => {
+        const keyNum = Number(key);
+        if (keyNum < index) {
+          newLoadingStates[keyNum] = loadingSentenceB.value[keyNum];
+        } else if (keyNum > index) {
+          newLoadingStates[keyNum - 1] = loadingSentenceB.value[keyNum];
+        }
+      });
+      loadingSentenceB.value = newLoadingStates;
+    }
+  }
+};
+
+// 初始化加载状态
+const initLoadingStates = () => {
+  // 为每个对话句子初始化加载状态
+  dialogConfig.value.roleA.contents.forEach((_, index) => {
+    loadingSentenceA.value[index] = false;
+  });
+  dialogConfig.value.roleB.contents.forEach((_, index) => {
+    loadingSentenceB.value[index] = false;
+  });
+};
+
+// 单句试听
+const tryAudioSentence = async (role: 'roleA' | 'roleB', index: number) => {
+  const content = dialogConfig.value[role].contents[index];
+  if (!content || content.trim() === '') {
+    MessagePlugin.warning('请先输入对话内容');
+    return;
+  }
+
+  // 设置当前句子的加载状态
+  if (role === 'roleA') {
+    loadingSentenceA.value[index] = true;
+  } else {
+    loadingSentenceB.value[index] = true;
+  }
+
+  try {
+    const audioRatio = ensureFloat(dialogConfig.value[role].audioRatio);
+    const audioType = dialogConfig.value[role].audioType;
+
+    const response = await tryAIGCDialogAudio({
+      content: content,
+      audio_type: audioType,
+      audio_ratio: audioRatio
+    });
+
+    if (response.code === 200) {
+      // 播放试听音频
+      if (isBrowser) {
+        const audio = new Audio(response.data.audio_url);
+        audio.play();
+        MessagePlugin.success('正在播放试听音频');
+      }
+    } else {
+      MessagePlugin.error(response.message || '试听失败');
+    }
+  } catch (error) {
+    console.error('试听失败:', error);
+    MessagePlugin.error('试听失败，请重试');
+  } finally {
+    // 重置加载状态
+    if (role === 'roleA') {
+      loadingSentenceA.value[index] = false;
+    } else {
+      loadingSentenceB.value[index] = false;
+    }
+  }
+};
+
 const tryAudioA = async () => {
-  if (!dialogConfig.value.roleA.content1) {
+  // 使用第一个非空内容进行试听
+  const validContent = dialogConfig.value.roleA.contents.find(content => content.trim() !== '');
+  if (!validContent) {
     MessagePlugin.warning('请先输入角色A的对话内容');
     return;
   }
@@ -1145,16 +1321,18 @@ const tryAudioA = async () => {
     });
 
     const response = await tryAIGCDialogAudio({
-      content: dialogConfig.value.roleA.content1,
+      content: validContent,
       audio_type: dialogConfig.value.roleA.audioType,
       audio_ratio: audioRatio
     });
 
     if (response.code === 200) {
       // 播放试听音频
-      const audio = new Audio(response.data.audio_url);
-      audio.play();
-      MessagePlugin.success('正在播放试听音频');
+      if (isBrowser) {
+        const audio = new Audio(response.data.audio_url);
+        audio.play();
+        MessagePlugin.success('正在播放试听音频');
+      }
     } else {
       MessagePlugin.error(response.message || '试听失败');
     }
@@ -1167,7 +1345,9 @@ const tryAudioA = async () => {
 };
 
 const tryAudioB = async () => {
-  if (!dialogConfig.value.roleB.content1) {
+  // 使用第一个非空内容进行试听
+  const validContent = dialogConfig.value.roleB.contents.find(content => content.trim() !== '');
+  if (!validContent) {
     MessagePlugin.warning('请先输入角色B的对话内容');
     return;
   }
@@ -1181,16 +1361,18 @@ const tryAudioB = async () => {
     });
 
     const response = await tryAIGCDialogAudio({
-      content: dialogConfig.value.roleB.content1,
+      content: validContent,
       audio_type: dialogConfig.value.roleB.audioType,
       audio_ratio: audioRatio
     });
 
     if (response.code === 200) {
       // 播放试听音频
-      const audio = new Audio(response.data.audio_url);
-      audio.play();
-      MessagePlugin.success('正在播放试听音频');
+      if (isBrowser) {
+        const audio = new Audio(response.data.audio_url);
+        audio.play();
+        MessagePlugin.success('正在播放试听音频');
+      }
     } else {
       MessagePlugin.error(response.message || '试听失败');
     }
@@ -1940,6 +2122,9 @@ const extractRoleVideos = (data: AIGCDialog, isIncremental = false) => {
 
 // 生命周期
 onMounted(() => {
+  // 初始化加载状态
+  initLoadingStates();
+
   // 如果有videoId，获取视频详情
   if (props.videoId) {
     videoId.value = props.videoId;
@@ -1949,9 +2134,21 @@ onMounted(() => {
 
         // 填充对话配置（如果存在的话）
         const video = response.data.aigc_dialog;
-        if (video.detail_a?.content_list?.[0]) {
-          dialogConfig.value.roleA.content1 = video.detail_a.content_list[0];
+
+        // 角色A对话内容
+        if (video.detail_a?.content_list?.length > 0) {
+          // 清空现有内容
+          dialogConfig.value.roleA.contents = [];
+          // 添加所有内容
+          video.detail_a.content_list.forEach(content => {
+            dialogConfig.value.roleA.contents.push(content);
+          });
+          // 确保至少有一个空内容
+          if (dialogConfig.value.roleA.contents.length === 0) {
+            dialogConfig.value.roleA.contents.push('');
+          }
         }
+
         if (video.detail_a?.audio_type) {
           dialogConfig.value.roleA.audioType = video.detail_a.audio_type;
         }
@@ -1959,15 +2156,29 @@ onMounted(() => {
           dialogConfig.value.roleA.audioRatio = video.detail_a.audio_ratio;
         }
 
-        if (video.detail_b?.content_list?.[0]) {
-          dialogConfig.value.roleB.content1 = video.detail_b.content_list[0];
+        // 角色B对话内容
+        if (video.detail_b?.content_list?.length > 0) {
+          // 清空现有内容
+          dialogConfig.value.roleB.contents = [];
+          // 添加所有内容
+          video.detail_b.content_list.forEach(content => {
+            dialogConfig.value.roleB.contents.push(content);
+          });
+          // 确保至少有一个空内容
+          if (dialogConfig.value.roleB.contents.length === 0) {
+            dialogConfig.value.roleB.contents.push('');
+          }
         }
+
         if (video.detail_b?.audio_type) {
           dialogConfig.value.roleB.audioType = video.detail_b.audio_type;
         }
         if (video.detail_b?.audio_ratio) {
           dialogConfig.value.roleB.audioRatio = video.detail_b.audio_ratio;
         }
+
+        // 初始化每句话的加载状态
+        initLoadingStates();
 
         // 根据视频状态设置当前步骤
         if (response.data.aigc_dialog.play_url) {
@@ -2838,6 +3049,44 @@ onUnmounted(() => {
   .action-buttons {
     display: flex;
     gap: 16px;
+  }
+}
+
+// 视频预览对话框样式
+.video-preview-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+  .preview-video {
+    max-width: 100%;
+    max-height: 70vh;
+    background: #000;
+  }
+
+  .error-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ff4d4f;
+
+    p {
+      margin-top: 8px;
+    }
+  }
+}
+
+.preview-info {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+
+  p {
+    margin: 0;
   }
 }
 </style>

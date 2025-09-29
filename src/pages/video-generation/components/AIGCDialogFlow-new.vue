@@ -317,7 +317,7 @@ const startVideoPollingForRole = (role: 'A' | 'B') => {
 
   // 获取轮询接口
   const fetchVideoData = async () => {
-    const response = await fetch(`https://testapi.lingotok.ai/api/v1/aigc/get_aigc_dialog?id=${props.videoId}`);
+    const response = await fetch(`https://api.lingotok.ai/api/v1/aigc/get_aigc_dialog?id=${props.videoId}`);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -625,7 +625,7 @@ const submitFinalDialogVideo = async () => {
   try {
     submittingFinalVideo.value = true;
 
-    const response = await fetch('https://testapi.lingotok.ai/api/v1/aigc/operate_aigc_dialog', {
+    const response = await fetch('https://api.lingotok.ai/api/v1/aigc/operate_aigc_dialog', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

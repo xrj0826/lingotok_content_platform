@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { generateRequestParams } from '@/utils/crypto';
 
-const API_BASE_URL = 'https://testapi.lingotok.ai';
+const API_BASE_URL = 'https://api.lingotok.ai';
 
 // 工具函数：生成带签名的请求头
 function generateAuthHeaders(apiName: string) {

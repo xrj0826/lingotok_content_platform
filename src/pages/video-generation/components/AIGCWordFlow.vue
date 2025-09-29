@@ -516,8 +516,8 @@ const stopPolling = () => {
 // 查看视频库
 const router = useRouter();
 const viewInLibrary = () => {
-  // 导航到左侧栏中的视频库页面
-  router.push('/video-library/list');
+  // 使用命名路由，确保在任何路由下都能正确跳转
+  router.push({ name: 'videoLibraryList' });
 };
 
 // 创建新视频

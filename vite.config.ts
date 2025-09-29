@@ -121,7 +121,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
           }
         },
         '/manager': {
-          target: 'https://testapi.lingotok.ai/',
+          target: 'https://api.lingotok.ai/',
           ws: true,
           changeOrigin: true,
           rewrite: (path) => {
