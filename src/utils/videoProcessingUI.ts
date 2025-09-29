@@ -5,7 +5,7 @@
 
 import { createApp, h } from 'vue';
 import FFmpegProgressOverlay from '@/components/FFmpegProgressOverlay.vue';
-import { preloadFFmpeg, getFFmpeg, getFFmpegStatus } from './ffmpegCache';
+import { getSharedFFmpegStatus, preloadSharedFFmpeg } from './ffmpegSharedInstance';
 import { isBrowser, safeDocument, executeInBrowser } from './isBrowser';
 
 interface ProgressOptions {
@@ -79,7 +79,7 @@ export function showFFmpegProgress(options: ProgressOptions = {}): {
             state.progress = 0;
 
             try {
-              await preloadFFmpeg();
+              await preloadSharedFFmpeg();
               state.status = 'success';
               state.message = 'FFmpeg引擎加载成功';
               setTimeout(() => {
@@ -174,14 +174,14 @@ export function showFFmpegProgress(options: ProgressOptions = {}): {
  */
 export async function ensureFFmpegLoaded(): Promise<boolean> {
   // 检查FFmpeg是否已加载
-  const status = getFFmpegStatus();
+  const status = getSharedFFmpegStatus();
   if (status.isLoaded) {
     return true;
   }
 
   try {
     // 静默加载FFmpeg，无任何UI提示
-    await preloadFFmpeg();
+    await preloadSharedFFmpeg();
     return true;
   } catch (error) {
     console.error('FFmpeg加载失败:', error);

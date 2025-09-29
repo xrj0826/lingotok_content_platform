@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
-import { preloadFFmpeg, getFFmpegStatus } from '@/utils/ffmpegCache';
+import { preloadSharedFFmpeg, getSharedFFmpegStatus } from '@/utils/ffmpegSharedInstance';
 import { isBrowser } from '@/utils/isBrowser';
 
 const props = defineProps({
@@ -40,6 +40,8 @@ const loadingStages = [
 ];
 let currentStageIndex = 0;
 let progressInterval: number | null = null;
+let retryCount = 0;
+const MAX_RETRIES = 3;
 
 // 开始预加载FFmpeg（增强版）
 const startPreloading = async () => {
@@ -48,29 +50,45 @@ const startPreloading = async () => {
 
   try {
     // 先检查是否已经加载
-    const status = getFFmpegStatus();
+    const status = getSharedFFmpegStatus();
     if (status.isLoaded) {
       console.log('✅ [FFmpegPreloader] FFmpeg已经加载完成，无需重新加载');
       emits('loaded');
       return;
     }
 
-    console.log('🚀 [FFmpegPreloader] 开始预加载FFmpeg - 增强模式');
-
-    // 强制优先级为高，确保快速加载
-    const ffmpegPromise = preloadFFmpeg();
+    console.log('🚀 [FFmpegPreloader] 开始预加载FFmpeg - 使用共享实例');
 
     // 设置加载超时提醒（但不中断加载）
     const timeoutWarning = setTimeout(() => {
       console.log('⚠️ [FFmpegPreloader] FFmpeg加载时间较长，但仍在继续...');
     }, 10000); // 10秒后提示
 
-    // 等待加载完成
-    await ffmpegPromise;
-    clearTimeout(timeoutWarning);
+    try {
+      // 尝试加载FFmpeg
+      const ffmpegPromise = preloadSharedFFmpeg();
+      await ffmpegPromise;
+      clearTimeout(timeoutWarning);
 
-    console.log('✅ [FFmpegPreloader] FFmpeg预加载成功');
-    emits('loaded');
+      console.log('✅ [FFmpegPreloader] FFmpeg预加载成功');
+      emits('loaded');
+    } catch (error) {
+      clearTimeout(timeoutWarning);
+
+      // 如果加载失败，尝试重试
+      console.warn(`⚠️ [FFmpegPreloader] FFmpeg加载失败，尝试重试 (${retryCount + 1}/${MAX_RETRIES})`, error);
+
+      if (retryCount < MAX_RETRIES) {
+        retryCount++;
+        // 延迟1秒后重试
+        setTimeout(() => {
+          startPreloading();
+        }, 1000);
+      } else {
+        console.error('❌ [FFmpegPreloader] FFmpeg预加载失败，已达到最大重试次数:', error);
+        emits('error', error);
+      }
+    }
   } catch (error) {
     console.error('❌ [FFmpegPreloader] FFmpeg预加载失败:', error);
     emits('error', error);
@@ -89,6 +107,7 @@ const stopProgressSimulation = () => {
 // 重试加载
 const retryLoading = () => {
   // 静默调用预加载
+  retryCount = 0; // 重置重试计数
   startPreloading();
 };
 

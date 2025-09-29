@@ -255,7 +255,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, onUnmounted } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
-import { cutVideoWithFFmpeg, createPlayableVideoUrl, revokeVideoUrl, mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
+import { cutVideoWithFFmpeg, createPlayableVideoUrl, revokeVideoUrl, mergeVideosWithFFmpeg } from '@/utils/videoProcessorEnhanced';
 import { cutVideoWithTimeline } from '@/utils/advancedVideoProcessor';
 
 // 定义接口
@@ -527,9 +527,11 @@ const executeCutVideo = async () => {
 
       result = await cutVideoWithFFmpeg(
         videoFile,
-        cutOptions.startTime,
-        cutOptions.endTime,
-        ffmpegOptions
+        {
+          startTime: cutOptions.startTime,
+          endTime: cutOptions.endTime,
+          ...ffmpegOptions
+        }
       );
     }
 
