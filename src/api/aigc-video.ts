@@ -434,7 +434,14 @@ export const tryAIGCDialogAudio = async (data: {
 }): Promise<ApiResponse<{ audio_url: string }>> => {
   console.log('=== tryAIGCDialogAudio called ===', data);
 
-  return await apiRequest('/api/v1/aigc/try_audio', 'POST', 'try_audio', data);
+  // 使用测试域名
+  const response = await axios({
+    method: 'POST',
+    url: `https://testapi.lingotok.ai/api/v1/aigc/try_audio`,
+    headers: generateAuthHeaders('try_audio'),
+    data: data
+  });
+  return response.data;
 };
 
 // ========================== 视频展示API ==========================

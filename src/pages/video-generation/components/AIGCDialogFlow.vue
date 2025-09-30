@@ -331,7 +331,10 @@
           <!-- 视频预览区域 -->
           <div v-if="currentVideo?.play_url" class="video-preview">
             <h4>视频预览</h4>
-            <video :src="currentVideo.play_url" controls style="width: 100%; max-width: 600px;"></video>
+            <div class="main-video-container">
+              <RetryableVideo :src="currentVideo.play_url" controls @error="handleMainVideoError"
+                @retry="handleMainVideoRetry" />
+            </div>
           </div>
 
           <!-- 生成状态显示 -->
@@ -352,13 +355,22 @@
               <div class="video-grid">
                 <div v-for="(video, index) in roleAVideos" :key="`roleA-${index}`" class="video-card">
                   <div class="video-thumbnail">
-                    <video :src="video.url" controls class="thumbnail-video" />
+                    <div v-if="video.url && video.url.trim() !== ''" class="video-container">
+                      <RetryableVideo :src="video.url" controls class="thumbnail-video"
+                        @error="handleVideoError($event, 'roleA', index)"
+                        @retry="handleVideoRetry($event, 'roleA', index)" />
+                    </div>
+                    <div v-else class="video-error-overlay">
+                      <t-icon name="error-circle-filled" size="24px" />
+                      <p>视频生成中，请稍后查看</p>
+                    </div>
                   </div>
                   <div class="video-info">
                     <div class="video-title">{{ video.title || `角色A视频 ${index + 1}` }}</div>
                     <div class="video-content">{{ video.content }}</div>
                     <div class="video-actions">
-                      <t-button size="small" variant="outline" @click="downloadVideo(video)">
+                      <t-button size="small" variant="outline" @click="downloadVideo(video)"
+                        :disabled="!video.url || video.url.trim() === ''">
                         下载
                       </t-button>
                     </div>
@@ -375,102 +387,30 @@
               <div class="video-grid">
                 <div v-for="(video, index) in roleBVideos" :key="`roleB-${index}`" class="video-card">
                   <div class="video-thumbnail">
-                    <video :src="video.url" controls class="thumbnail-video" />
+                    <div v-if="video.url && video.url.trim() !== ''" class="video-container">
+                      <RetryableVideo :src="video.url" controls class="thumbnail-video"
+                        @error="handleVideoError($event, 'roleB', index)"
+                        @retry="handleVideoRetry($event, 'roleB', index)" />
+                    </div>
+                    <div v-else class="video-error-overlay">
+                      <t-icon name="error-circle-filled" size="24px" />
+                      <p>视频生成中，请稍后查看</p>
+                    </div>
                   </div>
                   <div class="video-info">
                     <div class="video-title">{{ video.title || `角色B视频 ${index + 1}` }}</div>
                     <div class="video-content">{{ video.content }}</div>
                     <div class="video-actions">
-                      <t-button size="small" variant="outline" @click="downloadVideo(video)">
+                      <t-button size="small" variant="outline" @click="downloadVideo(video)"
+                        :disabled="!video.url || video.url.trim() === ''">
                         下载
                       </t-button>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
 
-            <!-- 视频编辑工具 -->
-            <div class="video-tools-section">
-              <div class="tools-header">
-                <h4>视频编辑工具</h4>
-              </div>
-
-              <!-- 视频剪切工具 -->
-              <div v-if="selectedVideoForEdit" class="tool-section">
-                <div class="tool-header" @click="toggleTool('cut')">
-                  <span>视频剪切</span>
-                  <span class="toggle-icon">{{ showCutTool ? '−' : '+' }}</span>
-                </div>
-                <div v-if="showCutTool" class="tool-content">
-                  <div class="cut-tool-advanced">
-                    <h5>已选择视频: {{ selectedVideoForEdit.title }}</h5>
-
-                    <!-- 视频预览 -->
-                    <div class="video-preview-section">
-                      <video :src="selectedVideoForEdit.url" controls style="width: 100%; max-height: 200px;"
-                        @loadedmetadata="onVideoMetadataLoaded" ref="cutVideoRef" />
-                    </div>
-
-                    <!-- 剪切参数设置 -->
-                    <div class="cut-settings">
-                      <div class="setting-row">
-                        <label>开始时间 (秒):</label>
-                        <t-input-number v-model="cutOptions.startTime" :min="0" :max="cutOptions.endTime - 0.1"
-                          :step="0.1" style="width: 120px;" />
-                      </div>
-
-                      <div class="setting-row">
-                        <label>结束时间 (秒):</label>
-                        <t-input-number v-model="cutOptions.endTime" :min="cutOptions.startTime + 0.1" :step="0.1"
-                          style="width: 120px;" />
-                      </div>
-
-                      <div class="setting-row">
-                        <label>输出格式:</label>
-                        <t-select v-model="cutOptions.outputFormat" style="width: 100px;">
-                          <t-option value="mp4" label="MP4" />
-                          <t-option value="webm" label="WebM" />
-                          <t-option value="avi" label="AVI" />
-                        </t-select>
-                      </div>
-
-                      <div class="setting-row">
-                        <label>剪切模式:</label>
-                        <t-select v-model="cutOptions.mode" style="width: 120px;">
-                          <t-option value="timeline" label="时间轴模式" />
-                          <t-option value="fast" label="快速模式" />
-                          <t-option value="precise" label="精确模式" />
-                        </t-select>
-                      </div>
-                    </div>
-
-                    <!-- 操作按钮 -->
-                    <div class="cut-actions">
-                      <t-button theme="primary" size="small" @click="executeCutVideo" :loading="processingCut"
-                        :disabled="!selectedVideoForEdit">
-                        {{ processingCut ? '剪切中...' : '开始剪切' }}
-                      </t-button>
-                      <t-button size="small" variant="outline" @click="downloadVideo(selectedVideoForEdit)">
-                        下载原视频
-                      </t-button>
-                    </div>
-
-                    <!-- 剪切结果 -->
-                    <div v-if="cutResultUrl" class="cut-result">
-                      <h6>剪切结果:</h6>
-                      <video :src="cutResultUrl" controls style="width: 100%; max-height: 150px;" />
-                      <div class="result-actions">
-                        <t-button size="small" @click="downloadCutResult">下载剪切结果</t-button>
-                        <t-button size="small" variant="outline" @click="addCutResultToList">添加到视频列表</t-button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
           </div>
 
           <div class="step-actions">
@@ -543,7 +483,10 @@
               <!-- 系统生成的视频预览 -->
               <div v-if="currentVideo?.play_url" class="system-video-preview">
                 <h5>系统生成的视频预览</h5>
-                <video :src="currentVideo.play_url" controls style="width: 100%; max-width: 600px;"></video>
+                <div class="system-video-container">
+                  <RetryableVideo :src="currentVideo.play_url" controls @error="handleSystemVideoError"
+                    @retry="handleSystemVideoRetry" />
+                </div>
                 <div class="video-info">
                   <p class="video-tip">
                     <t-icon name="info-circle" style="color: #1890ff;" />
@@ -560,7 +503,10 @@
             <!-- 已上传视频预览 -->
             <div v-else class="final-video">
               <h4>已上传的最终视频</h4>
-              <video :src="finalVideoUrl" controls style="width: 100%; max-width: 600px;"></video>
+              <div class="final-video-container">
+                <RetryableVideo :src="finalVideoUrl" controls @error="handleFinalVideoError"
+                  @retry="handleFinalVideoRetry" />
+              </div>
 
               <div class="video-info">
                 <p class="video-tip">
@@ -634,6 +580,7 @@ import { useRouter } from 'vue-router';
 import HuaweiOBSUpload from '@/components/HuaweiOBSUpload/index.vue';
 import VideoEditingDialog from './VideoEditingDialog.vue';
 import ImagePreviewDialog from '@/components/ImagePreviewDialog.vue';
+import RetryableVideo from '@/components/RetryableVideo.vue';
 import { createVideoPolling, type SmartPolling } from '@/utils/smartPolling';
 import { cutVideoWithFFmpeg, createPlayableVideoUrl, revokeVideoUrl, mergeVideosWithFFmpeg } from '@/utils/videoProcessor';
 import { isBrowser, executeInBrowser } from '@/utils/isBrowser';
@@ -872,27 +819,37 @@ const canProceedStep3 = computed(() => {
 });
 
 const canProceedStep4 = computed(() => {
-  // 修改按钮判断依据：检查是否已从接口获取到了视频链接
-  // 包括完整的play_url或者角色A/B的视频链接
+  // 修改按钮判断依据：检查是否已从接口获取到了视频链接或已标记为生成完成
+  // 包括完整的play_url或者角色A/B的视频生成完成标记
   const hasPlayUrl = !!(currentVideo.value?.play_url);
 
   // 检查角色A和角色B是否已生成视频 - 基于gen_ai_video_succeed字段
   const hasRoleAVideos = currentVideo.value?.detail_a?.gen_ai_video_succeed === true;
   const hasRoleBVideos = currentVideo.value?.detail_b?.gen_ai_video_succeed === true;
 
-  // 只要有任意一种视频链接就可以进入完成步骤
-  const hasAnyVideoLinks = hasPlayUrl || hasRoleAVideos || hasRoleBVideos;
+  // 只要有任意一种视频已标记为生成完成就可以进入完成步骤
+  const hasAnyVideoComplete = hasPlayUrl || hasRoleAVideos || hasRoleBVideos;
+
+  // 检查是否已渲染了任意视频（通过视频列表是否已生成判断）
+  const hasRenderedVideos = roleAVideos.value.length > 0 || roleBVideos.value.length > 0;
+
+  // 两个条件都满足：有视频标记为生成完成 且 已渲染了视频列表
+  const canProceed = hasAnyVideoComplete && hasRenderedVideos;
 
   console.log('🎯 [完成按钮] 判断依据:', {
     hasPlayUrl,
     hasRoleAVideos,
     hasRoleBVideos,
-    hasAnyVideoLinks,
+    hasAnyVideoComplete,
+    hasRenderedVideos,
+    canProceed,
     roleA_count: currentVideo.value?.detail_a?.ai_video_url_list?.length || 0,
-    roleB_count: currentVideo.value?.detail_b?.ai_video_url_list?.length || 0
+    roleB_count: currentVideo.value?.detail_b?.ai_video_url_list?.length || 0,
+    renderedA: roleAVideos.value.length,
+    renderedB: roleBVideos.value.length
   });
 
-  return hasAnyVideoLinks;
+  return canProceed;
 });
 
 // 智能轮询器
@@ -1204,9 +1161,11 @@ const addDialogContent = (role: 'roleA' | 'roleB') => {
   // 更新加载状态
   const index = dialogConfig.value[role].contents.length - 1;
   if (role === 'roleA') {
-    loadingSentenceA.value[index] = false;
+    loadingSentenceA.value = { ...loadingSentenceA.value, [index]: false };
+    console.log(`添加角色A第${index + 1}句话的加载状态`, loadingSentenceA.value);
   } else {
-    loadingSentenceB.value[index] = false;
+    loadingSentenceB.value = { ...loadingSentenceB.value, [index]: false };
+    console.log(`添加角色B第${index + 1}句话的加载状态`, loadingSentenceB.value);
   }
 };
 
@@ -1248,38 +1207,74 @@ const removeDialogContent = (role: 'roleA' | 'roleB', index: number) => {
 // 初始化加载状态
 const initLoadingStates = () => {
   // 为每个对话句子初始化加载状态
+  const roleAStates: Record<number, boolean> = {};
+  const roleBStates: Record<number, boolean> = {};
+
   dialogConfig.value.roleA.contents.forEach((_, index) => {
-    loadingSentenceA.value[index] = false;
+    roleAStates[index] = false;
   });
   dialogConfig.value.roleB.contents.forEach((_, index) => {
-    loadingSentenceB.value[index] = false;
+    roleBStates[index] = false;
+  });
+
+  loadingSentenceA.value = roleAStates;
+  loadingSentenceB.value = roleBStates;
+
+  console.log('初始化加载状态完成:', {
+    roleAStates,
+    roleBStates,
+    roleAContents: dialogConfig.value.roleA.contents,
+    roleBContents: dialogConfig.value.roleB.contents
   });
 };
 
 // 单句试听
 const tryAudioSentence = async (role: 'roleA' | 'roleB', index: number) => {
+  console.log(`试听${role === 'roleA' ? '角色A' : '角色B'}的第${index + 1}句话`);
+
   const content = dialogConfig.value[role].contents[index];
   if (!content || content.trim() === '') {
     MessagePlugin.warning('请先输入对话内容');
     return;
   }
 
+  // 检查加载状态是否已初始化
+  if (role === 'roleA' && loadingSentenceA.value[index] === undefined) {
+    console.log(`初始化角色A第${index + 1}句话的加载状态`);
+    loadingSentenceA.value[index] = false;
+  } else if (role === 'roleB' && loadingSentenceB.value[index] === undefined) {
+    console.log(`初始化角色B第${index + 1}句话的加载状态`);
+    loadingSentenceB.value[index] = false;
+  }
+
   // 设置当前句子的加载状态
   if (role === 'roleA') {
     loadingSentenceA.value[index] = true;
+    console.log(`设置角色A第${index + 1}句话的加载状态为true`, loadingSentenceA.value);
   } else {
     loadingSentenceB.value[index] = true;
+    console.log(`设置角色B第${index + 1}句话的加载状态为true`, loadingSentenceB.value);
   }
 
   try {
     const audioRatio = ensureFloat(dialogConfig.value[role].audioRatio);
     const audioType = dialogConfig.value[role].audioType;
 
+    console.log(`试听参数:`, {
+      content,
+      audio_type: audioType,
+      audio_ratio: audioRatio,
+      role,
+      index
+    });
+
     const response = await tryAIGCDialogAudio({
       content: content,
       audio_type: audioType,
       audio_ratio: audioRatio
     });
+
+    console.log(`试听API响应:`, response);
 
     if (response.code === 200) {
       // 播放试听音频
@@ -1298,90 +1293,98 @@ const tryAudioSentence = async (role: 'roleA' | 'roleB', index: number) => {
     // 重置加载状态
     if (role === 'roleA') {
       loadingSentenceA.value[index] = false;
+      console.log(`重置角色A第${index + 1}句话的加载状态为false`, loadingSentenceA.value);
     } else {
       loadingSentenceB.value[index] = false;
+      console.log(`重置角色B第${index + 1}句话的加载状态为false`, loadingSentenceB.value);
     }
   }
 };
 
 const tryAudioA = async () => {
-  // 使用第一个非空内容进行试听
-  const validContent = dialogConfig.value.roleA.contents.find(content => content.trim() !== '');
-  if (!validContent) {
+  // 获取所有非空内容
+  const validContents = dialogConfig.value.roleA.contents.filter(content => content.trim() !== '');
+  if (validContents.length === 0) {
     MessagePlugin.warning('请先输入角色A的对话内容');
     return;
   }
 
-  loadingTryA.value = true;
-  try {
-    const audioRatio = ensureFloat(dialogConfig.value.roleA.audioRatio);
-    console.log('=== 试听音频A参数 ===', {
-      'audio_ratio': audioRatio,
-      'type': typeof audioRatio
-    });
-
-    const response = await tryAIGCDialogAudio({
-      content: validContent,
-      audio_type: dialogConfig.value.roleA.audioType,
-      audio_ratio: audioRatio
-    });
-
-    if (response.code === 200) {
-      // 播放试听音频
-      if (isBrowser) {
-        const audio = new Audio(response.data.audio_url);
-        audio.play();
-        MessagePlugin.success('正在播放试听音频');
-      }
-    } else {
-      MessagePlugin.error(response.message || '试听失败');
+  // 如果只有一句话，直接试听
+  if (validContents.length === 1) {
+    // 找到这句话的索引
+    const index = dialogConfig.value.roleA.contents.findIndex(content => content.trim() !== '');
+    if (index !== -1) {
+      tryAudioSentence('roleA', index);
     }
-  } catch (error) {
-    console.error('试听失败:', error);
-    MessagePlugin.error('试听失败，请重试');
-  } finally {
-    loadingTryA.value = false;
+    return;
   }
+
+  // 如果有多句话，显示选择对话框
+  MessagePlugin.info({
+    content: '请点击每句话旁边的试听按钮来试听对应的句子',
+    duration: 3000,
+  });
+
+  // 高亮显示试听按钮
+  const highlightButtons = () => {
+    const buttons = document.querySelectorAll('.dialog-row .dialog-actions .t-button[title="试听此句"]');
+    buttons.forEach((btn) => {
+      const button = btn as HTMLElement;
+      const originalBg = button.style.backgroundColor;
+      button.style.backgroundColor = '#e6f7ff';
+      button.style.boxShadow = '0 0 8px rgba(24, 144, 255, 0.5)';
+
+      setTimeout(() => {
+        button.style.backgroundColor = originalBg;
+        button.style.boxShadow = 'none';
+      }, 1500);
+    });
+  };
+
+  executeInBrowser(highlightButtons, undefined);
 };
 
 const tryAudioB = async () => {
-  // 使用第一个非空内容进行试听
-  const validContent = dialogConfig.value.roleB.contents.find(content => content.trim() !== '');
-  if (!validContent) {
+  // 获取所有非空内容
+  const validContents = dialogConfig.value.roleB.contents.filter(content => content.trim() !== '');
+  if (validContents.length === 0) {
     MessagePlugin.warning('请先输入角色B的对话内容');
     return;
   }
 
-  loadingTryB.value = true;
-  try {
-    const audioRatio = ensureFloat(dialogConfig.value.roleB.audioRatio);
-    console.log('=== 试听音频B参数 ===', {
-      'audio_ratio': audioRatio,
-      'type': typeof audioRatio
-    });
-
-    const response = await tryAIGCDialogAudio({
-      content: validContent,
-      audio_type: dialogConfig.value.roleB.audioType,
-      audio_ratio: audioRatio
-    });
-
-    if (response.code === 200) {
-      // 播放试听音频
-      if (isBrowser) {
-        const audio = new Audio(response.data.audio_url);
-        audio.play();
-        MessagePlugin.success('正在播放试听音频');
-      }
-    } else {
-      MessagePlugin.error(response.message || '试听失败');
+  // 如果只有一句话，直接试听
+  if (validContents.length === 1) {
+    // 找到这句话的索引
+    const index = dialogConfig.value.roleB.contents.findIndex(content => content.trim() !== '');
+    if (index !== -1) {
+      tryAudioSentence('roleB', index);
     }
-  } catch (error) {
-    console.error('试听失败:', error);
-    MessagePlugin.error('试听失败，请重试');
-  } finally {
-    loadingTryB.value = false;
+    return;
   }
+
+  // 如果有多句话，显示选择对话框
+  MessagePlugin.info({
+    content: '请点击每句话旁边的试听按钮来试听对应的句子',
+    duration: 3000,
+  });
+
+  // 高亮显示试听按钮
+  const highlightButtons = () => {
+    const buttons = document.querySelectorAll('.dialog-row .dialog-actions .t-button[title="试听此句"]');
+    buttons.forEach((btn) => {
+      const button = btn as HTMLElement;
+      const originalBg = button.style.backgroundColor;
+      button.style.backgroundColor = '#e6f7ff';
+      button.style.boxShadow = '0 0 8px rgba(24, 144, 255, 0.5)';
+
+      setTimeout(() => {
+        button.style.backgroundColor = originalBg;
+        button.style.boxShadow = 'none';
+      }, 1500);
+    });
+  };
+
+  executeInBrowser(highlightButtons, undefined);
 };
 
 
@@ -1440,9 +1443,18 @@ const startSmartVideoPolling = () => {
         const newRoleACount = data?.detail_a?.ai_video_url_list?.length || 0;
         const newRoleBCount = data?.detail_b?.ai_video_url_list?.length || 0;
 
-        // 检查是否有新增视频
-        const hasNewRoleAVideos = newRoleACount > currentRoleACount;
-        const hasNewRoleBVideos = newRoleBCount > currentRoleBCount;
+        // 检查是否有有效视频URL的函数
+        const hasValidVideoUrls = (urlList) => {
+          return Array.isArray(urlList) && urlList.some(url => url && url.trim() !== '');
+        };
+
+        // 检查新视频数据中是否有有效URL
+        const hasNewRoleAValidVideos = hasValidVideoUrls(data?.detail_a?.ai_video_url_list?.slice(currentRoleACount));
+        const hasNewRoleBValidVideos = hasValidVideoUrls(data?.detail_b?.ai_video_url_list?.slice(currentRoleBCount));
+
+        // 检查是否有新增视频（仅在数量增加且有有效URL时才算）
+        const hasNewRoleAVideos = newRoleACount > currentRoleACount && hasNewRoleAValidVideos;
+        const hasNewRoleBVideos = newRoleBCount > currentRoleBCount && hasNewRoleBValidVideos;
         const hasNewVideos = hasNewRoleAVideos || hasNewRoleBVideos;
 
         // 检查是否有新的完整对话视频
@@ -1470,39 +1482,81 @@ const startSmartVideoPolling = () => {
           // 先保存之前的状态
           const previousData = currentVideo.value;
 
-          // 检查是否有新增视频
+          // 检查视频生成状态的改变
+          const roleAVideoReady = data?.detail_a?.gen_ai_video_succeed === true;
+          const roleBVideoReady = data?.detail_b?.gen_ai_video_succeed === true;
+          const wasRoleAReady = previousData?.detail_a?.gen_ai_video_succeed === true;
+          const wasRoleBReady = previousData?.detail_b?.gen_ai_video_succeed === true;
+
+          // 检查是否有视频生成状态的改变
+          const statusChanged = (!wasRoleAReady && roleAVideoReady) || (!wasRoleBReady && roleBVideoReady);
+
+          // 检查是否有有效视频URL的函数
+          const hasValidVideoUrls = (urlList) => {
+            return Array.isArray(urlList) && urlList.some(url => url && url.trim() !== '');
+          };
+
+          // 检查是否有新增有效视频链接
+          const prevRoleACount = previousData?.detail_a?.ai_video_url_list?.length || 0;
+          const prevRoleBCount = previousData?.detail_b?.ai_video_url_list?.length || 0;
+          const newRoleACount = data?.detail_a?.ai_video_url_list?.length || 0;
+          const newRoleBCount = data?.detail_b?.ai_video_url_list?.length || 0;
+
+          // 检查新增的视频URL是否有效
+          const hasNewRoleAValidVideos = hasValidVideoUrls(data?.detail_a?.ai_video_url_list?.slice(prevRoleACount));
+          const hasNewRoleBValidVideos = hasValidVideoUrls(data?.detail_b?.ai_video_url_list?.slice(prevRoleBCount));
+
+          // 只有当数量增加且新增的URL有效时才更新
+          const hasNewRoleAVideos = newRoleACount > prevRoleACount && hasNewRoleAValidVideos;
+          const hasNewRoleBVideos = newRoleBCount > prevRoleBCount && hasNewRoleBValidVideos;
+
           const shouldUpdateVideos = !previousData || // 第一次
-            (previousData?.detail_a?.ai_video_url_list?.length || 0) < (data?.detail_a?.ai_video_url_list?.length || 0) || // 角色A有新增
-            (previousData?.detail_b?.ai_video_url_list?.length || 0) < (data?.detail_b?.ai_video_url_list?.length || 0); // 角色B有新增
+            hasNewRoleAVideos || // 角色A有有效新增
+            hasNewRoleBVideos; // 角色B有有效新增
 
           // 更新当前视频数据
           currentVideo.value = data;
 
-          // 只在有新增视频时才重新提取和显示视频
-          if (shouldUpdateVideos) {
-            const roleAVideoReady = data?.detail_a?.gen_ai_video_succeed === true;
-            const roleBVideoReady = data?.detail_b?.gen_ai_video_succeed === true;
+          // 当视频生成状态改变或有新视频链接时，更新视频列表
+          if (statusChanged || shouldUpdateVideos) {
+            console.log('🔄 [AIGCDialogFlow] 视频状态变化，更新视频列表:', {
+              statusChanged,
+              shouldUpdateVideos,
+              roleAVideoReady,
+              roleBVideoReady,
+              wasRoleAReady,
+              wasRoleBReady
+            });
 
-            if (roleAVideoReady && roleBVideoReady) {
-              const wasRoleAReady = previousData?.detail_a?.gen_ai_video_succeed;
-              const wasRoleBReady = previousData?.detail_b?.gen_ai_video_succeed;
+            // 状态改变时完全更新，视频链接增加时增量更新
+            if (statusChanged) {
+              extractRoleVideos(data, false); // 状态改变，完全更新
+              setLoadingState(false);
+              MessagePlugin.success('角色视频生成完成！');
+            } else if (shouldUpdateVideos) {
+              // 只有视频链接增加，增量更新视频
+              extractRoleVideos(data, true); // 增量更新
+              setLoadingState(false);
 
-              if (!wasRoleAReady || !wasRoleBReady) {
-                extractRoleVideos(data, false); // 第一次生成，完全更新
-                setLoadingState(false);
-                MessagePlugin.success('角色视频生成完成！');
-              } else {
-                // 后续生成，增量更新视频
-                extractRoleVideos(data, true); // 后续生成，增量更新
-                setLoadingState(false);
+              // 计算有效新增视频数量
+              let validNewRoleACount = 0;
+              let validNewRoleBCount = 0;
 
-                // 计算新增视频数量
-                const newRoleACount = (data?.detail_a?.ai_video_url_list?.length || 0) - (previousData?.detail_a?.ai_video_url_list?.length || 0);
-                const newRoleBCount = (data?.detail_b?.ai_video_url_list?.length || 0) - (previousData?.detail_b?.ai_video_url_list?.length || 0);
+              if (newRoleACount > prevRoleACount) {
+                // 检查新增视频URL是否有效
+                const newRoleAVideos = data?.detail_a?.ai_video_url_list?.slice(prevRoleACount) || [];
+                validNewRoleACount = newRoleAVideos.filter(url => url && url.trim() !== '').length;
+              }
 
-                if (newRoleACount > 0 || newRoleBCount > 0) {
-                  MessagePlugin.success(`新增视频生成完成！角色A新增${newRoleACount}个，角色B新增${newRoleBCount}个`);
-                }
+              if (newRoleBCount > prevRoleBCount) {
+                // 检查新增视频URL是否有效
+                const newRoleBVideos = data?.detail_b?.ai_video_url_list?.slice(prevRoleBCount) || [];
+                validNewRoleBCount = newRoleBVideos.filter(url => url && url.trim() !== '').length;
+              }
+
+              // 只有当真正有有效视频新增时才显示提示
+              if (validNewRoleACount > 0 || validNewRoleBCount > 0) {
+                MessagePlugin.success(`新增视频生成完成！角色A新增${validNewRoleACount}个，角色B新增${validNewRoleBCount}个`);
               }
             }
 
@@ -1616,6 +1670,43 @@ const handleVideoEditConfirm = (result: { url: string; title: string; file?: Fil
   videoEditDialogVisible.value = false;
 };
 
+// 视频错误处理和重试方法
+const handleVideoError = (event: any, role: 'roleA' | 'roleB', index: number) => {
+  console.error(`${role} 视频 ${index + 1} 加载失败:`, event);
+  MessagePlugin.warning(`${role === 'roleA' ? '角色A' : '角色B'}视频 ${index + 1} 加载失败，正在尝试重新加载`);
+};
+
+const handleVideoRetry = (event: any, role: 'roleA' | 'roleB', index: number) => {
+  console.log(`${role} 视频 ${index + 1} 正在重试 (${event.count}/${event.maxRetries})`);
+};
+
+const handleMainVideoError = (event: any) => {
+  console.error('主视频加载失败:', event);
+  MessagePlugin.warning('主视频加载失败，正在尝试重新加载');
+};
+
+const handleMainVideoRetry = (event: any) => {
+  console.log(`主视频正在重试 (${event.count}/${event.maxRetries})`);
+};
+
+const handleSystemVideoError = (event: any) => {
+  console.error('系统视频加载失败:', event);
+  MessagePlugin.warning('系统视频加载失败，正在尝试重新加载');
+};
+
+const handleSystemVideoRetry = (event: any) => {
+  console.log(`系统视频正在重试 (${event.count}/${event.maxRetries})`);
+};
+
+const handleFinalVideoError = (event: any) => {
+  console.error('最终视频加载失败:', event);
+  MessagePlugin.warning('最终视频加载失败，正在尝试重新加载');
+};
+
+const handleFinalVideoRetry = (event: any) => {
+  console.log(`最终视频正在重试 (${event.count}/${event.maxRetries})`);
+};
+
 // 视频编辑相关方法
 const setLoadingState = (loading: boolean, message?: string) => {
   isLoadingVideos.value = loading;
@@ -1642,18 +1733,20 @@ const selectVideoForEdit = (role: 'A' | 'B', video: VideoItem, index: number) =>
 };
 
 const downloadVideo = (video: VideoItem) => {
-  if (!video.url) {
-    MessagePlugin.warning('视频链接无效');
+  if (!video.url || video.url.trim() === '') {
+    MessagePlugin.warning('视频链接无效或视频尚未生成完成');
     return;
   }
 
-  const link = document.createElement('a');
-  link.href = video.url;
-  link.download = video.title || '视频.mp4';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  MessagePlugin.success('开始下载视频');
+  executeInBrowser(() => {
+    const link = document.createElement('a');
+    link.href = video.url;
+    link.download = video.title || '视频.mp4';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    MessagePlugin.success('开始下载视频');
+  }, undefined);
 };
 
 const toggleVideoSelection = (role: 'A' | 'B', video: VideoItem, index: number) => {
@@ -2016,10 +2109,11 @@ const extractRoleVideos = (data: AIGCDialog, isIncremental = false) => {
           const currentCount = roleAVideos.value.length;
           const newVideos = data.detail_a.ai_video_url_list.slice(currentCount);
           newVideos.forEach((videoUrl, index) => {
-            if (videoUrl) {
+            // 当gen_ai_video_succeed为true时，即使videoUrl是空字符串也添加视频项
+            if (videoUrl || data.detail_a.gen_ai_video_succeed) {
               const actualIndex = currentCount + index;
               roleAVideos.value.push({
-                url: videoUrl,
+                url: videoUrl || '', // 如果videoUrl是空字符串，也使用空字符串
                 title: `角色A视频 ${actualIndex + 1}`,
                 content: data.detail_a?.content_list?.[actualIndex] || `角色A对话内容 ${actualIndex + 1}`,
                 role: 'A',
@@ -2030,9 +2124,10 @@ const extractRoleVideos = (data: AIGCDialog, isIncremental = false) => {
         } else {
           // 完全更新：重新添加所有视频
           data.detail_a.ai_video_url_list.forEach((videoUrl, index) => {
-            if (videoUrl) {
+            // 当gen_ai_video_succeed为true时，即使videoUrl是空字符串也添加视频项
+            if (videoUrl || data.detail_a.gen_ai_video_succeed) {
               roleAVideos.value.push({
-                url: videoUrl,
+                url: videoUrl || '', // 如果videoUrl是空字符串，也使用空字符串
                 title: `角色A视频 ${index + 1}`,
                 content: data.detail_a?.content_list?.[index] || `角色A对话内容 ${index + 1}`,
                 role: 'A',
@@ -2064,10 +2159,11 @@ const extractRoleVideos = (data: AIGCDialog, isIncremental = false) => {
           const currentCount = roleBVideos.value.length;
           const newVideos = data.detail_b.ai_video_url_list.slice(currentCount);
           newVideos.forEach((videoUrl, index) => {
-            if (videoUrl) {
+            // 当gen_ai_video_succeed为true时，即使videoUrl是空字符串也添加视频项
+            if (videoUrl || data.detail_b.gen_ai_video_succeed) {
               const actualIndex = currentCount + index;
               roleBVideos.value.push({
-                url: videoUrl,
+                url: videoUrl || '', // 如果videoUrl是空字符串，也使用空字符串
                 title: `角色B视频 ${actualIndex + 1}`,
                 content: data.detail_b?.content_list?.[actualIndex] || `角色B对话内容 ${actualIndex + 1}`,
                 role: 'B',
@@ -2078,9 +2174,10 @@ const extractRoleVideos = (data: AIGCDialog, isIncremental = false) => {
         } else {
           // 完全更新：重新添加所有视频
           data.detail_b.ai_video_url_list.forEach((videoUrl, index) => {
-            if (videoUrl) {
+            // 当gen_ai_video_succeed为true时，即使videoUrl是空字符串也添加视频项
+            if (videoUrl || data.detail_b.gen_ai_video_succeed) {
               roleBVideos.value.push({
-                url: videoUrl,
+                url: videoUrl || '', // 如果videoUrl是空字符串，也使用空字符串
                 title: `角色B视频 ${index + 1}`,
                 content: data.detail_b?.content_list?.[index] || `角色B对话内容 ${index + 1}`,
                 role: 'B',
@@ -2452,12 +2549,25 @@ onUnmounted(() => {
 
         .video-preview {
           text-align: center;
+          margin-bottom: 32px;
 
           h4 {
             margin: 0 0 16px 0;
             font-size: 16px;
             font-weight: 500;
             color: #374151;
+          }
+
+          .main-video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            padding-top: 36%;
+            /* 16:9宽高比 */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
           }
         }
       }
@@ -2563,11 +2673,16 @@ onUnmounted(() => {
               color: #0369a1;
             }
 
-            video {
-              border-radius: 8px;
-              margin-bottom: 12px;
+            .system-video-container {
+              position: relative;
               width: 100%;
               max-width: 600px;
+              margin: 0 auto 16px;
+              padding-top: 56.25%;
+              /* 16:9宽高比 */
+              background: #000;
+              border-radius: 8px;
+              overflow: hidden;
             }
 
             .video-info {
@@ -2600,11 +2715,16 @@ onUnmounted(() => {
             color: #374151;
           }
 
-          video {
-            border-radius: 8px;
-            margin-bottom: 16px;
+          .final-video-container {
+            position: relative;
             width: 100%;
             max-width: 600px;
+            margin: 0 auto 16px;
+            padding-top: 56.25%;
+            /* 16:9宽高比 */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
           }
 
           .video-info {
@@ -2737,8 +2857,9 @@ onUnmounted(() => {
 
           .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
 
             .video-card {
               background: white;
@@ -2746,14 +2867,60 @@ onUnmounted(() => {
               padding: 16px;
               box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
               border: 1px solid #e5e7eb;
+              display: flex;
+              flex-direction: column;
 
               .video-thumbnail {
                 margin-bottom: 12px;
+                position: relative;
+                width: 100%;
+                /* 固定16:9的宽高比 */
+                padding-top: 56.25%;
+                background-color: #000;
+                overflow: hidden;
+                border-radius: 4px;
+
+                .video-container {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                }
 
                 .thumbnail-video {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
                   width: 100%;
-                  max-height: 200px;
+                  height: 100%;
+                  object-fit: contain;
                   border-radius: 4px;
+                }
+
+                .video-error-overlay {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  justify-content: center;
+                  background-color: rgba(0, 0, 0, 0.7);
+                  color: #fff;
+                  text-align: center;
+                  padding: 16px;
+                  z-index: 2;
+
+                  p {
+                    margin-top: 8px;
+                    font-size: 14px;
+                  }
                 }
               }
 

@@ -64,6 +64,9 @@ watch(() => props.visible, (newValue) => {
   console.log('ImagePreviewDialog: 可见性变化', newValue);
   localVisible.value = newValue;
   if (newValue) {
+    // 重置重试计数器
+    retryCount.value = 0;
+
     // 检查图片是否已经加载过
     const alreadyLoaded = loadedImages.value.has(props.imageUrl);
 
@@ -90,6 +93,9 @@ watch(() => props.visible, (newValue) => {
 // 监听图片URL变化
 watch(() => props.imageUrl, (newUrl, oldUrl) => {
   if (newUrl !== oldUrl && newUrl && props.visible) {
+    // 重置重试计数器
+    retryCount.value = 0;
+
     // 检查新URL是否已加载过
     if (!loadedImages.value.has(newUrl)) {
       isLoading.value = true;
@@ -146,9 +152,56 @@ const onImageLoad = () => {
   }
 };
 
+// 图片加载错误重试机制
+const maxRetries = 3;
+const retryDelay = 1500; // 1.5秒
+const retryCount = ref(0);
+
 const onImageError = () => {
-  isLoading.value = false;
-  hasError.value = true;
+  if (retryCount.value < maxRetries) {
+    retryCount.value++;
+    console.log(`图片加载失败，正在进行第 ${retryCount.value} 次重试...`);
+
+    // 保持加载状态
+    isLoading.value = true;
+    hasError.value = false;
+
+    // 添加时间戳或随机参数以避免缓存
+    setTimeout(() => {
+      // 创建一个新的图片元素进行预加载
+      const img = new Image();
+      const timestamp = new Date().getTime();
+      const url = props.imageUrl.includes('?')
+        ? `${props.imageUrl}&_retry=${timestamp}`
+        : `${props.imageUrl}?_retry=${timestamp}`;
+
+      img.onload = () => {
+        // 预加载成功，更新原始图片
+        const imgElement = document.querySelector('.image-preview-content img') as HTMLImageElement;
+        if (imgElement) {
+          imgElement.src = url;
+          onImageLoad();
+        }
+      };
+
+      img.onerror = () => {
+        // 继续重试或最终失败
+        if (retryCount.value >= maxRetries) {
+          isLoading.value = false;
+          hasError.value = true;
+          console.error(`图片加载失败，已重试 ${maxRetries} 次`);
+        } else {
+          onImageError();
+        }
+      };
+
+      img.src = url;
+    }, retryDelay);
+  } else {
+    isLoading.value = false;
+    hasError.value = true;
+    console.error(`图片加载失败，已达到最大重试次数 ${maxRetries}`);
+  }
 };
 
 // 关闭对话框
