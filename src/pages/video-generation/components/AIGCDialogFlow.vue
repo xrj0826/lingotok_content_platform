@@ -422,135 +422,134 @@
             </t-button>
           </div>
         </div>
+      </div>
 
-        <!-- 第五步：完成 -->
-        <div v-if="currentStepIndex == 4" class="step-panel">
-          <div class="step-title">
-            <h3>视频生成完成</h3>
-            <p>确认视频信息并提交到视频库</p>
-          </div>
+      <!-- 第五步：完成 -->
+      <div v-if="currentStepIndex === 4" class="step-panel">
+        <div class="step-title">
+          <h3>视频生成完成</h3>
+          <p>确认视频信息并提交到视频库</p>
+        </div>
 
-          <div class="completion-info">
-            <div class="video-summary">
-              <h4>视频信息确认</h4>
-              <div class="summary-item">
-                <span>视频名称：</span>
-                <span>{{ formData.title }}</span>
-              </div>
-              <div class="summary-item">
-                <span>所属合集：</span>
-                <span>{{ formData.series_name || '无' }}</span>
-              </div>
-              <div class="summary-item">
-                <span>场景描述：</span>
-                <span>{{ formData.far_img_prompt }}</span>
-              </div>
-
-              <!-- 显示最终视频来源信息 -->
-              <div v-if="finalVideoUrl || currentVideo?.play_url" class="summary-item">
-                <span>视频来源：</span>
-                <span v-if="finalVideoUrl" class="video-source edited">
-                  🎬 编辑后的最终视频
-                  <small v-if="finalVideoUploadTime">({{ finalVideoUploadTime }})</small>
-                </span>
-                <span v-else class="video-source generated">
-                  🤖 系统生成的视频
-                </span>
-              </div>
+        <div class="completion-info">
+          <div class="video-summary">
+            <h4>视频信息确认</h4>
+            <div class="summary-item">
+              <span>视频名称：</span>
+              <span>{{ formData.title }}</span>
+            </div>
+            <div class="summary-item">
+              <span>所属合集：</span>
+              <span>{{ formData.series_name || '无' }}</span>
+            </div>
+            <div class="summary-item">
+              <span>场景描述：</span>
+              <span>{{ formData.far_img_prompt }}</span>
             </div>
 
-            <!-- 视频上传区域 -->
-            <div v-if="!finalVideoUrl" class="video-upload-area">
-              <h4>上传最终视频</h4>
-              <p class="upload-tip">请上传编辑完成的最终视频文件，支持 MP4、AVI、MOV、WebM 格式，最大 500MB</p>
+            <!-- 显示最终视频来源信息 -->
+            <div v-if="finalVideoUrl || currentVideo?.play_url" class="summary-item">
+              <span>视频来源：</span>
+              <span v-if="finalVideoUrl" class="video-source edited">
+                🎬 编辑后的最终视频
+                <small v-if="finalVideoUploadTime">({{ finalVideoUploadTime }})</small>
+              </span>
+              <span v-else class="video-source generated">
+                🤖 系统生成的视频
+              </span>
+            </div>
+          </div>
 
-              <HuaweiOBSUpload accept="video/mp4,video/avi,video/mov,video/webm" :max-size="500 * 1024 * 1024"
-                button-text="上传最终视频" tips="支持拖拽上传" folder="final_videos" @success="handleFinalVideoUploadSuccess"
-                @error="handleFinalVideoUploadError">
-                <template #default>
-                  <div class="upload-container">
-                    <div class="upload-trigger">
-                      <t-icon name="cloud-upload" size="48px" />
-                      <div class="upload-text">
-                        <p>上传最终视频</p>
-                        <p>支持拖拽上传</p>
-                      </div>
+          <!-- 视频上传区域 -->
+          <div v-if="!finalVideoUrl" class="video-upload-area">
+            <h4>上传最终视频</h4>
+            <p class="upload-tip">请上传编辑完成的最终视频文件，支持 MP4、AVI、MOV、WebM 格式，最大 500MB</p>
+
+            <HuaweiOBSUpload accept="video/mp4,video/avi,video/mov,video/webm" :max-size="500 * 1024 * 1024"
+              button-text="上传最终视频" tips="支持拖拽上传" folder="final_videos" @success="handleFinalVideoUploadSuccess"
+              @error="handleFinalVideoUploadError">
+              <template #default>
+                <div class="upload-container">
+                  <div class="upload-trigger">
+                    <t-icon name="cloud-upload" size="48px" />
+                    <div class="upload-text">
+                      <p>上传最终视频</p>
+                      <p>支持拖拽上传</p>
                     </div>
                   </div>
-                </template>
-              </HuaweiOBSUpload>
-
-              <!-- 系统生成的视频预览 -->
-              <div v-if="currentVideo?.play_url" class="system-video-preview">
-                <h5>系统生成的视频预览</h5>
-                <div class="system-video-container">
-                  <RetryableVideo :src="currentVideo.play_url" controls @error="handleSystemVideoError"
-                    @retry="handleSystemVideoRetry" />
                 </div>
-                <div class="video-info">
-                  <p class="video-tip">
-                    <t-icon name="info-circle" style="color: #1890ff;" />
-                    这是系统自动生成的对话视频，您可以下载后编辑
-                  </p>
-                  <t-button @click="downloadSystemVideo" size="small" variant="outline">
-                    <t-icon name="download" />
-                    下载系统视频
-                  </t-button>
-                </div>
-              </div>
-            </div>
+              </template>
+            </HuaweiOBSUpload>
 
-            <!-- 已上传视频预览 -->
-            <div v-else class="final-video">
-              <h4>已上传的最终视频</h4>
-              <div class="final-video-container">
-                <RetryableVideo :src="finalVideoUrl" controls @error="handleFinalVideoError"
-                  @retry="handleFinalVideoRetry" />
+            <!-- 系统生成的视频预览 -->
+            <div v-if="currentVideo?.play_url" class="system-video-preview">
+              <h5>系统生成的视频预览</h5>
+              <div class="system-video-container">
+                <RetryableVideo :src="currentVideo.play_url" controls @error="handleSystemVideoError"
+                  @retry="handleSystemVideoRetry" />
               </div>
-
               <div class="video-info">
                 <p class="video-tip">
-                  <t-icon name="check-circle" style="color: #52c41a;" />
-                  此视频已上传到华为云OBS
+                  <t-icon name="info-circle" style="color: #1890ff;" />
+                  这是系统自动生成的对话视频，您可以下载后编辑
                 </p>
-                <div class="video-details">
-                  <p><strong>上传时间:</strong> {{ finalVideoUploadTime }}</p>
-                  <p><strong>视频地址:</strong> <span class="url-text">{{ finalVideoUrl }}</span></p>
-                </div>
-                <div class="video-actions">
-                  <t-button @click="removeUploadedVideo" variant="outline">
-                    <t-icon name="delete" />
-                    删除并重新上传
-                  </t-button>
-                </div>
+                <t-button @click="downloadSystemVideo" size="small" variant="outline">
+                  <t-icon name="download" />
+                  下载系统视频
+                </t-button>
               </div>
             </div>
           </div>
 
-          <div class="step-actions" v-if="!submitSuccess">
-            <t-button variant="outline" @click="prevStep">
-              上一步
-            </t-button>
-            <t-button theme="primary" size="large" @click="submitFinalVideo" :loading="loadingSubmit">
-              提交视频
-            </t-button>
-          </div>
+          <!-- 已上传视频预览 -->
+          <div v-else class="final-video">
+            <h4>已上传的最终视频</h4>
+            <div class="final-video-container">
+              <RetryableVideo :src="finalVideoUrl" controls @error="handleFinalVideoError"
+                @retry="handleFinalVideoRetry" />
+            </div>
 
-          <!-- 提交成功后的操作按钮 -->
-          <div v-if="submitSuccess" class="success-actions">
-            <t-alert theme="success" message="视频提交成功！" description="您的视频已成功提交并保存到视频库中。" />
-            <div class="action-buttons">
-              <t-button theme="primary" size="large" @click="goToVideoLibrary">
-                <template #icon><t-icon name="view-module" /></template>
-                前往视频库查看
-              </t-button>
-              <t-button variant="outline" @click="handleBack">
-                返回列表
-              </t-button>
+            <div class="video-info">
+              <p class="video-tip">
+                <t-icon name="check-circle" style="color: #52c41a;" />
+                此视频已上传到华为云OBS
+              </p>
+              <div class="video-details">
+                <p><strong>上传时间:</strong> {{ finalVideoUploadTime }}</p>
+                <p><strong>视频地址:</strong> <span class="url-text">{{ finalVideoUrl }}</span></p>
+              </div>
+              <div class="video-actions">
+                <t-button @click="removeUploadedVideo" variant="outline">
+                  <t-icon name="delete" />
+                  删除并重新上传
+                </t-button>
+              </div>
             </div>
           </div>
         </div>
 
+        <div class="step-actions" v-if="!submitSuccess">
+          <t-button variant="outline" @click="prevStep">
+            上一步
+          </t-button>
+          <t-button theme="primary" size="large" @click="submitFinalVideo" :loading="loadingSubmit">
+            提交视频
+          </t-button>
+        </div>
+
+        <!-- 提交成功后的操作按钮 -->
+        <div v-if="submitSuccess" class="success-actions">
+          <t-alert theme="success" message="视频提交成功！" description="您的视频已成功提交并保存到视频库中。" />
+          <div class="action-buttons">
+            <t-button theme="primary" size="large" @click="goToVideoLibrary">
+              <template #icon><t-icon name="view-module" /></template>
+              前往视频库查看
+            </t-button>
+            <t-button variant="outline" @click="handleBack">
+              返回列表
+            </t-button>
+          </div>
+        </div>
       </div>
 
 
