@@ -424,7 +424,7 @@
         </div>
 
         <!-- 第五步：完成 -->
-        <div v-if="currentStepIndex >= 4" class="step-panel">
+        <div v-if="currentStepIndex == 4" class="step-panel">
           <div class="step-title">
             <h3>视频生成完成</h3>
             <p>确认视频信息并提交到视频库</p>
