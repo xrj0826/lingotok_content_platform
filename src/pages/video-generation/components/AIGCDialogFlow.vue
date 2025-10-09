@@ -290,6 +290,10 @@
           <div class="generation-info">
             <div class="info-card">
               <h4>视频预览信息</h4>
+              <div class="info-item" v-if="currentVideo?.gen_ai_video_status">
+                <span>视频生成状态：</span>
+                <span>{{ currentVideo.gen_ai_video_status }}</span>
+              </div>
               <div class="info-item">
                 <span>场景：</span>
                 <span>{{ formData.far_img_prompt || '未设置' }}</span>

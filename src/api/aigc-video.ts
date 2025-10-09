@@ -187,6 +187,8 @@ export interface AIGCDialog {
   play_url?: string;
   cover_url?: string;
   subtitles?: Record<Language, string>;
+  // 新增：后端轮询返回的服务端状态描述
+  gen_ai_video_status?: string;
 }
 
 export interface ApiResponse<T = any> {
