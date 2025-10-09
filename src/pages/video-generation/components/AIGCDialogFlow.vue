@@ -2377,33 +2377,53 @@ onUnmounted(() => {
 
       .images-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 24px;
         margin-bottom: 32px;
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+
+        @media (max-width: 768px) {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 480px) {
+          grid-template-columns: 1fr;
+          max-width: 240px;
+        }
 
         .image-card {
           border: 1px solid #e5e7eb;
           border-radius: 8px;
           overflow: hidden;
+          min-width: 160px;
+          max-width: 240px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
 
           .image-header {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            padding: 16px;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
             background: #f9fafb;
             border-bottom: 1px solid #e5e7eb;
 
             h4 {
               margin: 0;
-              font-size: 16px;
+              font-size: 14px;
               font-weight: 500;
               color: #374151;
+              text-align: center;
             }
           }
 
           .image-content {
-            aspect-ratio: 16/9;
+            aspect-ratio: 9/16;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2423,7 +2443,7 @@ onUnmounted(() => {
             img {
               width: 100%;
               height: 100%;
-              object-fit: cover;
+              object-fit: contain;
               cursor: zoom-in;
               transition: all 0.2s ease;
 
