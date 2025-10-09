@@ -292,7 +292,7 @@
               <h4>视频预览信息</h4>
               <div class="info-item" v-if="currentVideo?.gen_ai_video_status">
                 <span>视频生成状态：</span>
-                <span>{{ currentVideo.gen_ai_video_status }}</span>
+                <span class="status-raw-text">{{ currentVideo.gen_ai_video_status }}</span>
               </div>
               <div class="info-item">
                 <span>场景：</span>
@@ -899,6 +899,53 @@ const getDialogStatusText = (video: AIGCDialog) => {
   if (video.detail_a?.near_ai_img_url && video.detail_b?.near_ai_img_url) return '图片已生成';
   if (video.ai_far_img_url) return '远景图已生成';
   return '等待生成';
+};
+
+// 格式化视频生成状态显示
+const formatVideoStatus = (status: string) => {
+  if (!status) return '';
+
+  // 检查是否包含错误信息
+  if (status.includes('失败') || status.includes('Error') || status.includes('错误')) {
+    // 提取主要错误信息
+    const errorMatch = status.match(/([A-Z]-\d+)\s+(.+?)(?:,\s*\{.*\})?$/);
+    if (errorMatch) {
+      return `${errorMatch[1]} 生成失败`;
+    }
+    return '视频生成失败';
+  }
+
+  // 检查是否包含成功信息
+  if (status.includes('成功') || status.includes('完成')) {
+    return '视频生成完成';
+  }
+
+  // 检查是否包含进行中信息
+  if (status.includes('生成中') || status.includes('处理中')) {
+    return '视频生成中';
+  }
+
+  // 默认返回原始状态，但截取前50个字符
+  return status.length > 50 ? status.substring(0, 50) + '...' : status;
+};
+
+// 获取状态样式类
+const getStatusClass = (status: string) => {
+  if (!status) return '';
+
+  if (status.includes('失败') || status.includes('Error') || status.includes('错误')) {
+    return 'status-error';
+  }
+
+  if (status.includes('成功') || status.includes('完成')) {
+    return 'status-success';
+  }
+
+  if (status.includes('生成中') || status.includes('处理中')) {
+    return 'status-processing';
+  }
+
+  return 'status-info';
 };
 
 // API调用方法
@@ -2560,6 +2607,55 @@ onUnmounted(() => {
 
               span:last-child {
                 color: #374151;
+              }
+
+              // 状态样式
+              .status-error {
+                color: #dc2626;
+                font-weight: 500;
+                background: #fef2f2;
+                padding: 2px 8px;
+                border-radius: 4px;
+                border: 1px solid #fecaca;
+              }
+
+              .status-success {
+                color: #059669;
+                font-weight: 500;
+                background: #f0fdf4;
+                padding: 2px 8px;
+                border-radius: 4px;
+                border: 1px solid #bbf7d0;
+              }
+
+              .status-processing {
+                color: #d97706;
+                font-weight: 500;
+                background: #fffbeb;
+                padding: 2px 8px;
+                border-radius: 4px;
+                border: 1px solid #fed7aa;
+              }
+
+              .status-info {
+                color: #2563eb;
+                font-weight: 500;
+                background: #eff6ff;
+                padding: 2px 8px;
+                border-radius: 4px;
+                border: 1px solid #bfdbfe;
+              }
+
+              // 原始文本显示（自动换行、不截断）
+              .status-raw-text {
+                white-space: pre-wrap;
+                word-break: break-all;
+                color: #374151;
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                border-radius: 4px;
+                padding: 8px;
+                max-width: 100%;
               }
             }
           }
